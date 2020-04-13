@@ -198,7 +198,7 @@
                      <content>
                         <AnchorPane prefHeight="200.0" prefWidth="200.0">
                            <children>
-                              <LineChart alternativeColumnFillVisible="true" focusTraversable="true" prefHeight="711.0" prefWidth="1000.0" title="Измерения" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <LineChart fx:id="mainDiagram" alternativeColumnFillVisible="true" focusTraversable="true" prefHeight="711.0" prefWidth="1000.0" title="Измерения" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <xAxis>
                                   <CategoryAxis label="Время, с" side="BOTTOM" />
                                 </xAxis>

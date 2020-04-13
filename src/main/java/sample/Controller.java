@@ -1,6 +1,6 @@
 package sample;
 
-import comPort.ComPortConnectivity;
+import comPort.ComPortConnection;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -42,7 +42,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
-        String [] portNames = ComPortConnectivity.getPortNames();
+        String [] portNames = ComPortConnection.getPortNames();
         portChoiceBox.getItems().addAll(portNames);
         portChoiceBox.setValue(portNames[0]);
         speedChoiceBox.getItems().removeAll(speedChoiceBox.getItems());
@@ -69,7 +69,7 @@ public class Controller implements Initializable {
 
     public void refresh(ActionEvent actionEvent) {
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
-        String [] portNames = ComPortConnectivity.getPortNames();
+        String [] portNames = ComPortConnection.getPortNames();
         portChoiceBox.getItems().addAll(portNames);
     }
 
@@ -97,4 +97,6 @@ public class Controller implements Initializable {
 
     public void sendData(ActionEvent actionEvent) {
     }
+
+
 }
