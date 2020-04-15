@@ -4,8 +4,10 @@ import comPort.ComPortConnection;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -23,26 +25,35 @@ public class Controller implements Initializable {
     public Button sendDataButton;
     public ImageView connectImage;
     public LineChart mainDiagram;
-    public RadioButton negativeMeasureHalfWave;
     public ToggleGroup choiceBigWave;
-    public RadioButton positiveMeasureHalfWave;
     public RadioButton positiveFastHalfWave;
     public ToggleGroup choiceLittleWave;
     public RadioButton negativeFastHalfWave;
     public TextField pauseTimeEdit;
-    public TextField leakingTimeEdit;
     public TextField positiveTimeFastWavesEdit;
     public TextField negativeTimeFastWavesEdit;
-    public TextField fastWavesFullTimeEdit;
-    public TextField wavesQuantityEdit;
-    public TextField positiveAmplitudeFastWavesEdit;
-    public TextField negativeAmplitudeFastWavesEdit;
     public Label connectionLabel;
+    public Tab graphTab;
+    public TextField waitingTimeEdit;
+    public CheckBox pauseTimeCheckBox;
+    public CheckBox waitingTimeCheckBox;
+    public TextField amplitudeFastWavesEdit;
+    public TextField quantityFastPulsesEdit;
+    public TextField commonFastPulsesTimeEdit;
+    public RadioButton positiveFastHalfWaveRadioB;
+    public TextField negativeTimeMeasureEdit;
+    public RadioButton negativeFastHalfWaveRadioB;
+    public TextField positiveAmpMeasureEdit;
+    public TextField positiveTimeMeasureEdit;
+    public TextField negativeAmpMeasureEdit;
+    public RadioButton positiveMeasureRadioB;
+    public RadioButton negativeMeasureRadioB;
+    public TextField commonMeasureTimeEdit;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
-        String [] portNames = ComPortConnection.getPortNames();
+        String[] portNames = ComPortConnection.getPortNames();
         portChoiceBox.getItems().addAll(portNames);
         portChoiceBox.setValue(portNames[0]);
         speedChoiceBox.getItems().removeAll(speedChoiceBox.getItems());
@@ -69,7 +80,7 @@ public class Controller implements Initializable {
 
     public void refresh(ActionEvent actionEvent) {
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
-        String [] portNames = ComPortConnection.getPortNames();
+        String[] portNames = ComPortConnection.getPortNames();
         portChoiceBox.getItems().addAll(portNames);
     }
 
@@ -77,8 +88,8 @@ public class Controller implements Initializable {
         setDisableElements();
     }
 
-    private void setDisableElements(){
-        if(defaultPortCheckBox.isSelected()){
+    private void setDisableElements() {
+        if (defaultPortCheckBox.isSelected()) {
             updatePortsButton.setDisable(true);
             portChoiceBox.setDisable(true);
             speedChoiceBox.setDisable(true);
@@ -96,7 +107,76 @@ public class Controller implements Initializable {
     }
 
     public void sendData(ActionEvent actionEvent) {
+
     }
 
 
+    public void disablePauseTime(ActionEvent actionEvent) {
+        checkTimeAvailability(pauseTimeCheckBox, pauseTimeEdit);
+    }
+
+    public void commonMeasureTimeAction(ActionEvent actionEvent) {
+        commonMeasure(positiveTimeMeasureEdit, negativeTimeMeasureEdit);
+    }
+
+    public void commonMeasureTime(MouseEvent actionEvent) {
+        commonMeasure(positiveTimeMeasureEdit, negativeTimeMeasureEdit);
+    }
+
+    private void commonMeasure(TextField textFieldPos, TextField textFieldNeg) {
+        String negativeTimeMeasure = textFieldNeg.getText();
+        String positiveTimeMeasure = textFieldPos.getText();
+        if (positiveTimeMeasure.equals("")) {
+            positiveTimeMeasure = "0";
+        }
+        if (negativeTimeMeasure.equals("")) {
+            negativeTimeMeasure = "0";
+        }
+        if (positiveTimeMeasure.equals("0") &&
+                negativeTimeMeasure.equals("0")) {
+            commonMeasureTimeEdit.clear();
+        } else {
+            int commonMeasureTime = Integer.parseInt(negativeTimeMeasure) + Integer.parseInt(positiveTimeMeasure);
+            commonMeasureTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
+        }
+    }
+
+    public void disableWaitingTime(ActionEvent actionEvent) {
+        checkTimeAvailability(waitingTimeCheckBox, waitingTimeEdit);
+    }
+
+    private void checkTimeAvailability(CheckBox checkBox, TextField textField) {
+        if (checkBox.isSelected()) {
+            textField.setDisable(true);
+            textField.setText("0");
+        } else {
+            textField.clear();
+            textField.setDisable(false);
+        }
+    }
+
+    public void commonFastPulsesTime(MouseEvent mouseEvent) {
+        String negativeTimeFastWaves = negativeTimeFastWavesEdit.getText();
+        String positiveTimeFastWaves = positiveTimeFastWavesEdit.getText();
+        String quantityFastPulses = quantityFastPulsesEdit.getText();
+        if (negativeTimeFastWaves.equals("")) {
+            negativeTimeFastWaves = "0";
+        }
+        if (positiveTimeFastWaves.equals("")) {
+            positiveTimeFastWaves = "0";
+        }
+        if (quantityFastPulses.equals("")) {
+            quantityFastPulses = "0";
+        }
+        if (quantityFastPulses.equals("0") &&
+                positiveTimeFastWaves.equals("0") &&
+                negativeTimeFastWaves.equals("0")) {
+            commonFastPulsesTimeEdit.clear();
+        } else {
+            int commonMeasureTime = Integer.parseInt(quantityFastPulses) *
+                    (Integer.parseInt(positiveTimeFastWaves) +
+                            Integer.parseInt(negativeTimeFastWaves));
+            commonFastPulsesTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
+        }
+    }
 }
