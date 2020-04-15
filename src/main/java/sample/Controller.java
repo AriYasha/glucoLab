@@ -24,7 +24,6 @@ public class Controller implements Initializable {
     public CheckBox defaultPortCheckBox;
     public Button sendDataButton;
     public ImageView connectImage;
-    public LineChart mainDiagram;
     public ToggleGroup choiceBigWave;
     public RadioButton positiveFastHalfWave;
     public ToggleGroup choiceLittleWave;
@@ -49,6 +48,8 @@ public class Controller implements Initializable {
     public RadioButton positiveMeasureRadioB;
     public RadioButton negativeMeasureRadioB;
     public TextField commonMeasureTimeEdit;
+    public Label waitTimeLabel;
+    public Label pauseTimeLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -112,7 +113,7 @@ public class Controller implements Initializable {
 
 
     public void disablePauseTime(ActionEvent actionEvent) {
-        checkTimeAvailability(pauseTimeCheckBox, pauseTimeEdit);
+        checkTimeAvailability(pauseTimeCheckBox, pauseTimeEdit, pauseTimeLabel);
     }
 
     public void commonMeasureTimeAction(ActionEvent actionEvent) {
@@ -142,16 +143,18 @@ public class Controller implements Initializable {
     }
 
     public void disableWaitingTime(ActionEvent actionEvent) {
-        checkTimeAvailability(waitingTimeCheckBox, waitingTimeEdit);
+        checkTimeAvailability(waitingTimeCheckBox, waitingTimeEdit, waitTimeLabel);
     }
 
-    private void checkTimeAvailability(CheckBox checkBox, TextField textField) {
+    private void checkTimeAvailability(CheckBox checkBox, TextField textField, Label label) {
         if (checkBox.isSelected()) {
             textField.setDisable(true);
+            label.setDisable(true);
             textField.setText("0");
         } else {
             textField.clear();
             textField.setDisable(false);
+            label.setDisable(false);
         }
     }
 
