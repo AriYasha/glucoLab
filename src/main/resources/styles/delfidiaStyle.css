@@ -92,3 +92,7 @@
 .table-cell {
     -fx-font-size: 12px;
 }
+
+.default-color0.chart-series-line { -fx-stroke: #000000; }
+.default-color1.chart-series-line { -fx-stroke: black; }
+.default-color2.chart-series-line { -fx-stroke: brown; }

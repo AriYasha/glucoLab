@@ -15,14 +15,14 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception{
         String fxmlFile = "/fxml/sample.fxml";
-        //String css = "/styles/delfidiaStyle.css";
+        String css = "/styles/labStyle.css";
         String icons = "/images/";
 
         FXMLLoader loader = new FXMLLoader();
         Parent root = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
         Scene scene = new Scene(root);
         stage.setTitle("GlucoLab");
-        //scene.getStylesheets().add(css);
+        scene.getStylesheets().add(css);
         stage.setScene(scene);
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
