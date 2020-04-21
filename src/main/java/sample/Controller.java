@@ -3,8 +3,12 @@ package sample;
 import comPort.ComPortConnection;
 import entity.MeasurementSetup;
 import graph.VisualisationPlot;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -18,8 +22,11 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
+
     private MeasurementSetup setup;
     private VisualisationPlot visualisationPlot;
+
+    public Label coordinateLabel;
     public Button updatePortsButton;
     public Button openPortButton;
     public ChoiceBox<String> portChoiceBox;
@@ -85,8 +92,71 @@ public class Controller implements Initializable {
         setup = new MeasurementSetup();
         visualisationPlot = new VisualisationPlot(visualPlot);
         renderVisualization();
+        coordinateLabel.setVisible(false);
+
+        Node chartBackground = visualPlot.lookup(".chart-plot-background");
+        Node chartSeries = visualPlot.lookup(".chart-series-line");
+        System.out.println(chartSeries.toString());
+        chartBackground.setOnMouseEntered(event -> {
+            visualPlot.setCursor(Cursor.CROSSHAIR);
+            coordinateLabel.setVisible(true);
+        });
+
+        chartBackground.setOnMouseExited(event -> {
+            //coordinateLabel.setVisible(false);
+        });
+
+//        for (Node n: chartBackground.getParent().getChildrenUnmodifiable()) {
+//            if (n != chartBackground && n != xTimeVisual && n != yAmpVisual) {
+//                n.setMouseTransparent(true);
+//            }
+//        }
+
+        chartSeries.setOnMouseMoved(event -> {
+            coordinateLabel.setText(
+                    String.format(
+                            "(%.2f, %.2f)",
+                            xTimeVisual.getValueForDisplay(event.getX()),
+                            yAmpVisual.getValueForDisplay(event.getY())
+                    )
+            );
+        });
+
+        chartBackground.setOnMouseMoved(event -> {
+            coordinateLabel.setText(
+                    String.format(
+                            "(%.2f, %.2f)",
+                            xTimeVisual.getValueForDisplay(event.getX()),
+                            yAmpVisual.getValueForDisplay(event.getY())
+                    )
+            );
+        });
+
+        setTooltip();
+
 
     }
+
+    private void setTooltip() {
+//        Node chartSeries = visualPlot.lookup(".chart-series-line");
+//        chartSeries.setOnMouseMoved(event -> {
+//            System.out.println("hi");
+//            coordinateLabel.setText(
+//                    String.format(
+//                            "(%.2f, %.2f)",
+//                            visualPlot.getXAxis().getValueForDisplay(event.getX()),
+//                            visualPlot.getYAxis().getValueForDisplay(event.getY())
+//                    )
+//            );
+//        });
+        ObservableList<XYChart.Data> dataList = ((XYChart.Series) visualPlot.getData().get(0)).getData();
+        dataList.forEach(data -> {
+            Node node = data.getNode();
+            Tooltip tooltip = new Tooltip('(' + data.getXValue().toString() + ';' + data.getYValue().toString() + ')');
+            Tooltip.install(node, tooltip);
+        });
+    }
+
 
 
     public void openPort(ActionEvent actionEvent) {
@@ -134,9 +204,10 @@ public class Controller implements Initializable {
         commonMeasure(positiveTimeMeasureEdit, negativeTimeMeasureEdit);
     }
 
-    public void commonMeasureTime(MouseEvent actionEvent) {
+    public void commonMeasureTime(MouseEvent mouseEvent) {
         commonMeasure(positiveTimeMeasureEdit, negativeTimeMeasureEdit);
         renderVisualization();
+        setTooltip();
     }
 
     private void commonMeasure(TextField textFieldPos, TextField textFieldNeg) {
@@ -197,20 +268,21 @@ public class Controller implements Initializable {
             commonFastPulsesTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
         }
         renderVisualization();
+        setTooltip();
     }
 
-    private void renderVisualization(){
-        String  waitingTime = waitingTimeEdit.getText();
-        String  pauseTime = pauseTimeEdit.getText();
-        String  negativeTimeFastWaves = negativeTimeFastWavesEdit.getText();
-        String  positiveTimeFastWaves = positiveTimeFastWavesEdit.getText();
+    private void renderVisualization() {
+        String waitingTime = waitingTimeEdit.getText();
+        String pauseTime = pauseTimeEdit.getText();
+        String negativeTimeFastWaves = negativeTimeFastWavesEdit.getText();
+        String positiveTimeFastWaves = positiveTimeFastWavesEdit.getText();
         String quantityFastPulses = quantityFastPulsesEdit.getText();
-        String  negativeAmpFast = negativeAmpFastWavesEdit.getText();
-        String  positiveAmpFastWaves = positiveAmpFastWavesEdit.getText();
-        String  negativeTimeMeasure = negativeTimeMeasureEdit.getText();
-        String  positiveTimeMeasure = positiveTimeMeasureEdit.getText();
-        String  negativeAmpMeasure = negativeAmpMeasureEdit.getText();
-        String  positiveAmpMeasure = positiveAmpMeasureEdit.getText();
+        String negativeAmpFast = negativeAmpFastWavesEdit.getText();
+        String positiveAmpFastWaves = positiveAmpFastWavesEdit.getText();
+        String negativeTimeMeasure = negativeTimeMeasureEdit.getText();
+        String positiveTimeMeasure = positiveTimeMeasureEdit.getText();
+        String negativeAmpMeasure = negativeAmpMeasureEdit.getText();
+        String positiveAmpMeasure = positiveAmpMeasureEdit.getText();
         boolean firstPolarityReversal = !negativeFastHalfWaveRadioB.isSelected();
         boolean firstPolarityMeasure = !negativeMeasureRadioB.isSelected();
         if (negativeTimeFastWaves.equals("")) {
@@ -224,12 +296,12 @@ public class Controller implements Initializable {
         }
         if (waitingTime.equals("") && !waitingTimeCheckBox.isSelected()) {
             waitingTime = "3000";
-        } else if (waitingTime.equals("") && waitingTimeCheckBox.isSelected()){
+        } else if (waitingTime.equals("") && waitingTimeCheckBox.isSelected()) {
             waitingTime = "0";
         }
         if (pauseTime.equals("") && !pauseTimeCheckBox.isSelected()) {
             pauseTime = "2000";
-        } else if (pauseTime.equals("") && pauseTimeCheckBox.isSelected()){
+        } else if (pauseTime.equals("") && pauseTimeCheckBox.isSelected()) {
             pauseTime = "0";
         }
         if (negativeAmpFast.equals("")) {
@@ -263,10 +335,41 @@ public class Controller implements Initializable {
         setup.setPositiveMeasureTime(Integer.parseInt(positiveTimeMeasure));
         setup.setNegativeFastPolarityReversalTime(Integer.parseInt(negativeTimeFastWaves));
         setup.setPositiveFastPolarityReversalTime(Integer.parseInt(positiveTimeFastWaves));
-        visualisationPlot.drawGraphic(setup);
+        visualPlot = visualisationPlot.drawGraphic(visualPlot, setup);
     }
 
     public void render(MouseEvent mouseEvent) {
         renderVisualization();
+        setTooltip();
+    }
+
+    public void visualPlotMouseEnter(MouseEvent mouseEvent) {
+        //coordinateLabel.setVisible(true);
+        //visualPlot.setCursor(Cursor.CROSSHAIR);
+    }
+
+    public void visualPlotMouseExit(MouseEvent mouseEvent) {
+        coordinateLabel.setVisible(false);
+    }
+
+    public void visualPlotMouseMoved(MouseEvent mouseEvent) {
+    }
+
+    public void xAxisMouseMove(MouseEvent mouseEvent) {
+        coordinateLabel.setText(
+                String.format(
+                        "x = %.2f",
+                        xTimeVisual.getValueForDisplay(mouseEvent.getX())
+                )
+        );
+    }
+
+    public void yAxisMouseMove(MouseEvent mouseEvent) {
+        coordinateLabel.setText(
+                String.format(
+                        "y = %.2f",
+                        yAmpVisual.getValueForDisplay(mouseEvent.getY())
+                )
+        );
     }
 }

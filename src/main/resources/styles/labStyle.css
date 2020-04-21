@@ -7,6 +7,10 @@
 .default-color0.chart-series-line { -fx-stroke: #000000; }
 .default-color1.chart-series-line { -fx-stroke: black; }
 .default-color2.chart-series-line { -fx-stroke: brown; }
+.chart-series-line {
+    -fx-stroke: black;
+    -fx-stroke-width: 5.0;
+}
 
 /*
  *
@@ -17,6 +21,6 @@
 .chart-line-symbol {
     -fx-background-color: black, white;
     -fx-background-insets: 0, 2;
-    -fx-background-radius: 3px;
-    -fx-padding: 3px;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
 }

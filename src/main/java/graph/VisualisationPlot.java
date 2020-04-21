@@ -2,11 +2,14 @@ package graph;
 
 import entity.MeasurementSetup;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Tooltip;
+
+import java.awt.event.MouseEvent;
 
 public class VisualisationPlot {
     private LineChart<Number, Number> visualPlot;
@@ -15,8 +18,8 @@ public class VisualisationPlot {
         this.visualPlot = visualPlot;
     }
 
-    public void drawGraphic(MeasurementSetup setup) {
-        visualPlot.getData().clear();
+    public LineChart drawGraphic(LineChart visualPlot, MeasurementSetup setup) {
+        //visualPlot.getData().clear();
         int time = 0;
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         visualPlot.setLegendVisible(false);
@@ -51,15 +54,15 @@ public class VisualisationPlot {
         }
         series.getData().add(new XYChart.Data<>(time, 0));
 
-
+        visualPlot.getData().clear();
         visualPlot.getData().add(series);
-        series.getNode().setOnMouseClicked(e -> System.out.println("Click on series"));
-        ObservableList<XYChart.Data> dataList = ((XYChart.Series) visualPlot.getData().get(0)).getData();
-        dataList.forEach(data->{
-            Node node = data.getNode();
-            Tooltip tooltip = new Tooltip('('+data.getXValue().toString()+';'+data.getYValue().toString()+')');
-            Tooltip.install(node, tooltip);
-        });
+        //series.getNode().setOnMouseClicked(e -> System.out.println("Click on series"));
+//        ObservableList<XYChart.Data> dataList = ((XYChart.Series) visualPlot.getData().get(0)).getData();
+//        dataList.forEach(data->{
+//            Node node = data.getNode();
+//            Tooltip tooltip = new Tooltip('('+data.getXValue().toString()+';'+data.getYValue().toString()+')');
+//            Tooltip.install(node, tooltip);
+//        });
 
 
 
@@ -70,6 +73,14 @@ public class VisualisationPlot {
 //                    System.out.printf("Click on data [%d, %d]%n", data.getXValue(), data.getYValue()));
 //        }
 
+
+        Node chartSeries = visualPlot.lookup(".chart-series-line");
+        System.out.println(chartSeries.toString());
+        chartSeries.setOnMouseMoved(event -> {
+            System.out.println("hi");
+        });
+
+        return visualPlot;
 
     }
 }
