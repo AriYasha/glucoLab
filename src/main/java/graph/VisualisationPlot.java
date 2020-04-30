@@ -55,27 +55,11 @@ public class VisualisationPlot {
         series.getData().add(new XYChart.Data<>(time, 0));
 
         visualPlot.getData().clear();
+        visualPlot.setAnimated(true);
         visualPlot.getData().add(series);
-        //series.getNode().setOnMouseClicked(e -> System.out.println("Click on series"));
-//        ObservableList<XYChart.Data> dataList = ((XYChart.Series) visualPlot.getData().get(0)).getData();
-//        dataList.forEach(data->{
-//            Node node = data.getNode();
-//            Tooltip tooltip = new Tooltip('('+data.getXValue().toString()+';'+data.getYValue().toString()+')');
-//            Tooltip.install(node, tooltip);
-//        });
-
-
-
-//        for (int x = 0 ; x <= 20 ; x++) {
-//
-//            // handler for clicking on data point:
-//            data.getNode().setOnMouseClicked(e ->
-//                    System.out.printf("Click on data [%d, %d]%n", data.getXValue(), data.getYValue()));
-//        }
-
 
         Node chartSeries = visualPlot.lookup(".chart-series-line");
-        System.out.println(chartSeries.toString());
+        //System.out.println(chartSeries.toString());
         chartSeries.setOnMouseMoved(event -> {
             System.out.println("hi");
         });

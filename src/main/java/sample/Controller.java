@@ -2,6 +2,7 @@ package sample;
 
 import comPort.ComPortConnection;
 import entity.MeasurementSetup;
+import exception.ComPortException;
 import graph.VisualisationPlot;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,8 +24,10 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
 
+    public Tab setupTab;
     private MeasurementSetup setup;
     private VisualisationPlot visualisationPlot;
+    private ComPortConnection comPortConnection;
 
     public Label coordinateLabel;
     public Button updatePortsButton;
@@ -71,6 +74,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setTooltips();
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
         String[] portNames = ComPortConnection.getPortNames();
         portChoiceBox.getItems().addAll(portNames);
@@ -115,7 +119,7 @@ public class Controller implements Initializable {
         chartSeries.setOnMouseMoved(event -> {
             coordinateLabel.setText(
                     String.format(
-                            "(%.2f, %.2f)",
+                            "время = %.2f мс, амплитуда = %.2f мВ",
                             xTimeVisual.getValueForDisplay(event.getX()),
                             yAmpVisual.getValueForDisplay(event.getY())
                     )
@@ -125,19 +129,19 @@ public class Controller implements Initializable {
         chartBackground.setOnMouseMoved(event -> {
             coordinateLabel.setText(
                     String.format(
-                            "(%.2f, %.2f)",
+                            "время = %.2f мс,%nамплитуда = %.2f мВ",
                             xTimeVisual.getValueForDisplay(event.getX()),
                             yAmpVisual.getValueForDisplay(event.getY())
                     )
             );
         });
 
-        setTooltip();
+        setPlotTooltip();
 
 
     }
 
-    private void setTooltip() {
+    private void setPlotTooltip() {
 //        Node chartSeries = visualPlot.lookup(".chart-series-line");
 //        chartSeries.setOnMouseMoved(event -> {
 //            System.out.println("hi");
@@ -152,7 +156,7 @@ public class Controller implements Initializable {
         ObservableList<XYChart.Data> dataList = ((XYChart.Series) visualPlot.getData().get(0)).getData();
         dataList.forEach(data -> {
             Node node = data.getNode();
-            Tooltip tooltip = new Tooltip('(' + data.getXValue().toString() + ';' + data.getYValue().toString() + ')');
+            Tooltip tooltip = new Tooltip("Время = " + data.getXValue().toString() + ", мс\nАмплитуда = " + data.getYValue().toString() + ", мВ");
             Tooltip.install(node, tooltip);
         });
     }
@@ -160,8 +164,21 @@ public class Controller implements Initializable {
 
 
     public void openPort(ActionEvent actionEvent) {
-        String s = (String) speedChoiceBox.getValue();
-        System.out.println(s);
+        if(defaultPortCheckBox.isSelected()){
+            try {
+                comPortConnection = ComPortConnection.getInstance(ComPortConnection.getPortName());
+                comPortConnection.openPort();
+            } catch (ComPortException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Ошибка подключения");
+                alert.setHeaderText("Проверьте подключение устройства");
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
+
+        }
+        String baudRate = (String) speedChoiceBox.getValue();
+        System.out.println("baudRate is " + baudRate);
     }
 
     public void refresh(ActionEvent actionEvent) {
@@ -172,6 +189,48 @@ public class Controller implements Initializable {
 
     public void defaultPortSettings(ActionEvent actionEvent) {
         setDisableElements();
+    }
+
+    private void setTooltips(){
+        Tooltip waitingTimeTooltip = new Tooltip("Время протекания, Тпр");
+        waitingTimeEdit.setTooltip(waitingTimeTooltip);
+        Tooltip.install(waitingTimeEdit, waitingTimeTooltip);
+        Tooltip pauseTimeTooltip = new Tooltip("Время паузы, Тпаузы");
+        pauseTimeEdit.setTooltip(pauseTimeTooltip);
+        Tooltip.install(pauseTimeEdit, pauseTimeTooltip);
+        Tooltip positiveTimeFastWavesTooltip = new Tooltip(" t+ ");
+        positiveTimeFastWavesEdit.setTooltip(positiveTimeFastWavesTooltip);
+        Tooltip.install(positiveTimeFastWavesEdit, positiveTimeFastWavesTooltip);
+        Tooltip negativeTimeFastWavesTooltip = new Tooltip(" t- ");
+        negativeTimeFastWavesEdit.setTooltip(negativeTimeFastWavesTooltip);
+        Tooltip.install(negativeTimeFastWavesEdit, negativeTimeFastWavesTooltip);
+        Tooltip positiveAmpFastWavesTooltip = new Tooltip("u+");
+        positiveAmpFastWavesEdit.setTooltip(positiveAmpFastWavesTooltip);
+        Tooltip.install(positiveAmpFastWavesEdit, positiveAmpFastWavesTooltip);
+        Tooltip negativeAmpFastWavesTooltip = new Tooltip("u-");
+        negativeAmpFastWavesEdit.setTooltip(negativeAmpFastWavesTooltip);
+        Tooltip.install(negativeAmpFastWavesEdit, negativeAmpFastWavesTooltip);
+        Tooltip positiveTimeMeasureTooltip = new Tooltip(" T+ ");
+        positiveTimeMeasureEdit.setTooltip(positiveTimeMeasureTooltip);
+        Tooltip.install(positiveTimeMeasureEdit, positiveTimeMeasureTooltip);
+        Tooltip negativeTimeMeasureTooltip = new Tooltip(" T- ");
+        negativeTimeMeasureEdit.setTooltip(negativeTimeMeasureTooltip);
+        Tooltip.install(negativeTimeMeasureEdit, negativeTimeMeasureTooltip);
+        Tooltip positiveAmpMeasureTooltip = new Tooltip("U+");
+        positiveAmpMeasureEdit.setTooltip(positiveAmpMeasureTooltip);
+        Tooltip.install(positiveAmpMeasureEdit, positiveAmpMeasureTooltip);
+        Tooltip negativeAmpMeasureTooltip = new Tooltip("U-");
+        negativeAmpMeasureEdit.setTooltip(negativeAmpMeasureTooltip);
+        Tooltip.install(negativeAmpMeasureEdit, negativeAmpMeasureTooltip);
+        Tooltip quantityFastPulsesTooltip = new Tooltip(" N ");
+        quantityFastPulsesEdit.setTooltip(quantityFastPulsesTooltip);
+        Tooltip.install(quantityFastPulsesEdit, quantityFastPulsesTooltip);
+        Tooltip commonFastPulsesTimeTooltip = new Tooltip(" Tп ");
+        commonFastPulsesTimeEdit.setTooltip(commonFastPulsesTimeTooltip);
+        Tooltip.install(commonFastPulsesTimeEdit, commonFastPulsesTimeTooltip);
+        Tooltip commonMeasureTimeTooltip = new Tooltip(" Tизм ");
+        commonMeasureTimeEdit.setTooltip(commonMeasureTimeTooltip);
+        Tooltip.install(commonMeasureTimeEdit, commonMeasureTimeTooltip);
     }
 
     private void setDisableElements() {
@@ -193,6 +252,7 @@ public class Controller implements Initializable {
     }
 
     public void sendData(ActionEvent actionEvent) {
+        tabPane.getSelectionModel().selectNext();
     }
 
 
@@ -207,7 +267,7 @@ public class Controller implements Initializable {
     public void commonMeasureTime(MouseEvent mouseEvent) {
         commonMeasure(positiveTimeMeasureEdit, negativeTimeMeasureEdit);
         renderVisualization();
-        setTooltip();
+        setPlotTooltip();
     }
 
     private void commonMeasure(TextField textFieldPos, TextField textFieldNeg) {
@@ -268,7 +328,7 @@ public class Controller implements Initializable {
             commonFastPulsesTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
         }
         renderVisualization();
-        setTooltip();
+        setPlotTooltip();
     }
 
     private void renderVisualization() {
@@ -340,7 +400,7 @@ public class Controller implements Initializable {
 
     public void render(MouseEvent mouseEvent) {
         renderVisualization();
-        setTooltip();
+        setPlotTooltip();
     }
 
     public void visualPlotMouseEnter(MouseEvent mouseEvent) {
@@ -358,7 +418,7 @@ public class Controller implements Initializable {
     public void xAxisMouseMove(MouseEvent mouseEvent) {
         coordinateLabel.setText(
                 String.format(
-                        "x = %.2f",
+                        "время - %.2f мс",
                         xTimeVisual.getValueForDisplay(mouseEvent.getX())
                 )
         );
@@ -367,7 +427,7 @@ public class Controller implements Initializable {
     public void yAxisMouseMove(MouseEvent mouseEvent) {
         coordinateLabel.setText(
                 String.format(
-                        "y = %.2f",
+                        "амплитуда - %.2f мВ",
                         yAmpVisual.getValueForDisplay(mouseEvent.getY())
                 )
         );

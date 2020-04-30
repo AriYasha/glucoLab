@@ -1,6 +1,7 @@
 package sample;
 
 import comPort.ComPortConnection;
+import exception.ComPortException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -32,11 +33,14 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
-        System.out.println("hello");
-        String[] ports = ComPortConnection.getPortNames();
 
-        ComPortConnection comPortConnection = ComPortConnection.getInstance(ports[1]);
-        comPortConnection.openPort();
+//        try {
+//            ComPortConnection comPortConnection = ComPortConnection.getInstance(ComPortConnection.getPortName());
+//            comPortConnection.openPort();
+//        } catch (ComPortException e){
+//            e.printStackTrace();
+//        }
+
 
     }
 
