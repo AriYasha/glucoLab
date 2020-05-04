@@ -173,6 +173,42 @@
                               </AnchorPane>
                           </content>
                         </Tab>
+                      <Tab fx:id="graphTab" text="Графики">
+                           <content>
+                              <AnchorPane fx:id="graphPane">
+                                 <children>
+                                    <LineChart fx:id="glucoChart" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <xAxis>
+                                        <NumberAxis fx:id="glocoTimeAxis" side="BOTTOM" />
+                                      </xAxis>
+                                      <yAxis>
+                                        <NumberAxis fx:id="glucoAmpAxis" side="LEFT" />
+                                      </yAxis>
+                                    </LineChart>
+                                 </children></AnchorPane>
+                           </content>
+                      </Tab>
+                        <Tab text="Подключение">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <Label layoutX="37.0" layoutY="45.0" text="Порт" />
+                                    <Label layoutX="37.0" layoutY="85.0" prefHeight="47.0" prefWidth="84.0" text="Скорость передачи" wrapText="true" />
+                                    <Label layoutX="37.0" layoutY="152.0" text="Размер символа" />
+                                    <Label layoutX="37.0" layoutY="208.0" text="Паритет" />
+                                    <Label layoutX="37.0" layoutY="254.0" prefHeight="43.0" prefWidth="139.0" text="Количество стоп-битов" wrapText="true" />
+                                    <ChoiceBox fx:id="portChoiceBox" layoutX="188.0" layoutY="40.0" prefWidth="150.0" />
+                                    <ChoiceBox fx:id="speedChoiceBox" layoutX="188.0" layoutY="93.0" prefWidth="150.0" />
+                                    <ChoiceBox fx:id="parityChoiceBox" layoutX="188.0" layoutY="203.0" prefWidth="150.0" />
+                                    <ChoiceBox fx:id="stopBitsChoiceBox" layoutX="188.0" layoutY="260.0" prefWidth="150.0" />
+                                    <ChoiceBox fx:id="sizeCharChoiceBox" layoutX="188.0" layoutY="147.0" prefWidth="150.0" />
+                                    <Button fx:id="openPortButton" layoutX="111.0" layoutY="347.0" mnemonicParsing="false" onAction="#openPort" text="Старт соединения" />
+                                    <Button fx:id="updatePortsButton" layoutX="365.0" layoutY="40.0" mnemonicParsing="false" onAction="#refresh" text="Обновить" />
+                                    <CheckBox fx:id="defaultPortCheckBox" layoutX="37.0" layoutY="306.0" mnemonicParsing="false" onAction="#defaultPortSettings" text="Настройки порта по умолчанию" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
                       <Tab text="Настройки сигнала">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="733.0" prefWidth="1000.0">
@@ -296,32 +332,6 @@
                               </AnchorPane>
                         </content>
                       </Tab>
-                      <Tab fx:id="graphTab" text="Графики">
-                           <content>
-                              <AnchorPane prefHeight="200.0" prefWidth="200.0" />
-                           </content>
-                      </Tab>
-                        <Tab text="Подключение">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <Label layoutX="37.0" layoutY="45.0" text="Порт" />
-                                    <Label layoutX="37.0" layoutY="85.0" prefHeight="47.0" prefWidth="84.0" text="Скорость передачи" wrapText="true" />
-                                    <Label layoutX="37.0" layoutY="152.0" text="Размер символа" />
-                                    <Label layoutX="37.0" layoutY="208.0" text="Паритет" />
-                                    <Label layoutX="37.0" layoutY="254.0" prefHeight="43.0" prefWidth="139.0" text="Количество стоп-битов" wrapText="true" />
-                                    <ChoiceBox fx:id="portChoiceBox" layoutX="188.0" layoutY="40.0" prefWidth="150.0" />
-                                    <ChoiceBox fx:id="speedChoiceBox" layoutX="188.0" layoutY="93.0" prefWidth="150.0" />
-                                    <ChoiceBox fx:id="parityChoiceBox" layoutX="188.0" layoutY="203.0" prefWidth="150.0" />
-                                    <ChoiceBox fx:id="stopBitsChoiceBox" layoutX="188.0" layoutY="260.0" prefWidth="150.0" />
-                                    <ChoiceBox fx:id="sizeCharChoiceBox" layoutX="188.0" layoutY="147.0" prefWidth="150.0" />
-                                    <Button fx:id="openPortButton" layoutX="111.0" layoutY="347.0" mnemonicParsing="false" onAction="#openPort" text="Старт соединения" />
-                                    <Button fx:id="updatePortsButton" layoutX="365.0" layoutY="40.0" mnemonicParsing="false" onAction="#refresh" text="Обновить" />
-                                    <CheckBox fx:id="defaultPortCheckBox" layoutX="37.0" layoutY="306.0" mnemonicParsing="false" onAction="#defaultPortSettings" text="Настройки порта по умолчанию" />
-                                 </children>
-                              </AnchorPane>
-                          </content>
-                        </Tab>
                     </tabs>
                   </TabPane>
                </children>

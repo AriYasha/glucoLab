@@ -23,6 +23,7 @@ public class Main extends Application {
         Parent root = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
         Scene scene = new Scene(root);
         stage.setTitle("GlucoLab");
+        stage.resizableProperty().setValue(Boolean.FALSE);
         scene.getStylesheets().add(css);
         stage.setScene(scene);
         stage.show();

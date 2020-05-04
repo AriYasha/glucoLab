@@ -3,11 +3,13 @@ package sample;
 import comPort.ComPortConnection;
 import entity.MeasurementSetup;
 import exception.ComPortException;
+import graph.MultipleAxesLineChart;
 import graph.VisualisationPlot;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
@@ -17,14 +19,22 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 public class Controller implements Initializable {
 
 
     public Tab setupTab;
+    public LineChart glucoChart;
+    public AnchorPane graphPane;
+    public NumberAxis glocoTimeAxis;
+    public NumberAxis glucoAmpAxis;
     private MeasurementSetup setup;
     private VisualisationPlot visualisationPlot;
     private ComPortConnection comPortConnection;
@@ -253,6 +263,57 @@ public class Controller implements Initializable {
 
     public void sendData(ActionEvent actionEvent) {
         tabPane.getSelectionModel().selectNext();
+        glucoChart.getData().add(prepareSeries("one", (x) -> (double)x*x));
+//        StackPane stackPane = new StackPane();
+//        graphPane.getChildren().add(stackPane);
+//        NumberAxis yAxis = new NumberAxis();
+//        NumberAxis xAxis = new NumberAxis();
+//        //graphPane.getChildren().add(yAxis);
+//        //graphPane.getChildren().add(xAxis);
+//
+//        // style x-axis
+//        //xAxis.setAutoRanging(false);
+//        xAxis.setVisible(false);
+//        xAxis.setOpacity(0.0); // somehow the upper setVisible does not work
+//        //xAxis.lowerBoundProperty().bind(((NumberAxis) glucoChart.getXAxis()).lowerBoundProperty());
+//        //xAxis.upperBoundProperty().bind(((NumberAxis) glucoChart.getXAxis()).upperBoundProperty());
+//        //xAxis.tickUnitProperty().bind(((NumberAxis) glucoChart.getXAxis()).tickUnitProperty());
+//
+//        // style y-axis
+//        yAxis.setSide(Side.RIGHT);
+//
+//        LineChart hello = new LineChart<Number, Number>(xAxis, yAxis);
+//        hello.setMinSize(1002, 784);
+//        //hello.setOpacity(0.5);
+//        stackPane.getChildren().add(glucoChart);
+//        stackPane.getChildren().add(hello);
+//        //graphPane.getChildren().add(hello);
+//        System.out.println(graphPane.getPrefWidth());
+//        System.out.println(graphPane.getPrefHeight());
+//        hello.getData().add(prepareSeries("one", (x) -> (double)-x*x));
+//        System.out.println(hello.getBoundsInParent().toString());
+//        System.out.println(glucoChart.getBoundsInParent().toString());
+//
+
+
+        MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, graphPane);
+        voltageChart.addSeries(prepareSeries("two", (x) -> (double)-x),Color.BLACK);
+//        voltageChart.addSeries(prepareSeries("two", (x) -> (double)-x*x),Color.GREEN);
+//        voltageChart.addSeries(prepareSeries("two", (x) -> (double)(x+100)*(x-200)),Color.GREEN);
+
+
+
+
+
+    }
+
+    private XYChart.Series<Number, Number> prepareSeries(String name, Function<Integer, Double> function) {
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName(name);
+        for (int i = 0; i < 3600; i++) {
+            series.getData().add(new XYChart.Data<>(i, function.apply(i)));
+        }
+        return series;
     }
 
 
