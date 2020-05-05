@@ -1,5 +1,6 @@
 package sample;
 
+import com.fazecast.jSerialComm.SerialPort;
 import comPort.ComPortConnection;
 import entity.MeasurementSetup;
 import exception.ComPortException;
@@ -17,12 +18,14 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Function;
@@ -43,12 +46,12 @@ public class Controller implements Initializable {
 
     public Label coordinateLabel;
     public Button updatePortsButton;
-    public Button openPortButton;
+    public ToggleButton openPortButton;
     public ChoiceBox<String> portChoiceBox;
     public ChoiceBox speedChoiceBox;
     public ChoiceBox parityChoiceBox;
-    public ChoiceBox<String> stopBitsChoiceBox;
-    public ChoiceBox<String> sizeCharChoiceBox;
+    public ChoiceBox stopBitsChoiceBox;
+    public ChoiceBox sizeCharChoiceBox;
     public CheckBox defaultPortCheckBox;
     public Button sendDataButton;
     public ImageView connectImage;
@@ -86,6 +89,8 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Image picture = new Image("images/red Ball.png", true);
+        connectImage.setImage(picture);
         setTooltips();
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
         String[] portNames = ComPortConnection.getPortNames();
@@ -118,16 +123,6 @@ public class Controller implements Initializable {
             coordinateLabel.setVisible(true);
         });
 
-        chartBackground.setOnMouseExited(event -> {
-            //coordinateLabel.setVisible(false);
-        });
-
-//        for (Node n: chartBackground.getParent().getChildrenUnmodifiable()) {
-//            if (n != chartBackground && n != xTimeVisual && n != yAmpVisual) {
-//                n.setMouseTransparent(true);
-//            }
-//        }
-
         chartSeries.setOnMouseMoved(event -> {
             coordinateLabel.setText(
                     String.format(
@@ -147,24 +142,10 @@ public class Controller implements Initializable {
                     )
             );
         });
-
         setPlotTooltip();
-
-
     }
 
     private void setPlotTooltip() {
-//        Node chartSeries = visualPlot.lookup(".chart-series-line");
-//        chartSeries.setOnMouseMoved(event -> {
-//            System.out.println("hi");
-//            coordinateLabel.setText(
-//                    String.format(
-//                            "(%.2f, %.2f)",
-//                            visualPlot.getXAxis().getValueForDisplay(event.getX()),
-//                            visualPlot.getYAxis().getValueForDisplay(event.getY())
-//                    )
-//            );
-//        });
         ObservableList<XYChart.Data> dataList = ((XYChart.Series) visualPlot.getData().get(0)).getData();
         dataList.forEach(data -> {
             Node node = data.getNode();
@@ -176,21 +157,77 @@ public class Controller implements Initializable {
 
 
     public void openPort(ActionEvent actionEvent) {
-        if(defaultPortCheckBox.isSelected()){
+        if(defaultPortCheckBox.isSelected() && openPortButton.isSelected()){
             try {
                 comPortConnection = ComPortConnection.getInstance(ComPortConnection.getPortName());
                 comPortConnection.openPort();
+                Image picture = new Image("images/green Ball.png", true);
+                connectImage.setImage(picture);
+                connectionLabel.setText("Подключено");
+                openPortButton.setText("Прервать соединение");
             } catch (ComPortException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Ошибка подключения");
-                alert.setHeaderText("Проверьте подключение устройства");
-                alert.setContentText(e.getMessage());
-                alert.showAndWait();
+                sendError(e);
             }
 
+        } else if(!defaultPortCheckBox.isSelected() && openPortButton.isSelected()) {
+            try {
+                int baudRate = Integer.parseInt((String) speedChoiceBox.getValue());
+                int size = Integer.parseInt((String) sizeCharChoiceBox.getValue());
+                int stopBits = Integer.parseInt((String) stopBitsChoiceBox.getValue());
+                int parity;
+                switch ((String) parityChoiceBox.getValue()){
+                    case "no":
+                        parity = SerialPort.NO_PARITY;
+                        break;
+                    case "odd":
+                        parity = SerialPort.ODD_PARITY;
+                        break;
+                    case "even":
+                        parity = SerialPort.EVEN_PARITY;
+                        break;
+                    case "mark":
+                        parity = SerialPort.MARK_PARITY;
+                        break;
+                    case "space":
+                        parity = SerialPort.SPACE_PARITY;
+                        break;
+                    default :
+                        parity = SerialPort.NO_PARITY;
+                        break;
+                }
+                String portName = portChoiceBox.getValue();
+                comPortConnection = ComPortConnection.getInstance(portName);
+                comPortConnection.openPort(baudRate, size, stopBits, parity);
+                Image picture = new Image("images/green Ball.png", true);
+                connectImage.setImage(picture);
+                connectionLabel.setText("Подключено");
+                openPortButton.setText("Прервать соединение");
+            } catch (ComPortException e) {
+                sendError(e);
+            }
+
+        } else if(!openPortButton.isSelected()){
+            try {
+                comPortConnection.close();
+                openPortButton.setText("Старт соединения");
+                Image picture = new Image("images/red Ball.png", true);
+                connectImage.setImage(picture);
+                connectionLabel.setText("Не подключено");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        String baudRate = (String) speedChoiceBox.getValue();
-        System.out.println("baudRate is " + baudRate);
+    }
+
+    private void sendError(ComPortException e){
+        openPortButton.setSelected(false);
+        Image picture = new Image("images/red Ball.png", true);
+        connectImage.setImage(picture);
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка подключения");
+        alert.setHeaderText("Проверьте подключение устройства");
+        alert.setContentText(e.getMessage());
+        alert.showAndWait();
     }
 
     public void refresh(ActionEvent actionEvent) {
@@ -268,15 +305,8 @@ public class Controller implements Initializable {
         glucoChart.getData().add(prepareSeries("Напряжение", (x) -> (double)x*x));
 
         MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, graphStackPane);
-        voltageChart.addSeries(prepareSeries("Ток", (x) -> (double)x),Color.RED);
-       // voltageChart.addSeries(prepareSeries("two", (x) -> (double)-x*x),Color.GREEN);
-//        voltageChart.addSeries(prepareSeries("two", (x) -> (double)(x+100)*(x-200)),Color.BLUE);
+        voltageChart.addSeries(prepareSeries("Ток", (x) -> (double)x),Color.GREEN);
         legendPane.getChildren().add(voltageChart.getLegend());
-
-
-
-
-
     }
 
     private XYChart.Series<Number, Number> prepareSeries(String name, Function<Integer, Double> function) {
@@ -437,8 +467,6 @@ public class Controller implements Initializable {
     }
 
     public void visualPlotMouseEnter(MouseEvent mouseEvent) {
-        //coordinateLabel.setVisible(true);
-        //visualPlot.setCursor(Cursor.CROSSHAIR);
     }
 
     public void visualPlotMouseExit(MouseEvent mouseEvent) {

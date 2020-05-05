@@ -15,6 +15,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -59,18 +60,20 @@
                      <children>
                         <HBox prefHeight="35.0" prefWidth="164.0" spacing="10.0">
                            <children>
-                              <ImageView fx:id="connectImage" fitHeight="35.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                     <Image url="/images/green-circle.png" />
-                                 </image>
-                              </ImageView>
-                              <Label fx:id="connectionLabel" prefHeight="26.0" prefWidth="103.0" text="Не подключено">
+                              <Label fx:id="connectionLabel" prefHeight="35.0" prefWidth="163.0" text="Не подключено">
                                  <opaqueInsets>
                                     <Insets top="10.0" />
                                  </opaqueInsets>
                                  <font>
                                     <Font size="14.0" />
                                  </font>
+                                 <graphic>
+                                    <ImageView fx:id="connectImage" fitHeight="35.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                           <Image url="/images/green-circle.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
                               </Label>
                            </children>
                            <opaqueInsets>
@@ -208,9 +211,9 @@
                                     <ChoiceBox fx:id="parityChoiceBox" layoutX="188.0" layoutY="203.0" prefWidth="150.0" />
                                     <ChoiceBox fx:id="stopBitsChoiceBox" layoutX="188.0" layoutY="260.0" prefWidth="150.0" />
                                     <ChoiceBox fx:id="sizeCharChoiceBox" layoutX="188.0" layoutY="147.0" prefWidth="150.0" />
-                                    <Button fx:id="openPortButton" layoutX="111.0" layoutY="347.0" mnemonicParsing="false" onAction="#openPort" text="Старт соединения" />
                                     <Button fx:id="updatePortsButton" layoutX="365.0" layoutY="40.0" mnemonicParsing="false" onAction="#refresh" text="Обновить" />
                                     <CheckBox fx:id="defaultPortCheckBox" layoutX="37.0" layoutY="306.0" mnemonicParsing="false" onAction="#defaultPortSettings" text="Настройки порта по умолчанию" />
+                                    <ToggleButton fx:id="openPortButton" layoutX="107.0" layoutY="348.0" mnemonicParsing="false" onAction="#openPort" text="Старт соединения" />
                                  </children>
                               </AnchorPane>
                           </content>

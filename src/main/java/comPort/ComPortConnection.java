@@ -18,7 +18,7 @@ public class ComPortConnection implements AutoCloseable {
         }
     }
 
-    public static synchronized ComPortConnection getInstance(String comPortName) {
+    public static synchronized ComPortConnection getInstance(String comPortName) throws ComPortException {
         if (comPortConnection == null) {
             comPortConnection = new ComPortConnection(comPortName);
         }
@@ -47,7 +47,7 @@ public class ComPortConnection implements AutoCloseable {
         return result;
     }
 
-    public void openPort() {
+    public void openPort() throws ComPortException {
         userPort.setBaudRate(9600);
         userPort.setNumDataBits(8);
         userPort.setNumStopBits(SerialPort.ONE_STOP_BIT);
@@ -55,7 +55,7 @@ public class ComPortConnection implements AutoCloseable {
         userPort.openPort();
     }
 
-    public void openPort(int baudRate, int numDataBits, int numStopBits, int parity) {
+    public void openPort(int baudRate, int numDataBits, int numStopBits, int parity) throws ComPortException {
         userPort.setBaudRate(baudRate);
         userPort.setNumDataBits(numDataBits);
         userPort.setNumStopBits(numStopBits);
