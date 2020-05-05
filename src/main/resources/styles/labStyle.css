@@ -4,23 +4,32 @@
  *
  */
 
-.default-color0.chart-series-line { -fx-stroke: #000000; }
+.default-color0.chart-series-line { -fx-stroke: black; }
 .default-color1.chart-series-line { -fx-stroke: black; }
 .default-color2.chart-series-line { -fx-stroke: brown; }
 .chart-series-line {
     -fx-stroke: black;
-    -fx-stroke-width: 5.0;
+    -fx-stroke-width: 2.0;
 }
-
+.chart-plot-background{ -fx-background-color: transparent; }
 /*
  *
  *SERIES NODE STYLE
  *
  */
 
+/*.chart-line-symbol {*/
+    /*-fx-background-color: black, white;*/
+    /*-fx-background-insets: 0, 2;*/
+    /*-fx-background-radius: 5px;*/
+    /*-fx-padding: 5px;*/
+    /*-fx-shape: "";*/
+/*}*/
+
 .chart-line-symbol {
-    -fx-background-color: black, white;
-    -fx-background-insets: 0, 2;
-    -fx-background-radius: 5px;
-    -fx-padding: 5px;
+    -fx-background-insets: 0,0;
+    -fx-background-radius: 0px;
+    -fx-padding: 0px;
+    -fx-shape: "";
+    -fx-background-color: transparent;
 }

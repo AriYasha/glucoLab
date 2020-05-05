@@ -22,6 +22,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 <?scenebuilder-classpath-element ../images?>
 <?scenebuilder-classpath-element ../resources?>
@@ -154,7 +155,7 @@
                                     <TextField fx:id="commonMeasureTimeEdit" alignment="TOP_CENTER" editable="false" layoutX="812.0" layoutY="367.0" prefHeight="25.0" prefWidth="85.0" promptText="Тизм" />
                                     <Label layoutX="697.0" layoutY="360.0" prefHeight="38.0" prefWidth="117.0" text="Tизм = ( Т+ ) + ( Т- )" textAlignment="CENTER" wrapText="true" />
                                     <Label layoutX="899.0" layoutY="371.0" text=" ,c" />
-                                    <LineChart fx:id="visualPlot" alternativeColumnFillVisible="true" alternativeRowFillVisible="false" layoutX="1.0" layoutY="494.0" onMouseEntered="#visualPlotMouseEnter" onMouseExited="#visualPlotMouseExit" onMouseMoved="#visualPlotMouseMoved" prefHeight="290.0" prefWidth="1001.0" title="Визуализация">
+                                    <LineChart fx:id="visualPlot" alternativeColumnFillVisible="true" alternativeRowFillVisible="false" animated="false" layoutX="1.0" layoutY="494.0" onMouseEntered="#visualPlotMouseEnter" onMouseExited="#visualPlotMouseExit" onMouseMoved="#visualPlotMouseMoved" prefHeight="290.0" prefWidth="1001.0" title="Визуализация">
                                       <xAxis>
                                         <NumberAxis label="Время, мс" onMouseMoved="#xAxisMouseMove" side="BOTTOM" fx:id="xTimeVisual">
                                              <cursor>
@@ -177,14 +178,19 @@
                            <content>
                               <AnchorPane fx:id="graphPane">
                                  <children>
-                                    <LineChart fx:id="glucoChart" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                      <xAxis>
-                                        <NumberAxis fx:id="glocoTimeAxis" side="BOTTOM" />
-                                      </xAxis>
-                                      <yAxis>
-                                        <NumberAxis fx:id="glucoAmpAxis" side="LEFT" />
-                                      </yAxis>
-                                    </LineChart>
+                                    <StackPane fx:id="graphStackPane" prefHeight="754.0" prefWidth="1002.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <LineChart fx:id="glucoChart">
+                                            <xAxis>
+                                              <NumberAxis fx:id="glocoTimeAxis" label="Время, мс" side="BOTTOM" />
+                                            </xAxis>
+                                            <yAxis>
+                                              <NumberAxis fx:id="glucoAmpAxis" label="Амплитуда, мВ" side="LEFT" />
+                                            </yAxis>
+                                          </LineChart>
+                                       </children>
+                                    </StackPane>
+                                    <AnchorPane fx:id="legendPane" layoutY="748.0" prefHeight="36.0" prefWidth="1002.0" />
                                  </children></AnchorPane>
                            </content>
                       </Tab>

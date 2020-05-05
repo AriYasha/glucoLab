@@ -35,6 +35,8 @@ public class Controller implements Initializable {
     public AnchorPane graphPane;
     public NumberAxis glocoTimeAxis;
     public NumberAxis glucoAmpAxis;
+    public StackPane graphStackPane;
+    public AnchorPane legendPane;
     private MeasurementSetup setup;
     private VisualisationPlot visualisationPlot;
     private ComPortConnection comPortConnection;
@@ -263,43 +265,13 @@ public class Controller implements Initializable {
 
     public void sendData(ActionEvent actionEvent) {
         tabPane.getSelectionModel().selectNext();
-        glucoChart.getData().add(prepareSeries("one", (x) -> (double)x*x));
-//        StackPane stackPane = new StackPane();
-//        graphPane.getChildren().add(stackPane);
-//        NumberAxis yAxis = new NumberAxis();
-//        NumberAxis xAxis = new NumberAxis();
-//        //graphPane.getChildren().add(yAxis);
-//        //graphPane.getChildren().add(xAxis);
-//
-//        // style x-axis
-//        //xAxis.setAutoRanging(false);
-//        xAxis.setVisible(false);
-//        xAxis.setOpacity(0.0); // somehow the upper setVisible does not work
-//        //xAxis.lowerBoundProperty().bind(((NumberAxis) glucoChart.getXAxis()).lowerBoundProperty());
-//        //xAxis.upperBoundProperty().bind(((NumberAxis) glucoChart.getXAxis()).upperBoundProperty());
-//        //xAxis.tickUnitProperty().bind(((NumberAxis) glucoChart.getXAxis()).tickUnitProperty());
-//
-//        // style y-axis
-//        yAxis.setSide(Side.RIGHT);
-//
-//        LineChart hello = new LineChart<Number, Number>(xAxis, yAxis);
-//        hello.setMinSize(1002, 784);
-//        //hello.setOpacity(0.5);
-//        stackPane.getChildren().add(glucoChart);
-//        stackPane.getChildren().add(hello);
-//        //graphPane.getChildren().add(hello);
-//        System.out.println(graphPane.getPrefWidth());
-//        System.out.println(graphPane.getPrefHeight());
-//        hello.getData().add(prepareSeries("one", (x) -> (double)-x*x));
-//        System.out.println(hello.getBoundsInParent().toString());
-//        System.out.println(glucoChart.getBoundsInParent().toString());
-//
+        glucoChart.getData().add(prepareSeries("Напряжение", (x) -> (double)x*x));
 
-
-        MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, graphPane);
-        voltageChart.addSeries(prepareSeries("two", (x) -> (double)-x),Color.BLACK);
-//        voltageChart.addSeries(prepareSeries("two", (x) -> (double)-x*x),Color.GREEN);
-//        voltageChart.addSeries(prepareSeries("two", (x) -> (double)(x+100)*(x-200)),Color.GREEN);
+        MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, graphStackPane);
+        voltageChart.addSeries(prepareSeries("Ток", (x) -> (double)x),Color.RED);
+       // voltageChart.addSeries(prepareSeries("two", (x) -> (double)-x*x),Color.GREEN);
+//        voltageChart.addSeries(prepareSeries("two", (x) -> (double)(x+100)*(x-200)),Color.BLUE);
+        legendPane.getChildren().add(voltageChart.getLegend());
 
 
 
@@ -310,7 +282,7 @@ public class Controller implements Initializable {
     private XYChart.Series<Number, Number> prepareSeries(String name, Function<Integer, Double> function) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName(name);
-        for (int i = 0; i < 3600; i++) {
+        for (int i = 0; i < 36; i++) {
             series.getData().add(new XYChart.Data<>(i, function.apply(i)));
         }
         return series;
