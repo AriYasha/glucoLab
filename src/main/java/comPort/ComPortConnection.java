@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import exception.ComPortException;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ComPortConnection implements AutoCloseable {
 
@@ -18,10 +19,14 @@ public class ComPortConnection implements AutoCloseable {
         }
     }
 
+    public SerialPort getUserPort() {
+        return userPort;
+    }
+
     public static synchronized ComPortConnection getInstance(String comPortName) throws ComPortException {
-        if (comPortConnection == null) {
+        //if (comPortConnection == null) {
             comPortConnection = new ComPortConnection(comPortName);
-        }
+        //}
         return comPortConnection;
     }
 
@@ -29,9 +34,15 @@ public class ComPortConnection implements AutoCloseable {
         SerialPort[] ports = SerialPort.getCommPorts();
         String[] result = new String[ports.length];
         for (int i = 0; i < ports.length; i++) {
-            result[i] = ports[i].getDescriptivePortName();
+            //result[i] = ports[i].getDescriptivePortName();
+            result[i] = ports[i].getSystemPortName();
         }
         return result;
+    }
+
+    public static SerialPort[] getsPortNames(){
+        SerialPort[] ports = SerialPort.getCommPorts();
+        return ports;
     }
 
     public static String getPortName() throws ComPortException {
@@ -48,7 +59,7 @@ public class ComPortConnection implements AutoCloseable {
     }
 
     public void openPort() throws ComPortException {
-        userPort.setBaudRate(9600);
+        userPort.setBaudRate(38400);
         userPort.setNumDataBits(8);
         userPort.setNumStopBits(SerialPort.ONE_STOP_BIT);
         userPort.setParity(SerialPort.NO_PARITY);
@@ -82,5 +93,12 @@ public class ComPortConnection implements AutoCloseable {
         if (userPort.isOpen()) {
             userPort.closePort();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ComPortConnection{" +
+                "userPort=" + userPort.toString() +
+                '}';
     }
 }

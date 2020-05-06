@@ -139,4 +139,39 @@ public class MeasurementSetup {
     public void setNegativeAmplitudeMeasurePulses(int negativeAmplitudeMeasurePulses) {
         this.negativeAmplitudeMeasurePulses = negativeAmplitudeMeasurePulses;
     }
+
+    public byte[] getTransmitArray(){
+        byte[] transmitBytes = new byte[30];
+        transmitBytes[0] = (byte) 170;
+        transmitBytes[1] = (byte) 1;
+        transmitBytes[3] = (byte) leakingTime;
+        transmitBytes[2] = (byte) (leakingTime >> 8);
+        transmitBytes[5] = (byte) pauseTime;
+        transmitBytes[4] = (byte) (pauseTime >> 8);
+        transmitBytes[6] = (byte) 170;
+        transmitBytes[8] = (byte) positiveFastPolarityReversalTime;
+        transmitBytes[7] = (byte) (positiveFastPolarityReversalTime >> 8);
+        transmitBytes[10] = (byte) negativeFastPolarityReversalTime;
+        transmitBytes[9] = (byte) (negativeFastPolarityReversalTime >> 8);
+        transmitBytes[11] = (byte) (firstPolarityReversal ? 1 : 0);
+        transmitBytes[13] = (byte) positiveAmplitudeFastPolarityPulses;
+        transmitBytes[12] = (byte) (positiveAmplitudeFastPolarityPulses >> 8);
+        transmitBytes[15] = (byte) negativeAmplitudeFastPolarityPulses;
+        transmitBytes[14] = (byte) (negativeAmplitudeFastPolarityPulses >> 8);
+        transmitBytes[17] = (byte) quantityFastPolarityPulses;
+        transmitBytes[16] = (byte) (quantityFastPolarityPulses >> 8);
+        transmitBytes[18] = (byte) 170;
+        transmitBytes[20] = (byte) positiveMeasureTime;
+        transmitBytes[19] = (byte) (positiveMeasureTime >> 8);
+        transmitBytes[22] = (byte) negativeMeasureTime;
+        transmitBytes[21] = (byte) (negativeMeasureTime >> 8);
+        transmitBytes[23] = (byte) (firstPolarityMeasure ? 1 : 0);
+        transmitBytes[25] = (byte) positiveAmplitudeMeasurePulses;
+        transmitBytes[24] = (byte) (positiveAmplitudeMeasurePulses >> 8);
+        transmitBytes[27] = (byte) negativeAmplitudeMeasurePulses;
+        transmitBytes[26] = (byte) (negativeAmplitudeMeasurePulses >> 8);
+        transmitBytes[28] = (byte) 28;
+        transmitBytes[29] = (byte) 170;
+        return transmitBytes;
+    }
 }

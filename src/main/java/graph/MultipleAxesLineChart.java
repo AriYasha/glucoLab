@@ -161,11 +161,8 @@ public class MultipleAxesLineChart/* extends StackPane*/ {
         graphPane.getChildren().clear();
 
         graphPane.getChildren().add(resizeBaseChart(baseChart));
-        int i = 0;
         for (LineChart lineChart : backgroundCharts) {
             graphPane.getChildren().add(resizeBackgroundChart(lineChart));
-            i++;
-            System.out.println(i);
         }
         graphPane.getChildren().add(detailsWindow);
     }

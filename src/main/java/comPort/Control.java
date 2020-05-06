@@ -21,16 +21,61 @@ public class Control extends Thread implements SerialPortDataListener {
     private boolean dataReady;
     private byte[] bytesFromFile;
     private int counterBytes;
+    private byte[] command = {85, 0, 0, 0, (byte) 170};
 
     private ComPortConnection comPortConnection;
+    private SerialPort userPort;
 
     private TextArea textArea;
 
     private ArrayList<Byte> bytesReceived;
     private LinkedList<Integer> listIntegers = new LinkedList<>();
 
+    public Control(){
+
+    }
+
     public Control(ComPortConnection comPortConnection) {
-        //comPortConnection = ComPortConnection.getInstance();
+        this.comPortConnection = comPortConnection;
+        this.userPort = comPortConnection.getUserPort();
+        bytesReceived = new ArrayList<>();
+        //addListener();
+    }
+
+    public void setComPortConnection(ComPortConnection comPortConnection) {
+        this.comPortConnection = comPortConnection;
+        this.userPort = comPortConnection.getUserPort();
+        bytesReceived = new ArrayList<>();
+    }
+
+    public void sendByte(byte byteToSend){
+        byte[] bytesToSend = {byteToSend};
+        userPort.writeBytes(bytesToSend, 1);
+    }
+
+    public void sendByteArray(byte[] bytesToSend){
+        userPort.writeBytes(bytesToSend, bytesToSend.length);
+    }
+
+    public void sendTest(){
+        command[1] = 79;
+        command[2] = 104;
+        command[3] = (byte) (79 + 104);
+        userPort.writeBytes(command, command.length);
+    }
+
+    public void addListener(){
+        userPort.addDataListener(this);
+    }
+
+    public void removeListener(){
+        userPort.removeDataListener();
+    }
+
+    public byte[] readBytes(){
+        byte[] bytes = new byte[5];
+        userPort.readBytes(bytes, bytes.length);
+        return bytes;
     }
 
 
@@ -89,26 +134,26 @@ public class Control extends Thread implements SerialPortDataListener {
     public void serialEvent(SerialPortEvent event) {
 //        if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 //            return;
-//        if (userPort.bytesAvailable() > 1) {
-//            int counterBytes;
-//            do {
-//                counterBytes = userPort.bytesAvailable();
-//                try {
-//                    Thread.sleep(200);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            } while (counterBytes < userPort.bytesAvailable());
-//            byte[] newData = new byte[userPort.bytesAvailable()];
-//            int numRead = userPort.readBytes(newData, newData.length);
-//            System.out.println("Read " + numRead + " bytes.");
+        if (userPort.bytesAvailable() > 1) {
+            int counterBytes;
+            do {
+                counterBytes = userPort.bytesAvailable();
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (counterBytes < userPort.bytesAvailable());
+            byte[] newData = new byte[userPort.bytesAvailable()];
+            int numRead = userPort.readBytes(newData, newData.length);
+            System.out.println("Read " + numRead + " bytes.");
 //            System.out.println(Hex.encodeHexString(newData));
-//            for (byte aNewData : newData) {
-//                bytesReceived.add(aNewData);
-//            }
-//            System.out.println(bytesReceived);
+            for (byte aNewData : newData) {
+                bytesReceived.add(aNewData);
+            }
+            System.out.println(bytesReceived);
 //            control.addToList(bytesReceived);
 //            bytesReceived.clear();
-//        }
+        }
     }
 }

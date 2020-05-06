@@ -2,10 +2,12 @@ package sample;
 
 import com.fazecast.jSerialComm.SerialPort;
 import comPort.ComPortConnection;
+import comPort.Control;
 import entity.MeasurementSetup;
 import exception.ComPortException;
 import graph.MultipleAxesLineChart;
 import graph.VisualisationPlot;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -27,6 +29,7 @@ import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -43,6 +46,7 @@ public class Controller implements Initializable {
     private MeasurementSetup setup;
     private VisualisationPlot visualisationPlot;
     private ComPortConnection comPortConnection;
+    private Control control;
 
     public Label coordinateLabel;
     public Button updatePortsButton;
@@ -89,6 +93,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //control = new Control();
         Image picture = new Image("images/red Ball.png", true);
         connectImage.setImage(picture);
         setTooltips();
@@ -143,6 +148,7 @@ public class Controller implements Initializable {
             );
         });
         setPlotTooltip();
+        setConnection();
     }
 
     private void setPlotTooltip() {
@@ -154,13 +160,82 @@ public class Controller implements Initializable {
         });
     }
 
+    private void setConnection() {
+        Runnable task = () -> {
+            ObservableList portList = portChoiceBox.getItems();
+            byte[] readBytes = new byte[5];
+            for (Object port : portList) {
+                try {
+                    comPortConnection = ComPortConnection.getInstance((String) port);
+                    System.out.println((String) port);
+                    comPortConnection.openPort();
+                    control = new Control(comPortConnection);
+                    //control.setComPortConnection(comPortConnection);
+                    control.sendTest();
+                    System.out.println(comPortConnection.toString());
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    readBytes = control.readBytes();
+                    byte[] controlBytes = {85, 79, 104, -73, -86};
+                    if (Arrays.equals(readBytes, controlBytes)) {
+                        Image picture = new Image("images/green Ball.png", true);
+                        connectImage.setImage(picture);
+                        Platform.runLater(() -> connectionLabel.setText("Подключено"));
+                        Platform.runLater(() -> openPortButton.setText("Прервать соединение"));
+                        openPortButton.setSelected(true);
+                        control.addListener();
+                        break;
+                    } else {
+                        comPortConnection.close();
+                    }
+                    System.out.println(Arrays.toString(readBytes));
+
+                } catch (ComPortException e) {
+                    connectionLabel.setText("Не удалось подключиться автоматически");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        /*new Thread(() -> {
+            ObservableList portList = portChoiceBox.getItems();
+            byte[] readBytes = new byte[5];
+            for (Object port : portList) {
+                try {
+                    comPortConnection = ComPortConnection.getInstance((String) port);
+                    System.out.println((String) port);
+                    comPortConnection.openPort();
+                    control = new Control(comPortConnection);
+                    control.sendTest();
+                    System.out.println(comPortConnection.toString());
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    readBytes = control.readBytes();
+                    System.out.println(Arrays.toString(readBytes));
+                    comPortConnection = null;
+                } catch (ComPortException e) {
+                    connectionLabel.setText("Не удалось подключиться автоматически");
+                }
+                comPortConnection = null;
+            }
+        }).start();*/
+        Thread thread = new Thread(task);
+        thread.start();
+    }
 
 
     public void openPort(ActionEvent actionEvent) {
-        if(defaultPortCheckBox.isSelected() && openPortButton.isSelected()){
+        if (defaultPortCheckBox.isSelected() && openPortButton.isSelected()) {
             try {
                 comPortConnection = ComPortConnection.getInstance(ComPortConnection.getPortName());
                 comPortConnection.openPort();
+                control = new Control(comPortConnection);
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
                 connectionLabel.setText("Подключено");
@@ -169,13 +244,13 @@ public class Controller implements Initializable {
                 sendError(e);
             }
 
-        } else if(!defaultPortCheckBox.isSelected() && openPortButton.isSelected()) {
+        } else if (!defaultPortCheckBox.isSelected() && openPortButton.isSelected()) {
             try {
                 int baudRate = Integer.parseInt((String) speedChoiceBox.getValue());
                 int size = Integer.parseInt((String) sizeCharChoiceBox.getValue());
                 int stopBits = Integer.parseInt((String) stopBitsChoiceBox.getValue());
                 int parity;
-                switch ((String) parityChoiceBox.getValue()){
+                switch ((String) parityChoiceBox.getValue()) {
                     case "no":
                         parity = SerialPort.NO_PARITY;
                         break;
@@ -191,13 +266,14 @@ public class Controller implements Initializable {
                     case "space":
                         parity = SerialPort.SPACE_PARITY;
                         break;
-                    default :
+                    default:
                         parity = SerialPort.NO_PARITY;
                         break;
                 }
                 String portName = portChoiceBox.getValue();
                 comPortConnection = ComPortConnection.getInstance(portName);
                 comPortConnection.openPort(baudRate, size, stopBits, parity);
+                control = new Control(comPortConnection);
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
                 connectionLabel.setText("Подключено");
@@ -206,7 +282,7 @@ public class Controller implements Initializable {
                 sendError(e);
             }
 
-        } else if(!openPortButton.isSelected()){
+        } else if (!openPortButton.isSelected()) {
             try {
                 comPortConnection.close();
                 openPortButton.setText("Старт соединения");
@@ -217,9 +293,14 @@ public class Controller implements Initializable {
                 e.printStackTrace();
             }
         }
+
+
+        if (comPortConnection.isBusy()) {
+            control.sendByte((byte) 170);
+        }
     }
 
-    private void sendError(ComPortException e){
+    private void sendError(ComPortException e) {
         openPortButton.setSelected(false);
         Image picture = new Image("images/red Ball.png", true);
         connectImage.setImage(picture);
@@ -240,7 +321,7 @@ public class Controller implements Initializable {
         setDisableElements();
     }
 
-    private void setTooltips(){
+    private void setTooltips() {
         Tooltip waitingTimeTooltip = new Tooltip("Время протекания, Тпр");
         waitingTimeEdit.setTooltip(waitingTimeTooltip);
         Tooltip.install(waitingTimeEdit, waitingTimeTooltip);
@@ -301,11 +382,15 @@ public class Controller implements Initializable {
     }
 
     public void sendData(ActionEvent actionEvent) {
+        if (comPortConnection.isBusy()) {
+            control.sendByteArray(setup.getTransmitArray());
+        }
+
         tabPane.getSelectionModel().selectNext();
-        glucoChart.getData().add(prepareSeries("Напряжение", (x) -> (double)x*x));
+        glucoChart.getData().add(prepareSeries("Напряжение", (x) -> (double) x * x));
 
         MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, graphStackPane);
-        voltageChart.addSeries(prepareSeries("Ток", (x) -> (double)x),Color.GREEN);
+        voltageChart.addSeries(prepareSeries("Ток", (x) -> (double) x), Color.GREEN);
         legendPane.getChildren().add(voltageChart.getLegend());
     }
 
