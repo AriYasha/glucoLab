@@ -3,6 +3,7 @@ package sample;
 import com.fazecast.jSerialComm.SerialPort;
 import comPort.ComPortConnection;
 import comPort.Control;
+import entity.DTOMainFrame;
 import entity.MeasurementSetup;
 import exception.ComPortException;
 import graph.MultipleAxesLineChart;
@@ -11,6 +12,8 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Cursor;
@@ -26,6 +29,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import validation.UIValidation;
 
 import java.io.IOException;
 import java.net.URL;
@@ -90,6 +94,21 @@ public class Controller implements Initializable {
     public TextField negativeAmpFastWavesEdit;
     public TextField positiveAmpFastWavesEdit;
     public TabPane tabPane;
+
+    public Controller() {
+
+    }
+
+    public Controller(String fxml) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/sample.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -169,7 +188,7 @@ public class Controller implements Initializable {
                     comPortConnection = ComPortConnection.getInstance((String) port);
                     System.out.println((String) port);
                     comPortConnection.openPort();
-                    control = new Control(comPortConnection);
+                    control = new Control(comPortConnection, this);
                     //control.setComPortConnection(comPortConnection);
                     control.sendTest();
                     System.out.println(comPortConnection.toString());
@@ -179,8 +198,7 @@ public class Controller implements Initializable {
                         e.printStackTrace();
                     }
                     readBytes = control.readBytes();
-                    byte[] controlBytes = {85, 79, 104, -73, -86};
-                    if (Arrays.equals(readBytes, controlBytes)) {
+                    if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
                         Image picture = new Image("images/green Ball.png", true);
                         connectImage.setImage(picture);
                         Platform.runLater(() -> connectionLabel.setText("Подключено"));
@@ -199,34 +217,11 @@ public class Controller implements Initializable {
                     e.printStackTrace();
                 }
             }
+
         };
-        /*new Thread(() -> {
-            ObservableList portList = portChoiceBox.getItems();
-            byte[] readBytes = new byte[5];
-            for (Object port : portList) {
-                try {
-                    comPortConnection = ComPortConnection.getInstance((String) port);
-                    System.out.println((String) port);
-                    comPortConnection.openPort();
-                    control = new Control(comPortConnection);
-                    control.sendTest();
-                    System.out.println(comPortConnection.toString());
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    readBytes = control.readBytes();
-                    System.out.println(Arrays.toString(readBytes));
-                    comPortConnection = null;
-                } catch (ComPortException e) {
-                    connectionLabel.setText("Не удалось подключиться автоматически");
-                }
-                comPortConnection = null;
-            }
-        }).start();*/
         Thread thread = new Thread(task);
         thread.start();
+
     }
 
 
@@ -235,7 +230,8 @@ public class Controller implements Initializable {
             try {
                 comPortConnection = ComPortConnection.getInstance(ComPortConnection.getPortName());
                 comPortConnection.openPort();
-                control = new Control(comPortConnection);
+                control = new Control(comPortConnection, this);
+                control.addListener();
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
                 connectionLabel.setText("Подключено");
@@ -273,7 +269,8 @@ public class Controller implements Initializable {
                 String portName = portChoiceBox.getValue();
                 comPortConnection = ComPortConnection.getInstance(portName);
                 comPortConnection.openPort(baudRate, size, stopBits, parity);
-                control = new Control(comPortConnection);
+                control = new Control(comPortConnection, this);
+                control.addListener();
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
                 connectionLabel.setText("Подключено");
@@ -549,6 +546,10 @@ public class Controller implements Initializable {
     public void render(MouseEvent mouseEvent) {
         renderVisualization();
         setPlotTooltip();
+        UIValidation uiValidation = new UIValidation();
+        DTOMainFrame dto = new DTOMainFrame();
+        dto.setConnectionLabel(connectionLabel);
+        uiValidation.help(dto);
     }
 
     public void visualPlotMouseEnter(MouseEvent mouseEvent) {
