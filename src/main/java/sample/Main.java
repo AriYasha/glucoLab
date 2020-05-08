@@ -1,6 +1,7 @@
 package sample;
 
 import comPort.ComPortConnection;
+import comPort.Control;
 import exception.ComPortException;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -25,17 +26,22 @@ public class Main extends Application {
         System.out.println(b);
         System.out.println(c);
 
+
         FXMLLoader loader = new FXMLLoader();
-        Parent root = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
+        loader.setLocation(getClass().getResource(fxmlFile));
+        Parent root = (Parent) loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("GlucoLab");
         stage.resizableProperty().setValue(Boolean.FALSE);
         scene.getStylesheets().add(css);
         stage.setScene(scene);
+        Controller controller = loader.getController();
         stage.show();
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent t) {
+                Control control = controller.getControl();
+                control.sendTest();
                 Platform.exit();
                 System.exit(0);
             }
@@ -50,6 +56,8 @@ public class Main extends Application {
 
 
     }
+
+
 
 
     public static void main(String[] args) {

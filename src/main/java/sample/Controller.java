@@ -3,7 +3,6 @@ package sample;
 import com.fazecast.jSerialComm.SerialPort;
 import comPort.ComPortConnection;
 import comPort.Control;
-import entity.DTOMainFrame;
 import entity.MeasurementSetup;
 import exception.ComPortException;
 import graph.MultipleAxesLineChart;
@@ -33,8 +32,14 @@ import validation.UIValidation;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class Controller implements Initializable {
@@ -51,6 +56,7 @@ public class Controller implements Initializable {
     private VisualisationPlot visualisationPlot;
     private ComPortConnection comPortConnection;
     private Control control;
+    private UIValidation uiValidation;
 
     public Label coordinateLabel;
     public Button updatePortsButton;
@@ -95,23 +101,9 @@ public class Controller implements Initializable {
     public TextField positiveAmpFastWavesEdit;
     public TabPane tabPane;
 
-    public Controller() {
-
-    }
-
-    public Controller(String fxml) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/sample.fxml"));
-        fxmlLoader.setRoot(this);
-        fxmlLoader.setController(this);
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        uiValidation = new UIValidation(this);
         //control = new Control();
         Image picture = new Image("images/red Ball.png", true);
         connectImage.setImage(picture);
@@ -170,6 +162,10 @@ public class Controller implements Initializable {
         setConnection();
     }
 
+    public Control getControl() {
+        return control;
+    }
+
     private void setPlotTooltip() {
         ObservableList<XYChart.Data> dataList = ((XYChart.Series) visualPlot.getData().get(0)).getData();
         dataList.forEach(data -> {
@@ -186,12 +182,9 @@ public class Controller implements Initializable {
             for (Object port : portList) {
                 try {
                     comPortConnection = ComPortConnection.getInstance((String) port);
-                    System.out.println((String) port);
                     comPortConnection.openPort();
                     control = new Control(comPortConnection, this);
-                    //control.setComPortConnection(comPortConnection);
                     control.sendTest();
-                    System.out.println(comPortConnection.toString());
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -199,17 +192,17 @@ public class Controller implements Initializable {
                     }
                     readBytes = control.readBytes();
                     if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
+                        control.addListener();
                         Image picture = new Image("images/green Ball.png", true);
                         connectImage.setImage(picture);
                         Platform.runLater(() -> connectionLabel.setText("Подключено"));
                         Platform.runLater(() -> openPortButton.setText("Прервать соединение"));
                         openPortButton.setSelected(true);
-                        control.addListener();
+                        //control.addListener();
                         break;
                     } else {
                         comPortConnection.close();
                     }
-                    System.out.println(Arrays.toString(readBytes));
 
                 } catch (ComPortException e) {
                     connectionLabel.setText("Не удалось подключиться автоматически");
@@ -379,22 +372,49 @@ public class Controller implements Initializable {
     }
 
     public void sendData(ActionEvent actionEvent) {
-        if (comPortConnection.isBusy()) {
+        /*if (comPortConnection.isBusy()) {
             control.sendByteArray(setup.getTransmitArray());
         }
 
         tabPane.getSelectionModel().selectNext();
-        glucoChart.getData().add(prepareSeries("Напряжение", (x) -> (double) x * x));
+        //glucoChart.getData().add(prepareSeries("Напряжение", (x) -> (double) x * x));
 
-        MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, graphStackPane);
-        voltageChart.addSeries(prepareSeries("Ток", (x) -> (double) x), Color.GREEN);
-        legendPane.getChildren().add(voltageChart.getLegend());
+//        MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, graphStackPane);
+//        voltageChart.addSeries(prepareSeries("Ток", (x) -> (double) x), Color.GREEN);
+//        legendPane.getChildren().add(voltageChart.getLegend());
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        glucoChart.getData().add(series);
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+
+        // setup a scheduled executor to periodically put data into the chart
+        ScheduledExecutorService scheduledExecutorService;
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+        // put dummy data onto graph per second
+        scheduledExecutorService.scheduleAtFixedRate(() -> {
+            // get a random integer between 0-10
+            Integer random = ThreadLocalRandom.current().nextInt(10);
+
+            // Update the chart
+            Platform.runLater(() -> {
+                // get current time
+                Date now = new Date();
+                // put random number with current time
+                series.getData().add(new XYChart.Data<>(now.getSeconds(), random));
+            });
+        }, 0, 1, TimeUnit.SECONDS);
+        */
+//        byte[] byes = {0x55, (byte) 0x99, 0x00, (byte) 0x99, (byte) 0xAA};
+//        control.sendByteArray(byes);
+        if (comPortConnection.isBusy()) {
+            control.sendByteArray(setup.getTransmitArray());
+        }
     }
 
     private XYChart.Series<Number, Number> prepareSeries(String name, Function<Integer, Double> function) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         series.setName(name);
-        for (int i = 0; i < 36; i++) {
+        for (int i = 0; i < 360; i++) {
             series.getData().add(new XYChart.Data<>(i, function.apply(i)));
         }
         return series;
@@ -516,10 +536,10 @@ public class Controller implements Initializable {
             positiveAmpFastWaves = "300";
         }
         if (negativeTimeMeasure.equals("")) {
-            negativeTimeMeasure = "5000";
+            negativeTimeMeasure = "15000";
         }
         if (positiveTimeMeasure.equals("")) {
-            positiveTimeMeasure = "5000";
+            positiveTimeMeasure = "15000";
         }
         if (negativeAmpMeasure.equals("")) {
             negativeAmpMeasure = "300";
@@ -546,10 +566,6 @@ public class Controller implements Initializable {
     public void render(MouseEvent mouseEvent) {
         renderVisualization();
         setPlotTooltip();
-        UIValidation uiValidation = new UIValidation();
-        DTOMainFrame dto = new DTOMainFrame();
-        dto.setConnectionLabel(connectionLabel);
-        uiValidation.help(dto);
     }
 
     public void visualPlotMouseEnter(MouseEvent mouseEvent) {

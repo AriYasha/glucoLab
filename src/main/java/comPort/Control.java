@@ -35,8 +35,9 @@ public class Control extends Thread implements SerialPortDataListener {
     private LinkedList<Integer> listIntegers = new LinkedList<>();
 
     private Controller controller;
+    DataFromComPortValidation validation;
 
-    public Control(){
+    public Control() {
 
     }
 
@@ -45,6 +46,7 @@ public class Control extends Thread implements SerialPortDataListener {
         this.controller = controller;
         this.userPort = comPortConnection.getUserPort();
         bytesReceived = new ArrayList<>();
+        validation = new DataFromComPortValidation(controller, this);
         //addListener();
     }
 
@@ -54,37 +56,40 @@ public class Control extends Thread implements SerialPortDataListener {
         bytesReceived = new ArrayList<>();
     }
 
-    public void sendByte(byte byteToSend){
+    public void sendByte(byte byteToSend) {
         byte[] bytesToSend = {byteToSend};
         userPort.writeBytes(bytesToSend, 1);
     }
 
-    public void sendByteArray(byte[] bytesToSend){
+    public void sendByteArray(byte[] bytesToSend) {
         userPort.writeBytes(bytesToSend, bytesToSend.length);
     }
 
-    public void sendTest(){
+    public void sendTest() {
         command[1] = O_CMD;
         command[2] = k_CMD;
         command[3] = (byte) (O_CMD + k_CMD);
         userPort.writeBytes(command, command.length);
     }
 
-    public void addListener(){
+    public void addListener() {
         userPort.addDataListener(this);
     }
 
-    public void removeListener(){
+    public void removeListener() {
         userPort.removeDataListener();
     }
 
-    public byte[] readBytes(){
+    public byte[] readBytes() {
         byte[] bytes = new byte[5];
         userPort.readBytes(bytes, bytes.length);
         return bytes;
     }
 
+    public int getIntFromArray(byte[] bytes) {
 
+        return fromBinToInt(dataToBin(bytes[0]) + dataToBin(bytes[1]));
+    }
 
 
     private String dataToBin(byte data) {
@@ -104,6 +109,12 @@ public class Control extends Thread implements SerialPortDataListener {
 
     private int fromBinToInt(String binaryString) {
         int decDigit = 0;
+
+        if (binaryString.length() < 32) {
+            StringBuilder sb = new StringBuilder(binaryString);
+            sb.insert(0, "0");
+            binaryString = sb.toString();
+        }
         char[] binStringToArray = binaryString.toCharArray(); // Преобразуем строку в массив символов
         //System.out.println(Arrays.toString(binStringToArray));
         if (binStringToArray[0] != '1') {
@@ -140,27 +151,28 @@ public class Control extends Thread implements SerialPortDataListener {
     public void serialEvent(SerialPortEvent event) {
 //        if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 //            return;
-        if (userPort.bytesAvailable() > 1) {
-            int counterBytes;
-            do {
-                counterBytes = userPort.bytesAvailable();
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while (counterBytes < userPort.bytesAvailable());
+        while (userPort.bytesAvailable() >= 5) {
+            int counterBytes = userPort.bytesAvailable();
+//            do {
+//                counterBytes = userPort.bytesAvailable();
+//                try {
+//                    Thread.sleep(200);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            } while (counterBytes < userPort.bytesAvailable());
             byte[] newData = new byte[userPort.bytesAvailable()];
-            int numRead = userPort.readBytes(newData, newData.length);
+            //int numRead = userPort.readBytes(newData, newData.length);
+            int numRead = userPort.readBytes(newData, 5);
             System.out.println("Read " + numRead + " bytes.");
-            System.out.println("Read " + counterBytes + " bytes.");
+            System.out.println("available" + userPort.bytesAvailable());
+            //System.out.println("Read " + counterBytes + " bytes.");
 //            System.out.println(Hex.encodeHexString(newData));
             for (byte aNewData : newData) {
                 bytesReceived.add(aNewData);
             }
 
-            if (counterBytes == 5){
-                DataFromComPortValidation validation = new DataFromComPortValidation(controller);
+            if (numRead == 5) {
                 try {
                     validation.checkCmd(bytesReceived);
                 } catch (IOException e) {
@@ -168,7 +180,6 @@ public class Control extends Thread implements SerialPortDataListener {
                 }
                 System.out.println(bytesReceived);
             }
-//            control.addToList(bytesReceived);
             bytesReceived.clear();
         }
     }
@@ -184,10 +195,10 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte[] CONTROL_ARRAY = {Control.START_CMD,
             Control.O_CMD,
             Control.k_CMD,
-            (byte)(Control.O_CMD + Control.k_CMD),
+            (byte) (Control.O_CMD + Control.k_CMD),
             Control.END_CMD};
 
-//    DEVICE STATUS TYPES
+    //    DEVICE STATUS TYPES
     static final public byte NOT_CONNECTED_STAT = 0;
     static final public byte CONNECTED_STAT = 1;
     static final public byte STRIP_WAITING_STAT = 2;
@@ -202,7 +213,7 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte POLARITY_CHANGED_STAT = 11;
     static final public byte END_MEASURE_STAT = 12;
 
-//    STRIP TYPES
+    //    STRIP TYPES
     static final public byte FIRST_STRIP_TYPE = 1;
     static final public byte SECOND_STRIP_TYPE = 2;
     static final public byte THIRD_STRIP_TYPE = 3;

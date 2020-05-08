@@ -188,7 +188,7 @@
                                               <NumberAxis fx:id="glocoTimeAxis" label="Время, мс" side="BOTTOM" />
                                             </xAxis>
                                             <yAxis>
-                                              <NumberAxis fx:id="glucoAmpAxis" label="Амплитуда, мВ" side="LEFT" />
+                                              <NumberAxis fx:id="glucoAmpAxis" label="Ток, мА" side="LEFT" />
                                             </yAxis>
                                           </LineChart>
                                        </children>

@@ -66,7 +66,7 @@ public class MultipleAxesLineChart/* extends StackPane*/ {
         detailsWindow = new AnchorPane();
         bindMouseEvents(baseChart, this.strokeWidth);
 
-        setPlotTooltip(baseChart);
+        //setPlotTooltip(baseChart);
 
         rebuildChart();
     }
@@ -213,7 +213,7 @@ public class MultipleAxesLineChart/* extends StackPane*/ {
 
         // style y-axis
         yAxis.setSide(Side.RIGHT);
-        yAxis.setLabel("Ток, мА");
+        yAxis.setLabel("Напряжение, мВ");
 
         // create chart
         LineChart lineChart = new LineChart(xAxis, yAxis);
@@ -346,16 +346,16 @@ public class MultipleAxesLineChart/* extends StackPane*/ {
 
             Number yValueForChart = getYValueForX(lineChart, xValueLong.intValue());
             if (yValueForChart == null) {
-                return null;
+                //return null;
             }
             Number yValueLower = Math.round(normalizeYValue(lineChart, event.getY() - 10));
             Number yValueUpper = Math.round(normalizeYValue(lineChart, event.getY() + 10));
             Number yValueUnderMouse = Math.round((double) lineChart.getYAxis().getValueForDisplay(event.getY()));
 
             // make series name bold when mouse is near given chart's line
-            if (isMouseNearLine(yValueForChart, yValueUnderMouse, Math.abs(yValueLower.doubleValue()-yValueUpper.doubleValue()))) {
-                seriesName.setStyle("-fx-font-weight: bold");
-            }
+//            if (isMouseNearLine(yValueForChart, yValueUnderMouse, Math.abs(yValueLower.doubleValue()-yValueUpper.doubleValue()))) {
+//                seriesName.setStyle("-fx-font-weight: bold");
+//            }
 
             Number time = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
             Number amplitude = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
