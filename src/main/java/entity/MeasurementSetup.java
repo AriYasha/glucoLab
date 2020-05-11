@@ -1,5 +1,7 @@
 package entity;
 
+import comPort.Control;
+
 public class MeasurementSetup {
     private int leakingTime;
     private int pauseTime;
@@ -142,7 +144,7 @@ public class MeasurementSetup {
 
     public byte[] getTransmitArray(){
         byte[] transmitBytes = new byte[30];
-        transmitBytes[0] = (byte) 170;
+        transmitBytes[0] = Control.SETUP_CMD;
         transmitBytes[1] = (byte) 1;
         transmitBytes[3] = (byte) leakingTime;
         transmitBytes[2] = (byte) (leakingTime >> 8);
@@ -171,7 +173,7 @@ public class MeasurementSetup {
         transmitBytes[27] = (byte) negativeAmplitudeMeasurePulses;
         transmitBytes[26] = (byte) (negativeAmplitudeMeasurePulses >> 8);
         transmitBytes[28] = (byte) 28;
-        transmitBytes[29] = (byte) 170;
+        transmitBytes[29] = Control.SETUP_CMD;
         return transmitBytes;
     }
 }

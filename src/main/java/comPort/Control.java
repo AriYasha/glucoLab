@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import comPort.ComPortConnection;
+import entity.MeasurementSetup;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import org.apache.commons.codec.binary.Hex;
@@ -35,16 +36,18 @@ public class Control extends Thread implements SerialPortDataListener {
     private LinkedList<Integer> listIntegers = new LinkedList<>();
 
     private Controller controller;
-    DataFromComPortValidation validation;
+    private DataFromComPortValidation validation;
+    private MeasurementSetup setup;
 
     public Control() {
 
     }
 
-    public Control(ComPortConnection comPortConnection, Controller controller) {
+    public Control(ComPortConnection comPortConnection, Controller controller, MeasurementSetup setup) {
         this.comPortConnection = comPortConnection;
         this.controller = controller;
         this.userPort = comPortConnection.getUserPort();
+        this.setup = setup;
         bytesReceived = new ArrayList<>();
         validation = new DataFromComPortValidation(controller, this);
         //addListener();
@@ -72,6 +75,13 @@ public class Control extends Thread implements SerialPortDataListener {
         userPort.writeBytes(command, command.length);
     }
 
+    public void sendSetupRequest() {
+        command[1] = CMD;
+        command[2] = 0x00;
+        command[3] = (byte) (command[1] + command[2]);
+        userPort.writeBytes(command, command.length);
+    }
+
     public void addListener() {
         userPort.addDataListener(this);
     }
@@ -88,7 +98,7 @@ public class Control extends Thread implements SerialPortDataListener {
 
     public int getIntFromArray(byte[] bytes) {
 
-        return fromBinToInt(dataToBin(bytes[0]) + dataToBin(bytes[1]));
+        return fromBinToInt(dataToBin(bytes[1]) + dataToBin(bytes[0]));
     }
 
 
@@ -152,40 +162,41 @@ public class Control extends Thread implements SerialPortDataListener {
 //        if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 //            return;
         while (userPort.bytesAvailable() >= 5) {
-            int counterBytes = userPort.bytesAvailable();
-//            do {
-//                counterBytes = userPort.bytesAvailable();
-//                try {
-//                    Thread.sleep(200);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            } while (counterBytes < userPort.bytesAvailable());
-            byte[] newData = new byte[userPort.bytesAvailable()];
-            //int numRead = userPort.readBytes(newData, newData.length);
-            int numRead = userPort.readBytes(newData, 5);
-            System.out.println("Read " + numRead + " bytes.");
-            System.out.println("available" + userPort.bytesAvailable());
-            //System.out.println("Read " + counterBytes + " bytes.");
+            byte[] cmdData = new byte[4];
+            byte[] firstByte = new byte[1];
+            userPort.readBytes(firstByte, 1);
+            if (firstByte[0] == START_CMD || firstByte[0] == END_CMD) {
+                int numRead = userPort.readBytes(cmdData, 4);
+                System.out.println("Read " + numRead + " bytes.");
+                System.out.println("available" + userPort.bytesAvailable());
 //            System.out.println(Hex.encodeHexString(newData));
-            for (byte aNewData : newData) {
-                bytesReceived.add(aNewData);
-            }
-
-            if (numRead == 5) {
-                try {
-                    validation.checkCmd(bytesReceived);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                for (byte aNewData : cmdData) {
+                    bytesReceived.add(aNewData);
                 }
-                System.out.println(bytesReceived);
+                bytesReceived.add(0, firstByte[0]);
+            } else if(firstByte[0] == SETUP_CMD){
+                byte[] setupData = new byte[29];
+                while (userPort.bytesAvailable() < 29);
+                userPort.readBytes(setupData, 29);
+                for (byte aNewData : setupData) {
+                    bytesReceived.add(aNewData);
+                }
+                bytesReceived.add(0, firstByte[0]);
             }
+            try {
+                validation.checkCmd(bytesReceived, setup);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println(bytesReceived);
+
             bytesReceived.clear();
         }
     }
 
     static final public byte START_CMD = 0x55;          // 0x55
     static final public byte END_CMD = (byte) 0xAA;      // 0xAA
+    static final public byte SETUP_CMD = (byte) 0xCC;      // 0xCC
     static final public byte STAT_CMD = (byte) 153;     // 0x99
     static final public byte STRIP_NUMBER_CMD = 83;     // 0x53
     static final public byte ERR_CMD = 69;              // 0x45
@@ -218,6 +229,7 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte SECOND_STRIP_TYPE = 2;
     static final public byte THIRD_STRIP_TYPE = 3;
     static final public byte FOURTH_STRIP_TYPE = 4;
+    static final public byte ZERO_STRIP_TYPE = 5;
 
 //    DEVICE ERROR TYPES
 

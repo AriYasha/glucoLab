@@ -52,8 +52,11 @@ public class Controller implements Initializable {
     public NumberAxis glucoAmpAxis;
     public StackPane graphStackPane;
     public AnchorPane legendPane;
-    private MeasurementSetup setup;
-    private VisualisationPlot visualisationPlot;
+    public MeasurementSetup setup;
+    public VisualisationPlot visualisationPlot;
+    public Label measureStatLabel;
+    public ImageView stripTypeImage;
+    public Label stripTypeLabel;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -106,7 +109,10 @@ public class Controller implements Initializable {
         uiValidation = new UIValidation(this);
         //control = new Control();
         Image picture = new Image("images/red Ball.png", true);
+        Image stripType = new Image("images/stripNoName.jpg", true);
+        stripTypeLabel.setVisible(false);
         connectImage.setImage(picture);
+        stripTypeImage.setImage(stripType);
         setTooltips();
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
         String[] portNames = ComPortConnection.getPortNames();
@@ -158,6 +164,7 @@ public class Controller implements Initializable {
                     )
             );
         });
+
         setPlotTooltip();
         setConnection();
     }
@@ -183,10 +190,10 @@ public class Controller implements Initializable {
                 try {
                     comPortConnection = ComPortConnection.getInstance((String) port);
                     comPortConnection.openPort();
-                    control = new Control(comPortConnection, this);
+                    control = new Control(comPortConnection, this, setup);
                     control.sendTest();
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -223,7 +230,7 @@ public class Controller implements Initializable {
             try {
                 comPortConnection = ComPortConnection.getInstance(ComPortConnection.getPortName());
                 comPortConnection.openPort();
-                control = new Control(comPortConnection, this);
+                control = new Control(comPortConnection, this, setup);
                 control.addListener();
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
@@ -262,7 +269,7 @@ public class Controller implements Initializable {
                 String portName = portChoiceBox.getValue();
                 comPortConnection = ComPortConnection.getInstance(portName);
                 comPortConnection.openPort(baudRate, size, stopBits, parity);
-                control = new Control(comPortConnection, this);
+                control = new Control(comPortConnection, this, setup);
                 control.addListener();
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
@@ -406,9 +413,23 @@ public class Controller implements Initializable {
         */
 //        byte[] byes = {0x55, (byte) 0x99, 0x00, (byte) 0x99, (byte) 0xAA};
 //        control.sendByteArray(byes);
+        //renderVisualization();
         if (comPortConnection.isBusy()) {
             control.sendByteArray(setup.getTransmitArray());
         }
+        System.out.println("controller");
+        //System.out.println(Arrays.toString(setup.getTransmitArray()));
+        Runnable task = () -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            control.sendSetupRequest();
+
+        };
+        Thread thread = new Thread(task);
+        thread.start();
     }
 
     private XYChart.Series<Number, Number> prepareSeries(String name, Function<Integer, Double> function) {
@@ -425,34 +446,6 @@ public class Controller implements Initializable {
         checkTimeAvailability(pauseTimeCheckBox, pauseTimeEdit, pauseTimeLabel);
     }
 
-    public void commonMeasureTimeAction(ActionEvent actionEvent) {
-        commonMeasure(positiveTimeMeasureEdit, negativeTimeMeasureEdit);
-    }
-
-    public void commonMeasureTime(MouseEvent mouseEvent) {
-        commonMeasure(positiveTimeMeasureEdit, negativeTimeMeasureEdit);
-        renderVisualization();
-        setPlotTooltip();
-    }
-
-    private void commonMeasure(TextField textFieldPos, TextField textFieldNeg) {
-        String negativeTimeMeasure = textFieldNeg.getText();
-        String positiveTimeMeasure = textFieldPos.getText();
-        if (positiveTimeMeasure.equals("")) {
-            positiveTimeMeasure = "0";
-        }
-        if (negativeTimeMeasure.equals("")) {
-            negativeTimeMeasure = "0";
-        }
-        if (positiveTimeMeasure.equals("0") &&
-                negativeTimeMeasure.equals("0")) {
-            commonMeasureTimeEdit.clear();
-        } else {
-            int commonMeasureTime = Integer.parseInt(negativeTimeMeasure) + Integer.parseInt(positiveTimeMeasure);
-            commonMeasureTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
-        }
-    }
-
     public void disableWaitingTime(ActionEvent actionEvent) {
         checkTimeAvailability(waitingTimeCheckBox, waitingTimeEdit, waitTimeLabel);
     }
@@ -467,33 +460,6 @@ public class Controller implements Initializable {
             textField.setDisable(false);
             label.setDisable(false);
         }
-    }
-
-    public void commonFastPulsesTime(MouseEvent mouseEvent) {
-        String negativeTimeFastWaves = negativeTimeFastWavesEdit.getText();
-        String positiveTimeFastWaves = positiveTimeFastWavesEdit.getText();
-        String quantityFastPulses = quantityFastPulsesEdit.getText();
-        if (negativeTimeFastWaves.equals("")) {
-            negativeTimeFastWaves = "0";
-        }
-        if (positiveTimeFastWaves.equals("")) {
-            positiveTimeFastWaves = "0";
-        }
-        if (quantityFastPulses.equals("")) {
-            quantityFastPulses = "0";
-        }
-        if (quantityFastPulses.equals("0") &&
-                positiveTimeFastWaves.equals("0") &&
-                negativeTimeFastWaves.equals("0")) {
-            commonFastPulsesTimeEdit.clear();
-        } else {
-            int commonMeasureTime = Integer.parseInt(quantityFastPulses) *
-                    (Integer.parseInt(positiveTimeFastWaves) +
-                            Integer.parseInt(negativeTimeFastWaves));
-            commonFastPulsesTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
-        }
-        renderVisualization();
-        setPlotTooltip();
     }
 
     private void renderVisualization() {
@@ -536,16 +502,33 @@ public class Controller implements Initializable {
             positiveAmpFastWaves = "300";
         }
         if (negativeTimeMeasure.equals("")) {
-            negativeTimeMeasure = "15000";
+            negativeTimeMeasure = "5000";
         }
         if (positiveTimeMeasure.equals("")) {
-            positiveTimeMeasure = "15000";
+            positiveTimeMeasure = "5000";
         }
         if (negativeAmpMeasure.equals("")) {
             negativeAmpMeasure = "300";
         }
         if (positiveAmpMeasure.equals("")) {
             positiveAmpMeasure = "300";
+        }
+        if (quantityFastPulses.equals("0") &&
+                positiveTimeFastWaves.equals("0") &&
+                negativeTimeFastWaves.equals("0")) {
+            commonFastPulsesTimeEdit.clear();
+        } else {
+            int commonMeasureTime = Integer.parseInt(quantityFastPulses) *
+                    (Integer.parseInt(positiveTimeFastWaves) +
+                            Integer.parseInt(negativeTimeFastWaves));
+            commonFastPulsesTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
+        }
+        if (positiveTimeMeasure.equals("0") &&
+                negativeTimeMeasure.equals("0")) {
+            commonMeasureTimeEdit.clear();
+        } else {
+            int commonMeasureTime = Integer.parseInt(negativeTimeMeasure) + Integer.parseInt(positiveTimeMeasure);
+            commonMeasureTimeEdit.setText(String.valueOf((double) commonMeasureTime / 1000));
         }
         setup.setLeakingTime(Integer.parseInt(waitingTime));
         setup.setPauseTime(Integer.parseInt(pauseTime));
@@ -564,6 +547,7 @@ public class Controller implements Initializable {
     }
 
     public void render(MouseEvent mouseEvent) {
+        uiValidation.valuesValidation();
         renderVisualization();
         setPlotTooltip();
     }

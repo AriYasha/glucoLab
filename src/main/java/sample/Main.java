@@ -41,7 +41,9 @@ public class Main extends Application {
             @Override
             public void handle(WindowEvent t) {
                 Control control = controller.getControl();
-                control.sendTest();
+                if(control != null) {
+                    control.sendTest();
+                }
                 Platform.exit();
                 System.exit(0);
             }
