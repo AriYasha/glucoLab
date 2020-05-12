@@ -1,4 +1,4 @@
-package com.work.file;
+package com.file;
 
 import java.io.IOException;
 import java.nio.file.Files;

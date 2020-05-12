@@ -1,23 +1,16 @@
-package comPort;
+package com.comPort;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import comPort.ComPortConnection;
-import entity.MeasurementSetup;
-import javafx.scene.control.Label;
+import com.entity.MeasurementSetup;
 import javafx.scene.control.TextArea;
-import org.apache.commons.codec.binary.Hex;
-import sample.Controller;
-import validation.DataFromComPortValidation;
+import com.sample.Controller;
+import com.validation.DataFromComPortValidation;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 
 public class Control extends Thread implements SerialPortDataListener {

@@ -1,4 +1,4 @@
-package sample;
+package com.sample;
 
 import javafx.fxml.Initializable;
 

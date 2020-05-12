@@ -1,4 +1,4 @@
-package graph;
+package com.graph;
 
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;

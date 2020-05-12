@@ -1,8 +1,7 @@
-package sample;
+package com.sample;
 
-import comPort.ComPortConnection;
-import comPort.Control;
-import exception.ComPortException;
+import com.comPort.ComPortConnection;
+import com.comPort.Control;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;

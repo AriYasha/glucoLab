@@ -1,15 +1,9 @@
-package graph;
+package com.graph;
 
-import entity.MeasurementSetup;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import com.entity.MeasurementSetup;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Tooltip;
-
-import java.awt.event.MouseEvent;
 
 public class VisualisationPlot {
     private LineChart<Number, Number> visualPlot;

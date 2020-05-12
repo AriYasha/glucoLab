@@ -1,16 +1,14 @@
-package validation;
+package com.validation;
 
-import comPort.Control;
-import entity.MeasurementSetup;
-import graph.MultipleAxesLineChart;
+import com.comPort.Control;
+import com.entity.MeasurementSetup;
+import com.graph.MultipleAxesLineChart;
+import com.sample.Controller;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import sample.Controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,6 +129,13 @@ public class DataFromComPortValidation {
     private void endMeasure() {
         Platform.runLater(() -> {
             controller.measureStatLabel.setText("Измерение завершено");
+            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
+            ObservableList<XYChart.Data> data = series.getData();
+            for (XYChart.Data newData: data) {
+                System.out.println("x = " + newData.getXValue());
+                System.out.println("y = " + newData.getYValue());
+            }
+            System.out.println(series.getData());
         });
     }
 

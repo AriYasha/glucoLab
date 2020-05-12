@@ -1,9 +1,9 @@
-package validation;
+package com.validation;
 
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import sample.Controller;
+import com.sample.Controller;
 
 
 public class UIValidation {

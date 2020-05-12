@@ -1,6 +1,6 @@
-package entity;
+package com.entity;
 
-import comPort.Control;
+import com.comPort.Control;
 
 public class MeasurementSetup {
     private int leakingTime;

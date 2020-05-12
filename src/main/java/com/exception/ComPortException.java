@@ -1,4 +1,4 @@
-package exception;
+package com.exception;
 
 public class ComPortException extends Exception {
 

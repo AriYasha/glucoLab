@@ -1,10 +1,9 @@
-package comPort;
+package com.comPort;
 
 import com.fazecast.jSerialComm.SerialPort;
-import exception.ComPortException;
+import com.exception.ComPortException;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ComPortConnection implements AutoCloseable {
 

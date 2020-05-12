@@ -1,23 +1,17 @@
-package sample;
+package com.sample;
 
 import com.fazecast.jSerialComm.SerialPort;
-import comPort.ComPortConnection;
-import comPort.Control;
-import entity.MeasurementSetup;
-import exception.ComPortException;
-import graph.MultipleAxesLineChart;
-import graph.VisualisationPlot;
+import com.comPort.ComPortConnection;
+import com.comPort.Control;
+import com.entity.MeasurementSetup;
+import com.exception.ComPortException;
+import com.graph.VisualisationPlot;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -27,19 +21,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import validation.UIValidation;
+import com.validation.UIValidation;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 public class Controller implements Initializable {
@@ -410,7 +397,7 @@ public class Controller implements Initializable {
         ScheduledExecutorService scheduledExecutorService;
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-        // put dummy data onto graph per second
+        // put dummy data onto com.graph per second
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             // get a random integer between 0-10
             Integer random = ThreadLocalRandom.current().nextInt(10);
