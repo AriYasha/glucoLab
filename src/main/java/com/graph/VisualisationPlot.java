@@ -55,7 +55,7 @@ public class VisualisationPlot {
         series.getData().add(new XYChart.Data<>(time, 0));
 
         visualPlot.getData().clear();
-        visualPlot.setAnimated(true);
+        visualPlot.setAnimated(false);
         visualPlot.getData().add(series);
 
         Node chartSeries = visualPlot.lookup(".chart-series-line");
