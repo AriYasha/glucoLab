@@ -52,11 +52,11 @@ public class VisualisationPlot {
         visualPlot.setAnimated(false);
         visualPlot.getData().add(series);
 
-        Node chartSeries = visualPlot.lookup(".chart-series-line");
-        //System.out.println(chartSeries.toString());
-        chartSeries.setOnMouseMoved(event -> {
-            System.out.println("hi");
-        });
+//        Node chartSeries = visualPlot.lookup(".chart-series-line");
+//        System.out.println(chartSeries.toString());
+//        chartSeries.setOnMouseMoved(event -> {
+//            System.out.println("hi");
+//        });
 
         return visualPlot;
 

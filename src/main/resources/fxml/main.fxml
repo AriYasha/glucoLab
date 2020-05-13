@@ -20,7 +20,7 @@
     <children>
         <BorderPane layoutX="14.0" layoutY="52.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
-                <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+                <MenuBar fx:id="menuBar" nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER">
                     <menus>
                         <Menu mnemonicParsing="false" text="File">
                             <items>
@@ -75,9 +75,9 @@
             <center>
                 <AnchorPane BorderPane.alignment="CENTER">
                     <children>
-                        <TabPane fx:id="tabPane">
+                        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
-                                <Tab fx:id="setupTab" text="Untitled Tab">
+                                <Tab fx:id="setupTab" text="Настройка">
                                     <content>
                                         <AnchorPane>
                                             <children>

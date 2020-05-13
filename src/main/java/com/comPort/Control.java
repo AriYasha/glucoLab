@@ -7,13 +7,17 @@ import com.entity.MeasurementSetup;
 import javafx.scene.control.TextArea;
 import com.sample.Controller;
 import com.validation.DataFromComPortValidation;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 
 public class Control extends Thread implements SerialPortDataListener {
+
+    final static Logger logger = Logger.getLogger(Control.class);
 
     private boolean dataReady;
     private byte[] bytesFromFile;
@@ -55,6 +59,10 @@ public class Control extends Thread implements SerialPortDataListener {
     public void sendByte(byte byteToSend) {
         byte[] bytesToSend = {byteToSend};
         userPort.writeBytes(bytesToSend, 1);
+    }
+
+    public SerialPort getUserPort() {
+        return userPort;
     }
 
     public void sendByteArray(byte[] bytesToSend) {
@@ -145,6 +153,10 @@ public class Control extends Thread implements SerialPortDataListener {
         return decDigit;
     }
 
+    public int bytesAvailable() {
+        return userPort.bytesAvailable();
+    }
+
     @Override
     public int getListeningEvents() {
         return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
@@ -152,25 +164,33 @@ public class Control extends Thread implements SerialPortDataListener {
 
     @Override
     public void serialEvent(SerialPortEvent event) {
-//        if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-//            return;
-        while (userPort.bytesAvailable() >= 5) {
+        if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+            return;
+        int numRead = userPort.bytesAvailable();
+        while (numRead >= 5) {
             byte[] cmdData = new byte[4];
             byte[] firstByte = new byte[1];
             userPort.readBytes(firstByte, 1);
             if (firstByte[0] == START_CMD || firstByte[0] == END_CMD) {
-                int numRead = userPort.readBytes(cmdData, 4);
+                bytesReceived.add(firstByte[0]);
+                numRead = userPort.readBytes(cmdData, 4);
                 System.out.println("Read " + numRead + " bytes.");
-                System.out.println("available" + userPort.bytesAvailable());
+                System.out.println("available " + numRead);
 //            System.out.println(Hex.encodeHexString(newData));
                 for (byte aNewData : cmdData) {
                     bytesReceived.add(aNewData);
                 }
-                bytesReceived.add(0, firstByte[0]);
-            } else if(firstByte[0] == SETUP_CMD){
+                logger.debug(bytesReceived);
+                //bytesReceived.add(0, firstByte[0]);
+                numRead = userPort.bytesAvailable();
+                if (userPort.bytesAvailable() >= 4) {
+                    logger.debug("available " + numRead);
+                }
+
+            } else if (firstByte[0] == SETUP_CMD) {
                 byte[] setupData = new byte[29];
-                while (userPort.bytesAvailable() < 29);
-                userPort.readBytes(setupData, 29);
+                while (userPort.bytesAvailable() < 29) ;
+                numRead = userPort.readBytes(setupData, 29);
                 for (byte aNewData : setupData) {
                     bytesReceived.add(aNewData);
                 }
@@ -179,7 +199,7 @@ public class Control extends Thread implements SerialPortDataListener {
             try {
                 validation.checkCmd(bytesReceived, setup);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             System.out.println(bytesReceived);
 
@@ -223,6 +243,9 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte THIRD_STRIP_TYPE = 3;
     static final public byte FOURTH_STRIP_TYPE = 4;
     static final public byte ZERO_STRIP_TYPE = 5;
+
+    public void sendOnExit() {
+    }
 
 //    DEVICE ERROR TYPES
 

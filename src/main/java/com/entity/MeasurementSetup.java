@@ -2,7 +2,9 @@ package com.entity;
 
 import com.comPort.Control;
 
-public class MeasurementSetup {
+import java.io.Serializable;
+
+public class MeasurementSetup implements Serializable {
     private int leakingTime;
     private int pauseTime;
 

@@ -1,7 +1,9 @@
 package com.validation;
 
 import com.comPort.Control;
+import com.entity.Data;
 import com.entity.MeasurementSetup;
+import com.file.Write;
 import com.graph.MultipleAxesLineChart;
 import com.sample.Controller;
 import javafx.application.Platform;
@@ -9,12 +11,15 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataFromComPortValidation {
+
+    final static Logger logger = Logger.getLogger(Controller.class);
 
     private Controller controller;
     private Control control;
@@ -23,12 +28,12 @@ public class DataFromComPortValidation {
     private XYChart.Series<Number, Number> series;
     private XYChart.Series<Number, Number> currentSeries;
     private boolean isPolarityChanged = false;
-    private List<Integer> list;
+    private Data currentData;
 
     public DataFromComPortValidation(Controller controller, Control control) {
         this.controller = controller;
         this.control = control;
-        list = new ArrayList<>();
+        currentData = new Data();
     }
 
     public void checkCmd(List<Byte> command, MeasurementSetup setup) throws IOException {
@@ -49,7 +54,6 @@ public class DataFromComPortValidation {
         } else if (isData(command)) {
             byte[] bytes = {command.get(2), command.get(1)};
             int data = control.getIntFromArray(bytes);
-            list.add(data);
             if (isPolarityChanged) {
                 addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses());
             } else {
@@ -118,7 +122,6 @@ public class DataFromComPortValidation {
                 break;
             case Control.END_MEASURE_STAT:
                 System.out.println("END_MEASURE_STAT");
-                System.out.println(list);
                 endMeasure();
                 break;
 
@@ -127,16 +130,35 @@ public class DataFromComPortValidation {
     }
 
     private void endMeasure() {
+        currentData.setMeasurementSetup(setup);
         Platform.runLater(() -> {
             controller.measureStatLabel.setText("Измерение завершено");
-            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
-            ObservableList<XYChart.Data> data = series.getData();
-            for (XYChart.Data newData: data) {
-                System.out.println("x = " + newData.getXValue());
-                System.out.println("y = " + newData.getYValue());
-            }
-            System.out.println(series.getData());
+//            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
+//            ObservableList<XYChart.Data> dataFromPlot = series.getData();
+//            currentData.setCurrentMeasurement(dataFromPlot);
+//            Write.writeNewData(currentData);
+//            for (XYChart.Data newData: dataFromPlot) {
+//                logger.debug("x = " + newData.getXValue());
+//                logger.debug("y = " + newData.getYValue());
+//            }
         });
+        XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
+        ObservableList<XYChart.Data> dataFromPlot =  series.getData();
+        ArrayList<Number> xValues = new ArrayList<>();
+        ArrayList<Number> yValues = new ArrayList<>();
+        for (XYChart.Data newData: dataFromPlot) {
+            xValues.add((Number) newData.getXValue());
+            yValues.add((Number) newData.getYValue());
+//            logger.debug("x = " + newData.getXValue());
+//            logger.debug("y = " + newData.getYValue());
+        }
+        logger.debug("dataFromPlot");
+        logger.debug(dataFromPlot);
+        currentData.setCurrentXMeasurement(xValues);
+        currentData.setCurrentYMeasurement(yValues);
+        logger.debug(currentData.toString());
+        Write.writeNewData(currentData);
+
     }
 
     private void startMeasure() {
@@ -165,12 +187,7 @@ public class DataFromComPortValidation {
     }
 
     private void parseSetupCMD(List<Byte> command) {
-        System.out.println("parse");
-        System.out.println(command);
         byte[] bytes = {command.get(3), command.get(2)};
-        System.out.println("third = " + command.get(3));
-        System.out.println("second = " + command.get(2));
-        System.out.println("common = " + control.getIntFromArray(bytes));
         setup.setLeakingTime(control.getIntFromArray(bytes));
         controller.waitingTimeEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
         bytes[0] = command.get(5);
@@ -237,6 +254,7 @@ public class DataFromComPortValidation {
     }
 
     private void stripChecker(byte command) {
+        currentData.setStripType(command);
         switch (command) {
             case Control.FIRST_STRIP_TYPE:
                 System.out.println("FIRST_STRIP_TYPE");

@@ -1,12 +1,93 @@
 package com.entity;
 
+import javafx.collections.ObservableList;
+import javafx.scene.chart.XYChart;
+
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Data {
-    public int idHigh;
-    public int idLow;
-    public int stripType;
-    public ArrayList<Double> currentMeasurement;
+public class Data implements Serializable {
+    private String userName = "NoName";
+    private int idHigh = 0;
+    private int idLow = 0;
+    private int stripType;
+    private List<Number> currentXMeasurement;
+    private List<Number> currentYMeasurement;
 
-    public MeasurementSetup measurementSetup;
+    private MeasurementSetup measurementSetup;
+
+    public Data() {
+        currentXMeasurement = new ArrayList<>();
+        currentYMeasurement = new ArrayList<>();
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getIdHigh() {
+        return idHigh;
+    }
+
+    public void setIdHigh(int idHigh) {
+        this.idHigh = idHigh;
+    }
+
+    public int getIdLow() {
+        return idLow;
+    }
+
+    public void setIdLow(int idLow) {
+        this.idLow = idLow;
+    }
+
+    public int getStripType() {
+        return stripType;
+    }
+
+    public void setStripType(int stripType) {
+        this.stripType = stripType;
+    }
+
+    public List<Number> getCurrentXMeasurement() {
+        return currentXMeasurement;
+    }
+
+    public void setCurrentXMeasurement(List<Number> currentXMeasurement) {
+        this.currentXMeasurement = currentXMeasurement;
+    }
+
+    public List<Number> getCurrentYMeasurement() {
+        return currentYMeasurement;
+    }
+
+    public void setCurrentYMeasurement(List<Number> currentYMeasurement) {
+        this.currentYMeasurement = currentYMeasurement;
+    }
+
+    public MeasurementSetup getMeasurementSetup() {
+        return measurementSetup;
+    }
+
+    public void setMeasurementSetup(MeasurementSetup measurementSetup) {
+        this.measurementSetup = measurementSetup;
+    }
+
+    @Override
+    public String toString() {
+        return "Data{" +
+                "userName='" + userName + '\'' +
+                ", idHigh=" + idHigh +
+                ", idLow=" + idLow +
+                ", stripType=" + stripType +
+                ", currentXMeasurement=" + currentXMeasurement +
+                ", currentYMeasurement=" + currentYMeasurement +
+                ", measurementSetup=" + measurementSetup +
+                '}';
+    }
 }

@@ -41,7 +41,7 @@ public class Main extends Application {
             public void handle(WindowEvent t) {
                 Control control = controller.getControl();
                 if(control != null) {
-                    control.sendTest();
+                    control.sendOnExit();
                 }
                 Platform.exit();
                 System.exit(0);

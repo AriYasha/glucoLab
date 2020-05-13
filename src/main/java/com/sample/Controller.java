@@ -1,10 +1,13 @@
 package com.sample;
 
+import com.entity.Data;
 import com.fazecast.jSerialComm.SerialPort;
 import com.comPort.ComPortConnection;
 import com.comPort.Control;
 import com.entity.MeasurementSetup;
 import com.exception.ComPortException;
+import com.fazecast.jSerialComm.SerialPortEvent;
+import com.file.Write;
 import com.graph.VisualisationPlot;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -18,10 +21,12 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import com.validation.UIValidation;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +36,7 @@ import java.util.function.Function;
 
 public class Controller implements Initializable {
 
+    final static Logger logger = Logger.getLogger(Controller.class);
 
     public Tab setupTab;
     public LineChart glucoChart;
@@ -107,6 +113,7 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         uiValidation = new UIValidation(this);
         uiValidation.hideErrorLabels();
+        menuBarSetup();
         //control = new Control();
         Image picture = new Image("images/red Ball.png", true);
         Image stripType = new Image("images/stripNoName.jpg", true);
@@ -139,7 +146,6 @@ public class Controller implements Initializable {
 
         Node chartBackground = visualPlot.lookup(".chart-plot-background");
         Node chartSeries = visualPlot.lookup(".chart-series-line");
-        System.out.println(chartSeries.toString());
         chartBackground.setOnMouseEntered(event -> {
             visualPlot.setCursor(Cursor.CROSSHAIR);
             coordinateLabel.setVisible(true);
@@ -192,14 +198,21 @@ public class Controller implements Initializable {
                     comPortConnection.openPort();
                     control = new Control(comPortConnection, this, setup);
                     control.sendTest();
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+//                    try {
+//                        Thread.sleep(200);
+//                    } catch (InterruptedException e) {
+//                        logger.error(e);
+//                        logger.error(e.getMessage());
+//                    }
+                    int timeOut = 0;
+                    while(control.bytesAvailable() <= 5){
+                        timeOut++;
+                        if(timeOut > 65535) break;
                     }
                     readBytes = control.readBytes();
                     if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
                         control.addListener();
+                        control.serialEvent(new SerialPortEvent(control.getUserPort(), SerialPort.LISTENING_EVENT_DATA_AVAILABLE));
                         Image picture = new Image("images/green Ball.png", true);
                         connectImage.setImage(picture);
                         Platform.runLater(() -> connectionLabel.setText("Подключено"));
@@ -212,11 +225,15 @@ public class Controller implements Initializable {
                     }
 
                 } catch (ComPortException e) {
-                    connectionLabel.setText("Не удалось подключиться автоматически");
+                    Platform.runLater(() -> connectionLabel.setText("Не удалось подключиться автоматически"));
+                    logger.error(e);
+                    logger.error(e.getMessage());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e);
+                    logger.error(e.getMessage());
                 }
             }
+            logger.debug("end trying to connect");
 
         };
         Thread thread = new Thread(task);
@@ -238,6 +255,7 @@ public class Controller implements Initializable {
                 openPortButton.setText("Прервать соединение");
             } catch (ComPortException e) {
                 sendError(e);
+                logger.error(e.getMessage());
             }
 
         } else if (!defaultPortCheckBox.isSelected() && openPortButton.isSelected()) {
@@ -277,6 +295,7 @@ public class Controller implements Initializable {
                 openPortButton.setText("Прервать соединение");
             } catch (ComPortException e) {
                 sendError(e);
+                logger.error(e.getMessage());
             }
 
         } else if (!openPortButton.isSelected()) {
@@ -287,13 +306,8 @@ public class Controller implements Initializable {
                 connectImage.setImage(picture);
                 connectionLabel.setText("Не подключено");
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
-        }
-
-
-        if (comPortConnection.isBusy()) {
-            control.sendByte((byte) 170);
         }
     }
 
@@ -417,16 +431,13 @@ public class Controller implements Initializable {
         if (comPortConnection.isBusy()) {
             control.sendByteArray(setup.getTransmitArray());
         }
-        System.out.println("controller");
-        //System.out.println(Arrays.toString(setup.getTransmitArray()));
         Runnable task = () -> {
             try {
-                Thread.sleep(500);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             control.sendSetupRequest();
-
         };
         Thread thread = new Thread(task);
         thread.start();
@@ -547,7 +558,7 @@ public class Controller implements Initializable {
     }
 
     public void render(MouseEvent mouseEvent) {
-        if(uiValidation.valuesValidation()) {
+        if (uiValidation.valuesValidation()) {
             renderVisualization();
         }
         setPlotTooltip();
@@ -579,5 +590,41 @@ public class Controller implements Initializable {
                         yAmpVisual.getValueForDisplay(mouseEvent.getY())
                 )
         );
+    }
+
+    private void menuBarSetup() {
+        menuBar.getMenus().clear();
+
+        SeparatorMenuItem separator = new SeparatorMenuItem();
+
+        Menu file = new Menu("Файл");
+
+        MenuItem open = new MenuItem("Открыть");
+        MenuItem setup = new MenuItem("Настройки");
+        MenuItem close = new MenuItem("Выход");
+        open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
+        setup.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+S"));
+        close.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
+        open.setOnAction((event) -> {});
+        setup.setOnAction((event) -> {});
+        close.setOnAction((event) -> {
+            if(control != null) {
+                control.sendOnExit();
+            }
+            Platform.exit();
+            System.exit(0);
+        });
+
+        file.getItems().addAll(open, setup, separator, close);
+
+        menuBar.getMenus().addAll(file);
+    }
+
+    private void openDirectionWindow(){
+
+    }
+
+    private void openPlotWindow(){
+
     }
 }

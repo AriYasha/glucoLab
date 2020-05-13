@@ -1,6 +1,8 @@
 package com.file;
 
 
+import com.entity.Data;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +27,16 @@ public class Read {
         return string;
     }
 
-//    public static List<Data> reading(){
-//        List<Data> records = new ArrayList<>();
-//        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("notes3.txt")))
-//        {
-//            records = (ArrayList<Data>) objectInputStream.readObject();
-//        }
-//        catch(Exception ex){
-//            System.out.println(ex.getMessage());
-//            ex.printStackTrace();
-//        }
-//        return records;
-//    }
+    public static List<Data> reading(){
+        List<Data> records = new ArrayList<>();
+        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("notes3.txt")))
+        {
+            records = (ArrayList<Data>) objectInputStream.readObject();
+        }
+        catch(Exception ex){
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+        return records;
+    }
 }
