@@ -7,14 +7,21 @@ import com.comPort.Control;
 import com.entity.MeasurementSetup;
 import com.exception.ComPortException;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import com.file.ChooseFile;
+import com.file.Read;
 import com.file.Write;
+import com.graph.MultipleAxesLineChart;
 import com.graph.VisualisationPlot;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -26,10 +33,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import com.validation.UIValidation;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.function.Function;
@@ -65,6 +78,10 @@ public class Controller implements Initializable {
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
+    private GraphController graphController;
+    private boolean isNewWindowOpened = false;
+    private XYChart.Series<Number, Number> currentSeries;
+    private MultipleAxesLineChart voltageChart;
 
     public Label coordinateLabel;
     public Button updatePortsButton;
@@ -205,9 +222,9 @@ public class Controller implements Initializable {
 //                        logger.error(e.getMessage());
 //                    }
                     int timeOut = 0;
-                    while(control.bytesAvailable() <= 5){
+                    while (control.bytesAvailable() <= 5) {
                         timeOut++;
-                        if(timeOut > 65535) break;
+                        if (timeOut > 65535) break;
                     }
                     readBytes = control.readBytes();
                     if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
@@ -605,26 +622,106 @@ public class Controller implements Initializable {
         open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
         setup.setAccelerator(KeyCombination.keyCombination("Ctrl+Alt+S"));
         close.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
-        open.setOnAction((event) -> {});
-        setup.setOnAction((event) -> {});
+        open.setOnAction((event) -> {
+            openPlotWindow();
+        });
+        setup.setOnAction((event) -> {
+        });
         close.setOnAction((event) -> {
-            if(control != null) {
+            if (control != null) {
                 control.sendOnExit();
+                control.closeConnection();
             }
             Platform.exit();
             System.exit(0);
         });
 
+        Menu commands = new Menu("Команды");
+
+        MenuItem sendTest = new MenuItem("Тест");
+        MenuItem getStatus = new MenuItem("Получить статус");
+        MenuItem getSetup = new MenuItem("Получить настройки");
+        sendTest.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+T"));
+        getStatus.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
+        getSetup.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+D"));
+        sendTest.setOnAction((event) -> control.sendTest());
+        getStatus.setOnAction((event) -> control.sendStatusRequest());
+        getSetup.setOnAction((event) -> control.sendSetupRequest());
+
         file.getItems().addAll(open, setup, separator, close);
+        commands.getItems().addAll(sendTest, getStatus, getSetup);
 
-        menuBar.getMenus().addAll(file);
+        menuBar.getMenus().addAll(file, commands);
     }
 
-    private void openDirectionWindow(){
-
+    private XYChart.Series<Number, Number> series(String name, Data data) {
+        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName(name);
+        for (int i = 0; i < xValues.size(); i++) {
+            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+        }
+        return series;
     }
 
-    private void openPlotWindow(){
+    private void openPlotWindow() {
+        try {
+            String fileName = ChooseFile.chooseFile();
+            Data data = Read.reading(fileName);
+            if(!isNewWindowOpened){
+                isNewWindowOpened = newWindow(fileName);
+                ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+                ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
+                currentSeries = new XYChart.Series<>();
+                currentSeries.setName("Ток");
+                for (int i = 0; i < xValues.size(); i++) {
+                    currentSeries.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+                }
+                Platform.runLater(() -> {
+                    graphController.glucoChart.setAnimated(false);
+                    graphController.glucoChart.getData().add(currentSeries);
+                    voltageChart = new MultipleAxesLineChart(graphController.glucoChart, graphController.stackPane);
+                    voltageChart.addSeries(currentSeries, Color.color(Math.random(), Math.random(), Math.random()));
+                });
+            } else {
+
+                Platform.runLater(() -> {
+                    voltageChart.addSeries(series(fileName, data), Color.color(Math.random(), Math.random(), Math.random()));
+                    graphController.legendPane.getChildren().add(voltageChart.getLegend());
+                });
+            }
+
+        } catch (IOException e) {
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private boolean newWindow(String title) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/graph.fxml"));
+            Parent root1 = fxmlLoader.load();
+            Scene scene = new Scene(root1);
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            scene.getStylesheets().add("/styles/labStyle.css");
+            stage.setScene(scene);
+            stage.show();
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent t) {
+                    isNewWindowOpened = false;
+                    Platform.exit();
+                    System.exit(0);
+                }
+            });
+            graphController = fxmlLoader.getController();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 
     }
 }

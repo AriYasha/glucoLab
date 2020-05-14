@@ -39,6 +39,7 @@ public class DataFromComPortValidation {
     public void checkCmd(List<Byte> command, MeasurementSetup setup) throws IOException {
         this.setup = setup;
         if (isCommand(command)) {
+            logger.info("Command detected");
 //            Platform.runLater(() -> controller.connectionLabel.setText("bye"));
             switch (command.get(1)) {
                 case Control.STAT_CMD:
@@ -52,16 +53,26 @@ public class DataFromComPortValidation {
                     break;
             }
         } else if (isData(command)) {
+            logger.info("Data detected");
             byte[] bytes = {command.get(2), command.get(1)};
             int data = control.getIntFromArray(bytes);
-            if (isPolarityChanged) {
-                addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses());
+            if (setup.isFirstPolarityMeasure()) {
+                if (isPolarityChanged) {
+                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses());
+                } else {
+                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses());
+                }
             } else {
-                addToSeries(data, setup.getPositiveAmplitudeMeasurePulses());
+                if (!isPolarityChanged) {
+                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses());
+                } else {
+                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses());
+                }
             }
 
+
         } else if (isSetup(command)) {
-            System.out.println("SETUP_CMD");
+            logger.info("Setup detected");
             parseSetupCMD(command);
         }
 
@@ -77,52 +88,57 @@ public class DataFromComPortValidation {
     private void statusChecker(byte command) {
         switch (command) {
             case Control.NOT_CONNECTED_STAT:
-                System.out.println("NOT CONNECTED");
+                logger.info("NOT CONNECTED");
                 break;
             case Control.CONNECTED_STAT:
-                System.out.println("CONNECTED");
+                logger.info("CONNECTED");
                 break;
             case Control.STRIP_WAITING_STAT:
-                System.out.println("STRIP_WAITING");
+                logger.info("STRIP_WAITING");
+                Platform.runLater(() -> controller.tabPane.getSelectionModel().select(0));
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Вставьте полоску");
+                    Image stripType = new Image("images/stripNoName.jpg", true);
+                    controller.stripTypeImage.setImage(stripType);
+                    controller.stripTypeLabel.setVisible(false);
                 });
                 break;
             case Control.STRIP_INSERTED_STAT:
-                System.out.println("STRIP_INSERTED_STAT");
+                logger.info("STRIP_INSERTED_STAT");
                 break;
             case Control.DROP_WAITING_STAT:
-                System.out.println("DROP_WAITING_STAT");
+                logger.info("DROP_WAITING_STAT");
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Ожидание капли");
                 });
                 break;
             case Control.DROP_DETECTED_STAT:
-                System.out.println("DROP_DETECTED_STAT");
+                logger.info("DROP_DETECTED_STAT");
                 break;
             case Control.LEAK_WAITING_STAT:
-                System.out.println("LEAK_WAITING_STAT");
+                logger.info("LEAK_WAITING_STAT");
                 break;
             case Control.LEAKING_STAT:
-                System.out.println("LEAKING_STAT");
+                logger.info("LEAKING_STAT");
                 break;
             case Control.FAST_POLARITY_BEGIN_STAT:
-                System.out.println("FAST_POLARITY_BEGIN_STAT");
+                logger.info("FAST_POLARITY_BEGIN_STAT");
                 break;
             case Control.FAST_POLARITY_END_STAT:
-                System.out.println("FAST_POLARITY_END_STAT");
+                logger.info("FAST_POLARITY_END_STAT");
                 break;
             case Control.START_MEASURE_STAT:
-                System.out.println("START_MEASURE_STAT");
+                logger.info("START_MEASURE_STAT");
                 startMeasure();
                 break;
             case Control.POLARITY_CHANGED_STAT:
-                System.out.println("POLARITY_CHANGED_STAT");
+                logger.info("POLARITY_CHANGED_STAT");
                 polarityChange();
                 break;
             case Control.END_MEASURE_STAT:
-                System.out.println("END_MEASURE_STAT");
+                logger.info("END_MEASURE_STAT");
                 endMeasure();
+                isPolarityChanged = false;
                 break;
 
         }
@@ -143,10 +159,10 @@ public class DataFromComPortValidation {
 //            }
         });
         XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
-        ObservableList<XYChart.Data> dataFromPlot =  series.getData();
+        ObservableList<XYChart.Data> dataFromPlot = series.getData();
         ArrayList<Number> xValues = new ArrayList<>();
         ArrayList<Number> yValues = new ArrayList<>();
-        for (XYChart.Data newData: dataFromPlot) {
+        for (XYChart.Data newData : dataFromPlot) {
             xValues.add((Number) newData.getXValue());
             yValues.add((Number) newData.getYValue());
 //            logger.debug("x = " + newData.getXValue());
@@ -167,9 +183,9 @@ public class DataFromComPortValidation {
         currentSeries = new XYChart.Series<>();
         series.setName("Ток");
         currentSeries.setName("Напряжение");
-        Platform.runLater(() -> controller.glucoChart.setAnimated(false));
-        Platform.runLater(() -> controller.glucoChart.getData().add(series));
         Platform.runLater(() -> {
+            controller.glucoChart.setAnimated(false);
+            controller.glucoChart.getData().add(series);
             MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(controller.glucoChart, controller.graphStackPane);
             voltageChart.addSeries(currentSeries, Color.RED);
             controller.legendPane.getChildren().add(voltageChart.getLegend());
@@ -242,6 +258,7 @@ public class DataFromComPortValidation {
         bytes[1] = command.get(26);
         setup.setNegativeAmplitudeMeasurePulses(control.getIntFromArray(bytes));
         controller.negativeAmpMeasureEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
+        logger.debug("end setup");
 
     }
 
@@ -257,7 +274,7 @@ public class DataFromComPortValidation {
         currentData.setStripType(command);
         switch (command) {
             case Control.FIRST_STRIP_TYPE:
-                System.out.println("FIRST_STRIP_TYPE");
+                logger.info("FIRST_STRIP_TYPE");
                 Platform.runLater(() -> {
                     Image stripType = new Image("images/strip1.jpg", true);
                     controller.stripTypeImage.setImage(stripType);
@@ -266,13 +283,13 @@ public class DataFromComPortValidation {
                 });
                 break;
             case Control.SECOND_STRIP_TYPE:
-                System.out.println("SECOND_STRIP_TYPE");
+                logger.info("SECOND_STRIP_TYPE");
                 break;
             case Control.THIRD_STRIP_TYPE:
-                System.out.println("THIRD_STRIP_TYPE");
+                logger.info("THIRD_STRIP_TYPE");
                 break;
             case Control.FOURTH_STRIP_TYPE:
-                System.out.println("FOURTH_STRIP_TYPE");
+                logger.info("FOURTH_STRIP_TYPE");
                 Platform.runLater(() -> {
                     Image stripType = new Image("images/strip4.jpg", true);
                     controller.stripTypeImage.setImage(stripType);
@@ -281,7 +298,7 @@ public class DataFromComPortValidation {
                 });
                 break;
             case Control.ZERO_STRIP_TYPE:
-                System.out.println("ZERO_STRIP_TYPE");
+                logger.info("ZERO_STRIP_TYPE");
                 Platform.runLater(() -> {
                     Image stripType = new Image("images/strip0.jpg", true);
                     controller.stripTypeImage.setImage(stripType);

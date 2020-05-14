@@ -1,18 +1,18 @@
 package com.comPort;
 
+import com.entity.MeasurementSetup;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import com.entity.MeasurementSetup;
-import javafx.scene.control.TextArea;
 import com.sample.Controller;
 import com.validation.DataFromComPortValidation;
+import javafx.scene.control.TextArea;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 
 public class Control extends Thread implements SerialPortDataListener {
@@ -181,27 +181,32 @@ public class Control extends Thread implements SerialPortDataListener {
                     bytesReceived.add(aNewData);
                 }
                 logger.debug(bytesReceived);
-                //bytesReceived.add(0, firstByte[0]);
                 numRead = userPort.bytesAvailable();
                 if (userPort.bytesAvailable() >= 4) {
-                    logger.debug("available " + numRead);
+                    //logger.debug("available " + numRead);
                 }
 
             } else if (firstByte[0] == SETUP_CMD) {
                 byte[] setupData = new byte[29];
+                bytesReceived.add(firstByte[0]);
                 while (userPort.bytesAvailable() < 29) ;
                 numRead = userPort.readBytes(setupData, 29);
                 for (byte aNewData : setupData) {
                     bytesReceived.add(aNewData);
                 }
-                bytesReceived.add(0, firstByte[0]);
+                numRead = userPort.bytesAvailable();
+                //logger.debug("available " + numRead);
+            } else{
+                byte[] notRecognize = new byte[userPort.bytesAvailable()];
+                userPort.readBytes(notRecognize, userPort.bytesAvailable());
+                logger.debug(Arrays.toString(notRecognize));
             }
             try {
                 validation.checkCmd(bytesReceived, setup);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
-            System.out.println(bytesReceived);
+            //logger.debug("byte received :" + bytesReceived);
 
             bytesReceived.clear();
         }
@@ -245,6 +250,17 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte ZERO_STRIP_TYPE = 5;
 
     public void sendOnExit() {
+    }
+
+    public void sendStatusRequest() {
+        command[1] = STAT_CMD;
+        command[2] = 0x00;
+        command[3] = (byte) (command[1] + command[2]);
+        userPort.writeBytes(command, command.length);
+    }
+
+    public void closeConnection(){
+        comPortConnection.closePort();
     }
 
 //    DEVICE ERROR TYPES

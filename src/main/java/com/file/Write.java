@@ -48,28 +48,6 @@ public class Write {
         }
     }
 
-    public static void writing(Data data) {
-        List<Data> records = Read.reading();
-        boolean exist = false;
-        if (records == null) {
-            records = new ArrayList<>();
-        }
-        if (records != null && records.contains(data)) {
-            exist = true;
-
-        }
-        if (!exist) {
-            clear();
-            records.add(data);
-            try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("notes3.txt", true))) {
-                objectOutputStream.writeObject(records);
-            } catch (Exception ex) {
-                System.out.println(ex.getMessage());
-                ex.printStackTrace();
-            }
-        }
-    }
-
     public static void writeNewData(Data data){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm-ss");
         LocalDateTime nowDateTime = LocalDateTime.now();

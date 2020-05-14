@@ -42,6 +42,7 @@ public class Main extends Application {
                 Control control = controller.getControl();
                 if(control != null) {
                     control.sendOnExit();
+                    control.closeConnection();
                 }
                 Platform.exit();
                 System.exit(0);
