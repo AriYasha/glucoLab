@@ -171,7 +171,7 @@ public class Control extends Thread implements SerialPortDataListener {
             byte[] cmdData = new byte[4];
             byte[] firstByte = new byte[1];
             userPort.readBytes(firstByte, 1);
-            if (firstByte[0] == START_CMD || firstByte[0] == END_CMD) {
+            if (firstByte[0] == START_CMD) {
                 bytesReceived.add(firstByte[0]);
                 numRead = userPort.readBytes(cmdData, 4);
                 System.out.println("Read " + numRead + " bytes.");
@@ -196,6 +196,15 @@ public class Control extends Thread implements SerialPortDataListener {
                 }
                 numRead = userPort.bytesAvailable();
                 //logger.debug("available " + numRead);
+            } else if (firstByte[0] == END_CMD){
+                byte[] measureData = new byte[6];
+                bytesReceived.add(firstByte[0]);
+                while (userPort.bytesAvailable() < 6) ;
+                userPort.readBytes(measureData, 6);
+                for (byte aNewData : measureData) {
+                    bytesReceived.add(aNewData);
+                }
+                numRead = userPort.bytesAvailable();
             } else{
                 byte[] notRecognize = new byte[userPort.bytesAvailable()];
                 userPort.readBytes(notRecognize, userPort.bytesAvailable());

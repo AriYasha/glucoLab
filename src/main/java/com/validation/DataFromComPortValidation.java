@@ -19,12 +19,11 @@ import java.util.List;
 
 public class DataFromComPortValidation {
 
-    final static Logger logger = Logger.getLogger(Controller.class);
+    final static Logger logger = Logger.getLogger(DataFromComPortValidation.class);
 
     private Controller controller;
     private Control control;
     private MeasurementSetup setup;
-    private long millisStart;
     private XYChart.Series<Number, Number> series;
     private XYChart.Series<Number, Number> currentSeries;
     private boolean isPolarityChanged = false;
@@ -53,20 +52,23 @@ public class DataFromComPortValidation {
                     break;
             }
         } else if (isData(command)) {
-            logger.info("Data detected");
+            //logger.info("Data detected");
             byte[] bytes = {command.get(2), command.get(1)};
+            int time = control.getIntFromArray(bytes);
+            bytes[0] = command.get(4);
+            bytes[1] = command.get(3);
             int data = control.getIntFromArray(bytes);
             if (setup.isFirstPolarityMeasure()) {
                 if (isPolarityChanged) {
-                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses());
+                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
                 } else {
-                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses());
+                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses(), time);
                 }
             } else {
                 if (!isPolarityChanged) {
-                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses());
+                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
                 } else {
-                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses());
+                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses() ,time);
                 }
             }
 
@@ -96,6 +98,7 @@ public class DataFromComPortValidation {
             case Control.STRIP_WAITING_STAT:
                 logger.info("STRIP_WAITING");
                 Platform.runLater(() -> controller.tabPane.getSelectionModel().select(0));
+                Platform.runLater(() -> controller.glucoChart.getData().clear());
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Вставьте полоску");
                     Image stripType = new Image("images/stripNoName.jpg", true);
@@ -191,13 +194,12 @@ public class DataFromComPortValidation {
             controller.legendPane.getChildren().add(voltageChart.getLegend());
             controller.measureStatLabel.setText("Измерение . . .");
         });
-        millisStart = System.currentTimeMillis();
     }
 
-    private void addToSeries(int data, int voltage) {
+    private void addToSeries(int data, int voltage, int time) {
         Platform.runLater(() -> {
-            series.getData().add(new XYChart.Data<>(System.currentTimeMillis() - millisStart, data));
-            currentSeries.getData().add(new XYChart.Data<>(System.currentTimeMillis() - millisStart, voltage));
+            series.getData().add(new XYChart.Data<>(time, data));
+            currentSeries.getData().add(new XYChart.Data<>(time, voltage));
 
         });
     }
@@ -319,7 +321,7 @@ public class DataFromComPortValidation {
 
     private boolean isData(List<Byte> command) {
         return command.get(0).equals(Control.END_CMD) &&
-                command.get(4).equals(Control.END_CMD) &&
-                (byte) (command.get(1) + command.get(2)) == command.get(3);
+                command.get(6).equals(Control.END_CMD) /*&&
+                (byte) (command.get(1) + command.get(2)) == command.get(3)*/;
     }
 }

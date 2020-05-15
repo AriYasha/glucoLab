@@ -79,9 +79,7 @@ public class Controller implements Initializable {
     private Control control;
     private UIValidation uiValidation;
     private GraphController graphController;
-    private boolean isNewWindowOpened = false;
     private XYChart.Series<Number, Number> currentSeries;
-    private MultipleAxesLineChart voltageChart;
 
     public Label coordinateLabel;
     public Button updatePortsButton;
@@ -654,43 +652,34 @@ public class Controller implements Initializable {
         menuBar.getMenus().addAll(file, commands);
     }
 
-    private XYChart.Series<Number, Number> series(String name, Data data) {
-        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
-        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(name);
-        for (int i = 0; i < xValues.size(); i++) {
-            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
-        }
-        return series;
-    }
+//    private XYChart.Series<Number, Number> series(String name, Data data) {
+//        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+//        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
+//        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+//        series.setName(name);
+//        for (int i = 0; i < xValues.size(); i++) {
+//            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+//        }
+//        return series;
+//    }
 
     private void openPlotWindow() {
         try {
             String fileName = ChooseFile.chooseFile();
             Data data = Read.reading(fileName);
-            if(!isNewWindowOpened){
-                isNewWindowOpened = newWindow(fileName);
-                ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
-                ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
-                currentSeries = new XYChart.Series<>();
-                currentSeries.setName("Ток");
+            newWindow(fileName);
+            ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+            ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
+            currentSeries = new XYChart.Series<>();
+            currentSeries.setName(fileName);
+            Platform.runLater(() -> {
                 for (int i = 0; i < xValues.size(); i++) {
                     currentSeries.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
                 }
-                Platform.runLater(() -> {
-                    graphController.glucoChart.setAnimated(false);
-                    graphController.glucoChart.getData().add(currentSeries);
-                    voltageChart = new MultipleAxesLineChart(graphController.glucoChart, graphController.stackPane);
-                    voltageChart.addSeries(currentSeries, Color.color(Math.random(), Math.random(), Math.random()));
-                });
-            } else {
-
-                Platform.runLater(() -> {
-                    voltageChart.addSeries(series(fileName, data), Color.color(Math.random(), Math.random(), Math.random()));
-                    graphController.legendPane.getChildren().add(voltageChart.getLegend());
-                });
-            }
+                graphController.glucoChart.setAnimated(false);
+                graphController.glucoChart.getData().add(currentSeries);
+                //graphController.legendPane.getChildren().add(currentSeries.getLegend());
+            });
 
         } catch (IOException e) {
             logger.warn(e.getMessage());
@@ -698,7 +687,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private boolean newWindow(String title) {
+    private void newWindow(String title) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/graph.fxml"));
             Parent root1 = fxmlLoader.load();
@@ -711,16 +700,13 @@ public class Controller implements Initializable {
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override
                 public void handle(WindowEvent t) {
-                    isNewWindowOpened = false;
-                    Platform.exit();
-                    System.exit(0);
+                    stage.close();
                 }
             });
             graphController = fxmlLoader.getController();
-            return true;
         } catch (IOException e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
-            return false;
         }
 
     }
