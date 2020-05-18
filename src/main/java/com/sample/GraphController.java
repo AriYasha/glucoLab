@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -35,6 +36,8 @@ public class GraphController implements Initializable {
     public StackPane stackPane;
     public AnchorPane legendPane;
     public MenuBar menuBar;
+    public NumberAxis xAxis;
+    public NumberAxis yAxis;
 
     private boolean isOpen = false;
 
@@ -79,11 +82,13 @@ public class GraphController implements Initializable {
     private void openPlotWindow() throws IOException {
         String fileName = ChooseFile.chooseFile();
         Data data = Read.reading(fileName);
+      //  glucoChart.getData().add(prepareSeries(fileName, data));
         if (!isOpen) {
             createMultiAxesLineChart();
         }
-        multipleAxesLineChart.addSeries(prepareSeries(fileName, data), Color.color(Math.random(), 0, Math.random()), fileName);
+        LineChart lineChart = multipleAxesLineChart.addSeries(prepareSeries(fileName, data), Color.color(Math.random(), 0, Math.random()), fileName);
         legendPane.getChildren().add(multipleAxesLineChart.getLegend());
+
         //glucoChart.getData().add(prepareSeries(fileName, data));
     }
 

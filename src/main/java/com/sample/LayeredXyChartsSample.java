@@ -117,6 +117,6 @@ public class LayeredXyChartsSample extends Application {
         chart.getXAxis().setVisible(false);
         chart.getYAxis().setVisible(false);
 
-        //chart.getStylesheets().addAll(getClass().getResource("styles/overlay-chart.css").toExternalForm());
+        chart.getStylesheets().addAll(getClass().getResource("styles/overlay-chart.css").toExternalForm());
     }
 }

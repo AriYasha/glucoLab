@@ -44,6 +44,10 @@ public class MultipleSameAxesLineChart {
     private final double yAxisSeparation = 20;
     private double strokeWidth = 0.3;
 
+    private Number xValue =  0;
+    private Number yMaxValue = 0;
+    private Number yMinValue = 0;
+
     public MultipleSameAxesLineChart(LineChart baseChart, StackPane graphPane) {
         this(baseChart, Color.BLACK, null, graphPane);
 
@@ -202,9 +206,9 @@ public class MultipleSameAxesLineChart {
         return hBox;
     }
 
-    public void addSeries(XYChart.Series series, Color lineColor, String seriesName) {
-        baseChart.getData().add(series);
-       /* NumberAxis yAxis = new NumberAxis();
+    public LineChart addSeries(XYChart.Series series, Color lineColor, String seriesName) {
+        //baseChart.getData().add(series);
+        NumberAxis yAxis = new NumberAxis();
         NumberAxis xAxis = new NumberAxis();
 
         // style x-axis
@@ -222,14 +226,34 @@ public class MultipleSameAxesLineChart {
 //            logger.debug("x = " + newData.getXValue());
 //            logger.debug("y = " + newData.getYValue());
         }
-        Number value =  xValues.get(xValues.size() - 1);
+        if(xValue.doubleValue() > xValues.get(xValues.size() - 1).doubleValue()){
+            xValue =  xValues.get(xValues.size() - 1);
+        }
+        for (Number number : yValues) {
+            if (number.doubleValue() > yMaxValue.doubleValue()){
+                yMaxValue = number;
+            } else if (number.doubleValue() < yMinValue.doubleValue()){
+                yMinValue = number;
+            }
+
+        }
+        logger.debug(yMaxValue);
+        logger.debug(yMinValue);
         logger.debug(((NumberAxis) baseChart.getXAxis()).upperBoundProperty().getValue());
-        logger.debug(value.doubleValue());
+        logger.debug(xValue.doubleValue());
         logger.debug(baseChart.getData().size());
 
 
-        if(  value.doubleValue() > ((NumberAxis) baseChart.getXAxis()).upperBoundProperty().getValue()){
-            ((NumberAxis) baseChart.getXAxis()).upperBoundProperty().setValue(value);
+        if(  xValue.doubleValue() > ((NumberAxis) baseChart.getXAxis()).upperBoundProperty().getValue()){
+            ((NumberAxis) baseChart.getXAxis()).upperBoundProperty().setValue(xValue);
+        }
+
+        if(  yMaxValue.doubleValue() > ((NumberAxis) baseChart.getYAxis()).upperBoundProperty().getValue()){
+            ((NumberAxis) baseChart.getYAxis()).upperBoundProperty().setValue(yMaxValue);
+        }
+
+        if(  yMinValue.doubleValue() < ((NumberAxis) baseChart.getYAxis()).lowerBoundProperty().getValue()){
+            ((NumberAxis) baseChart.getYAxis()).lowerBoundProperty().setValue(yMinValue);
         }
         logger.debug(((NumberAxis) baseChart.getXAxis()).upperBoundProperty().getValue());
 
@@ -238,8 +262,18 @@ public class MultipleSameAxesLineChart {
         xAxis.tickUnitProperty().bind(((NumberAxis) baseChart.getXAxis()).tickUnitProperty());
 
         // style y-axis
+        yAxis.setAutoRanging(false);
         yAxis.setSide(Side.RIGHT);
         yAxis.setLabel(seriesName);
+        //yAxis.setVisible(false);
+        //yAxis.setOpacity(0.0); // somehow the upper setVisible does not work
+        yAxis.lowerBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).lowerBoundProperty());
+        yAxis.upperBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).upperBoundProperty());
+        yAxis.tickUnitProperty().bind(((NumberAxis) baseChart.getYAxis()).tickUnitProperty());
+//        ((NumberAxis)baseChart.getYAxis()).setAutoRanging(false);
+//        ((NumberAxis)baseChart.getYAxis()).lowerBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).lowerBoundProperty());
+//        ((NumberAxis)baseChart.getYAxis()).upperBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).upperBoundProperty());
+//        ((NumberAxis)baseChart.getYAxis()).tickUnitProperty().bind(((NumberAxis) baseChart.getYAxis()).tickUnitProperty());
 
         // create chart
         LineChart lineChart = new LineChart(xAxis, yAxis);
@@ -256,7 +290,8 @@ public class MultipleSameAxesLineChart {
 
         chartColorMap.put(lineChart, lineColor);
         backgroundCharts.add(lineChart);
-        */
+        return lineChart;
+
     }
 
     private void setPlotTooltip(LineChart lineChart) {

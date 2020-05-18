@@ -98,7 +98,7 @@ public class DataFromComPortValidation {
             case Control.STRIP_WAITING_STAT:
                 logger.info("STRIP_WAITING");
                 Platform.runLater(() -> controller.tabPane.getSelectionModel().select(0));
-                Platform.runLater(() -> controller.glucoChart.getData().clear());
+                //Platform.runLater(() -> controller.glucoChart.getData().clear());
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Вставьте полоску");
                     Image stripType = new Image("images/stripNoName.jpg", true);
@@ -108,6 +108,7 @@ public class DataFromComPortValidation {
                 break;
             case Control.STRIP_INSERTED_STAT:
                 logger.info("STRIP_INSERTED_STAT");
+                Platform.runLater(() -> controller.glucoChart.getData().clear());
                 break;
             case Control.DROP_WAITING_STAT:
                 logger.info("DROP_WAITING_STAT");

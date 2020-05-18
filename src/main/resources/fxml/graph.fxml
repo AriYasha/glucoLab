@@ -23,10 +23,10 @@
                      <children>
                         <LineChart fx:id="glucoChart">
                           <xAxis>
-                            <NumberAxis side="BOTTOM" />
+                            <NumberAxis side="BOTTOM" fx:id="xAxis" />
                           </xAxis>
                           <yAxis>
-                            <NumberAxis side="LEFT" />
+                            <NumberAxis fx:id="yAxis" side="LEFT" />
                           </yAxis>
                         </LineChart>
                      </children>
