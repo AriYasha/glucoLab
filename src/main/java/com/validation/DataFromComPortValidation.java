@@ -19,7 +19,9 @@ import java.util.List;
 
 public class DataFromComPortValidation {
 
-    final static Logger logger = Logger.getLogger(DataFromComPortValidation.class);
+    final private static Logger logger = Logger.getLogger(DataFromComPortValidation.class);
+    public static boolean isMeasure = false;
+    public static boolean isTest = false;
 
     private Controller controller;
     private Control control;
@@ -50,6 +52,9 @@ public class DataFromComPortValidation {
                 case Control.STRIP_NUMBER_CMD:
                     stripChecker(command.get(2));
                     break;
+                case Control.O_CMD:
+                    testChecker();
+                    break;
             }
         } else if (isData(command)) {
             //logger.info("Data detected");
@@ -68,16 +73,23 @@ public class DataFromComPortValidation {
                 if (!isPolarityChanged) {
                     addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
                 } else {
-                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses() ,time);
+                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses(), time);
                 }
             }
 
 
         } else if (isSetup(command)) {
             logger.info("Setup detected");
+            Platform.runLater(() -> controller.deviceStatus.setText("Настройка устройства принята"));
             parseSetupCMD(command);
         }
 
+    }
+
+    private void testChecker() {
+        isTest = true;
+        Platform.runLater(() -> controller.deviceStatus.setText("Тестовая команда принята"));
+        logger.debug("TEST_CMD");
     }
 
     private boolean isSetup(List<Byte> command) {
@@ -91,12 +103,15 @@ public class DataFromComPortValidation {
         switch (command) {
             case Control.NOT_CONNECTED_STAT:
                 logger.info("NOT CONNECTED");
+                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание подключения"));
                 break;
             case Control.CONNECTED_STAT:
                 logger.info("CONNECTED");
+                Platform.runLater(() -> controller.deviceStatus.setText("Устройство подключено"));
                 break;
             case Control.STRIP_WAITING_STAT:
                 logger.info("STRIP_WAITING");
+                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание полоски"));
                 Platform.runLater(() -> controller.tabPane.getSelectionModel().select(0));
                 //Platform.runLater(() -> controller.glucoChart.getData().clear());
                 Platform.runLater(() -> {
@@ -108,31 +123,40 @@ public class DataFromComPortValidation {
                 break;
             case Control.STRIP_INSERTED_STAT:
                 logger.info("STRIP_INSERTED_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Полоска вставлена, Жыве БЕЛАРУСЬ!"));
                 Platform.runLater(() -> controller.glucoChart.getData().clear());
                 break;
             case Control.DROP_WAITING_STAT:
                 logger.info("DROP_WAITING_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание капли"));
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Ожидание капли");
                 });
                 break;
             case Control.DROP_DETECTED_STAT:
                 logger.info("DROP_DETECTED_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Капля обнаружена"));
                 break;
             case Control.LEAK_WAITING_STAT:
                 logger.info("LEAK_WAITING_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание протекания"));
                 break;
             case Control.LEAKING_STAT:
                 logger.info("LEAKING_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Есть протекание"));
                 break;
             case Control.FAST_POLARITY_BEGIN_STAT:
                 logger.info("FAST_POLARITY_BEGIN_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Быстрая ПП начата"));
                 break;
             case Control.FAST_POLARITY_END_STAT:
                 logger.info("FAST_POLARITY_END_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Быстрая ПП окончена"));
                 break;
             case Control.START_MEASURE_STAT:
+                isMeasure = true;
                 logger.info("START_MEASURE_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Начато измерение"));
                 startMeasure();
                 break;
             case Control.POLARITY_CHANGED_STAT:
@@ -141,8 +165,10 @@ public class DataFromComPortValidation {
                 break;
             case Control.END_MEASURE_STAT:
                 logger.info("END_MEASURE_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Измерение окончено"));
                 endMeasure();
                 isPolarityChanged = false;
+                isMeasure = false;
                 break;
 
         }

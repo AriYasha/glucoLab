@@ -83,6 +83,20 @@ public class Control extends Thread implements SerialPortDataListener {
         userPort.writeBytes(command, command.length);
     }
 
+    public boolean isTestOk(){
+        Runnable task = () -> {
+            sendTest();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+        return DataFromComPortValidation.isTest;
+    }
+
     public void addListener() {
         userPort.addDataListener(this);
     }
@@ -208,6 +222,7 @@ public class Control extends Thread implements SerialPortDataListener {
             } else{
                 byte[] notRecognize = new byte[userPort.bytesAvailable()];
                 userPort.readBytes(notRecognize, userPort.bytesAvailable());
+                logger.debug("notRecognize : ");
                 logger.debug(Arrays.toString(notRecognize));
             }
             try {

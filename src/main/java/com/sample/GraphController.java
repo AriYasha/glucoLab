@@ -12,10 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -38,6 +35,10 @@ public class GraphController implements Initializable {
     public MenuBar menuBar;
     public NumberAxis xAxis;
     public NumberAxis yAxis;
+    public Label legendLabel;
+
+    private Data firstData;
+    private String fileName;
 
     private boolean isOpen = false;
 
@@ -46,7 +47,17 @@ public class GraphController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         menuBarSetup();
+//        createMultiAxesLineChart();
+//        multipleAxesLineChart.addSeries(prepareSeries(fileName, firstData), Color.color(Math.random(), 0, Math.random()), fileName);
 
+    }
+
+    public void setFirstData(Data firstData) {
+        this.firstData = firstData;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     private void menuBarSetup() {
@@ -86,8 +97,9 @@ public class GraphController implements Initializable {
         if (!isOpen) {
             createMultiAxesLineChart();
         }
-        LineChart lineChart = multipleAxesLineChart.addSeries(prepareSeries(fileName, data), Color.color(Math.random(), 0, Math.random()), fileName);
-        legendPane.getChildren().add(multipleAxesLineChart.getLegend());
+        multipleAxesLineChart.addSeries(prepareSeries(fileName, data), Color.color(Math.random(), 0, Math.random()), fileName);
+        legendLabel.setText(data.getMeasurementSetup().toString());
+        //legendPane.getChildren().add(multipleAxesLineChart.getLegend());
 
         //glucoChart.getData().add(prepareSeries(fileName, data));
     }

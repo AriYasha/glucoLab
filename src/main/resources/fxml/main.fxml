@@ -45,7 +45,7 @@
                     <children>
                         <AnchorPane prefHeight="35.0" prefWidth="1002.0">
                             <children>
-                                <HBox prefHeight="35.0" prefWidth="164.0" spacing="10.0">
+                                <HBox prefHeight="35.0" prefWidth="397.0" spacing="15.0">
                                     <children>
                                         <Label fx:id="connectionLabel" prefHeight="35.0" prefWidth="163.0" text="Не подключено">
                                             <opaqueInsets>
@@ -62,6 +62,7 @@
                                                 </ImageView>
                                             </graphic>
                                         </Label>
+                              <Label fx:id="deviceStatus" prefHeight="35.0" prefWidth="165.0" text="Ожидание подключения" wrapText="true" />
                                     </children>
                                     <opaqueInsets>
                                         <Insets top="10.0" />

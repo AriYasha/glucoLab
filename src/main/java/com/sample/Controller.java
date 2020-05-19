@@ -1,17 +1,19 @@
 package com.sample;
 
-import com.entity.Data;
-import com.fazecast.jSerialComm.SerialPort;
 import com.comPort.ComPortConnection;
 import com.comPort.Control;
+import com.entity.Data;
 import com.entity.MeasurementSetup;
 import com.exception.ComPortException;
+import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.file.ChooseFile;
 import com.file.Read;
-import com.file.Write;
-import com.graph.MultipleAxesLineChart;
+import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
+import com.sun.org.apache.xpath.internal.operations.Mult;
+import com.validation.DataFromComPortValidation;
+import com.validation.UIValidation;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,11 +34,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import com.validation.UIValidation;
 import javafx.scene.paint.Color;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.apache.log4j.Logger;
 
@@ -75,6 +74,7 @@ public class Controller implements Initializable {
     public Label negativeAmpMeasureErrorLabel;
     public Label quantityErorLabel;
     public MenuBar menuBar;
+    public Label deviceStatus;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -126,6 +126,11 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        for (Tab tab : tabPane.getTabs()) {
+            if (tab.getText().equals("Подключение")) {
+                tab.setDisable(true);
+            }
+        }
         uiValidation = new UIValidation(this);
         uiValidation.hideErrorLabels();
         menuBarSetup();
@@ -187,7 +192,12 @@ public class Controller implements Initializable {
         });
 
         setPlotTooltip();
-        setConnection();
+        Runnable task = () -> {
+            setConnection();
+            //connectionRequest();
+        };
+        Thread thread = new Thread(task);
+        thread.start();
     }
 
     public Control getControl() {
@@ -204,56 +214,80 @@ public class Controller implements Initializable {
     }
 
     private void setConnection() {
-        Runnable task = () -> {
-            ObservableList portList = portChoiceBox.getItems();
-            byte[] readBytes = new byte[5];
-            for (Object port : portList) {
-                try {
-                    comPortConnection = ComPortConnection.getInstance((String) port);
-                    comPortConnection.openPort();
-                    control = new Control(comPortConnection, this, setup);
-                    control.sendTest();
-//                    try {
-//                        Thread.sleep(200);
-//                    } catch (InterruptedException e) {
-//                        logger.error(e);
-//                        logger.error(e.getMessage());
-//                    }
-                    int timeOut = 0;
-                    while (control.bytesAvailable() <= 5) {
-                        timeOut++;
-                        if (timeOut > 65535) break;
-                    }
-                    readBytes = control.readBytes();
-                    if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
-                        control.addListener();
-                        control.serialEvent(new SerialPortEvent(control.getUserPort(), SerialPort.LISTENING_EVENT_DATA_AVAILABLE));
-                        Image picture = new Image("images/green Ball.png", true);
-                        connectImage.setImage(picture);
-                        Platform.runLater(() -> connectionLabel.setText("Подключено"));
-                        Platform.runLater(() -> openPortButton.setText("Прервать соединение"));
-                        openPortButton.setSelected(true);
-                        //control.addListener();
-                        break;
-                    } else {
-                        comPortConnection.close();
+        ObservableList portList = portChoiceBox.getItems();
+        byte[] readBytes = new byte[5];
+        for (Object port : portList) {
+            try {
+                comPortConnection = ComPortConnection.getInstance((String) port);
+                comPortConnection.openPort();
+                control = new Control(comPortConnection, this, setup);
+                control.sendTest();
+                int timeOut = 0;
+                while (control.bytesAvailable() <= 5) {
+                    timeOut++;
+                    if (timeOut > 65535) break;
+                }
+                readBytes = control.readBytes();
+                if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
+                    control.addListener();
+                    control.serialEvent(new SerialPortEvent(control.getUserPort(), SerialPort.LISTENING_EVENT_DATA_AVAILABLE));
+                    Image picture = new Image("images/green Ball.png", true);
+                    connectImage.setImage(picture);
+                    Platform.runLater(() -> connectionLabel.setText("Подключено"));
+                    Platform.runLater(() -> deviceStatus.setText("Ожидание полоски"));
+                    Platform.runLater(() -> openPortButton.setText("Прервать соединение"));
+                    openPortButton.setSelected(true);
+                    //control.addListener();
+                    break;
+                } else {
+                    comPortConnection.close();
+                }
+
+            } catch (ComPortException e) {
+                Platform.runLater(() -> connectionLabel.setText("Не удалось подключиться автоматически"));
+                logger.error(e);
+                logger.error(e.getMessage());
+            } catch (IOException e) {
+                logger.error(e);
+                logger.error(e.getMessage());
+            }
+        }
+        logger.debug("end trying to connect");
+
+    }
+
+    private void connectionRequest() {
+        try {
+            Thread.sleep(3000);
+            while (true) {
+                if (comPortConnection.isBusy()) {
+                    if (!DataFromComPortValidation.isMeasure) {
+                        Thread.sleep(13000);
+                        control.sendTest();
+                        Thread.sleep(100);
+                        for (int i = 0; i < 3; i++) {
+                            if (DataFromComPortValidation.isTest) {
+                                DataFromComPortValidation.isTest = false;
+                                break;
+                            } else {
+                                control.sendTest();
+                                Thread.sleep(300);
+                            }
+                            if (i == 2) {
+                                uiValidation.setOnDisconnected();
+                                comPortConnection.closePort();
+                            }
+                        }
                     }
 
-                } catch (ComPortException e) {
-                    Platform.runLater(() -> connectionLabel.setText("Не удалось подключиться автоматически"));
-                    logger.error(e);
-                    logger.error(e.getMessage());
-                } catch (IOException e) {
-                    logger.error(e);
-                    logger.error(e.getMessage());
+
+                } else {
+                    setConnection();
                 }
             }
-            logger.debug("end trying to connect");
-
-        };
-        Thread thread = new Thread(task);
-        thread.start();
-
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -267,6 +301,7 @@ public class Controller implements Initializable {
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
                 connectionLabel.setText("Подключено");
+                deviceStatus.setText("Ожидание полоски");
                 openPortButton.setText("Прервать соединение");
             } catch (ComPortException e) {
                 sendError(e);
@@ -307,6 +342,7 @@ public class Controller implements Initializable {
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
                 connectionLabel.setText("Подключено");
+                deviceStatus.setText("Ожидание полоски");
                 openPortButton.setText("Прервать соединение");
             } catch (ComPortException e) {
                 sendError(e);
@@ -443,19 +479,22 @@ public class Controller implements Initializable {
 //        byte[] byes = {0x55, (byte) 0x99, 0x00, (byte) 0x99, (byte) 0xAA};
 //        control.sendByteArray(byes);
         //renderVisualization();
-        if (comPortConnection.isBusy()) {
+        if (comPortConnection.isBusy() /*&& control.isTestOk()*/) {
             control.sendByteArray(setup.getTransmitArray());
+        } else {
+            //uiValidation.setOnDisconnected();
+            //comPortConnection.closePort();
         }
-        Runnable task = () -> {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage());
-            }
-            control.sendSetupRequest();
-        };
-        Thread thread = new Thread(task);
-        thread.start();
+//        Runnable task = () -> {
+//            try {
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                logger.error(e.getMessage());
+//            }
+//            control.sendSetupRequest();
+//        };
+//        Thread thread = new Thread(task);
+//        thread.start();
     }
 
     private XYChart.Series<Number, Number> prepareSeries(String name, Function<Integer, Double> function) {
@@ -639,17 +678,28 @@ public class Controller implements Initializable {
         MenuItem sendTest = new MenuItem("Тест");
         MenuItem getStatus = new MenuItem("Получить статус");
         MenuItem getSetup = new MenuItem("Получить настройки");
+        MenuItem connection = new MenuItem("Подключение");
         sendTest.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+T"));
         getStatus.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
         getSetup.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+D"));
         sendTest.setOnAction((event) -> control.sendTest());
         getStatus.setOnAction((event) -> control.sendStatusRequest());
         getSetup.setOnAction((event) -> control.sendSetupRequest());
+        connection.setOnAction((event) -> connectionAvailable());
 
         file.getItems().addAll(open, setup, separator, close);
-        commands.getItems().addAll(sendTest, getStatus, getSetup);
+        commands.getItems().addAll(sendTest, getStatus, getSetup, separator, connection);
 
         menuBar.getMenus().addAll(file, commands);
+    }
+
+    private void connectionAvailable() {
+        for (Tab tab : tabPane.getTabs()) {
+            if (tab.getText().equals("Подключение")) {
+                tab.setDisable(false);
+            }
+        }
+        tabPane.getSelectionModel().select(2);
     }
 
 //    private XYChart.Series<Number, Number> series(String name, Data data) {
@@ -667,19 +717,32 @@ public class Controller implements Initializable {
         try {
             String fileName = ChooseFile.chooseFile();
             Data data = Read.reading(fileName);
-            newWindow(fileName);
+            newWindow(fileName, data);
+
             ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
             ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
             currentSeries = new XYChart.Series<>();
             currentSeries.setName(fileName);
+//            Platform.runLater(() -> {
+//                for (int i = 0; i < xValues.size(); i++) {
+//                    currentSeries.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+//                }
+//                graphController.glucoChart.setAnimated(false);
+//                graphController.glucoChart.getData().add(currentSeries);
+//                //graphController.legendPane.getChildren().add(currentSeries.getLegend());
+//            });
+
             Platform.runLater(() -> {
                 for (int i = 0; i < xValues.size(); i++) {
                     currentSeries.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
                 }
+                MultipleSameAxesLineChart multipleSameAxesLineChart = new MultipleSameAxesLineChart(graphController.glucoChart, graphController.stackPane);
                 graphController.glucoChart.setAnimated(false);
-                graphController.glucoChart.getData().add(currentSeries);
+                //graphController.glucoChart.getData().add(currentSeries);
+                multipleSameAxesLineChart.addSeries(currentSeries, Color.RED, fileName);
                 //graphController.legendPane.getChildren().add(currentSeries.getLegend());
             });
+
 
         } catch (IOException e) {
             logger.warn(e.getMessage());
@@ -687,7 +750,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private void newWindow(String title) {
+    private void newWindow(String title, Data data) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/graph.fxml"));
             Parent root1 = fxmlLoader.load();
@@ -704,6 +767,8 @@ public class Controller implements Initializable {
                 }
             });
             graphController = fxmlLoader.getController();
+            //graphController.setFirstData(data);
+            //graphController.setFileName(title);
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();

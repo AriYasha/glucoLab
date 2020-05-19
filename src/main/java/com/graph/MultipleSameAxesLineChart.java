@@ -1,20 +1,15 @@
 package com.graph;
 
-import com.sample.GraphController;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -24,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +29,8 @@ public class MultipleSameAxesLineChart {
 
     private final LineChart baseChart;
     private StackPane graphPane;
-    private final ObservableList<LineChart> backgroundCharts = FXCollections.observableArrayList();
-    private final Map<LineChart, Color> chartColorMap = new HashMap<>();
+    private final ObservableList<XYChart.Series> backgroundCharts = FXCollections.observableArrayList();
+    private final Map<XYChart.Series, Color> chartColorMap = new HashMap<>();
 
     private final double yAxisWidth = 60;
     private final AnchorPane detailsWindow;
@@ -44,7 +38,7 @@ public class MultipleSameAxesLineChart {
     private final double yAxisSeparation = 20;
     private double strokeWidth = 0.3;
 
-    private Number xValue =  0;
+    private Number xValue = 0;
     private Number yMaxValue = 0;
     private Number yMinValue = 0;
 
@@ -60,7 +54,7 @@ public class MultipleSameAxesLineChart {
         this.baseChart = baseChart;
         this.graphPane = graphPane;
 
-        chartColorMap.put(baseChart, lineColor);
+        //chartColorMap.put((XYChart.Series) baseChart.getData().get(0), lineColor);
 
         styleBaseChart(baseChart);
 //        styleChartLine(baseChart, lineColor);
@@ -68,16 +62,12 @@ public class MultipleSameAxesLineChart {
 
         graphPane.setAlignment(Pos.CENTER_LEFT);
 
-        backgroundCharts.addListener((Observable observable) -> rebuildChart());
+        // backgroundCharts.addListener((Observable observable) -> rebuildChart());
 
         detailsWindow = new AnchorPane();
         bindMouseEvents(baseChart, this.strokeWidth);
 
-        //setPlotTooltip(baseChart);
-
-        rebuildChart();
     }
-
 
     private void bindMouseEvents(LineChart baseChart, Double strokeWidth) {
         final MultipleSameAxesLineChart.DetailsPopup detailsPopup = new MultipleSameAxesLineChart.DetailsPopup();
@@ -97,13 +87,13 @@ public class MultipleSameAxesLineChart {
         final Line yLine = new Line();
         yLine.setFill(Color.GRAY);
         xLine.setFill(Color.GRAY);
-        yLine.setStrokeWidth(strokeWidth/2);
-        xLine.setStrokeWidth(strokeWidth/2);
+        yLine.setStrokeWidth(strokeWidth / 2);
+        xLine.setStrokeWidth(strokeWidth / 2);
         xLine.setVisible(false);
         yLine.setVisible(false);
 
         final Node chartBackground = baseChart.lookup(".chart-plot-background");
-        for (Node n: chartBackground.getParent().getChildrenUnmodifiable()) {
+        for (Node n : chartBackground.getParent().getChildrenUnmodifiable()) {
             if (n != chartBackground && n != xAxis && n != yAxis) {
                 n.setMouseTransparent(true);
             }
@@ -127,27 +117,27 @@ public class MultipleSameAxesLineChart {
             double y = event.getY() + chartBackground.getLayoutY();
 
             xLine.setStartX(10);
-            xLine.setEndX(detailsWindow.getWidth()-10);
-            xLine.setStartY(y+5);
-            xLine.setEndY(y+5);
+            xLine.setEndX(detailsWindow.getWidth() - 10);
+            xLine.setStartY(y + 5);
+            xLine.setEndY(y + 5);
 
-            yLine.setStartX(x+5);
-            yLine.setEndX(x+5);
+            yLine.setStartX(x + 5);
+            yLine.setEndX(x + 5);
             yLine.setStartY(10);
-            yLine.setEndY(detailsWindow.getHeight()-10);
+            yLine.setEndY(detailsWindow.getHeight() - 10);
 
             detailsPopup.showChartDescription(event);
 
             if (y + detailsPopup.getHeight() + 10 < graphPane.getHeight()) {
-                AnchorPane.setTopAnchor(detailsPopup, y+10);
+                AnchorPane.setTopAnchor(detailsPopup, y + 10);
             } else {
-                AnchorPane.setTopAnchor(detailsPopup, y-10-detailsPopup.getHeight());
+                AnchorPane.setTopAnchor(detailsPopup, y - 10 - detailsPopup.getHeight());
             }
 
             if (x + detailsPopup.getWidth() + 10 < graphPane.getWidth()) {
-                AnchorPane.setLeftAnchor(detailsPopup, x+10);
+                AnchorPane.setLeftAnchor(detailsPopup, x + 10);
             } else {
-                AnchorPane.setLeftAnchor(detailsPopup, x-10-detailsPopup.getWidth());
+                AnchorPane.setLeftAnchor(detailsPopup, x - 10 - detailsPopup.getWidth());
             }
         });
     }
@@ -165,165 +155,23 @@ public class MultipleSameAxesLineChart {
         chart.getYAxis().setMaxWidth(yAxisWidth);
     }
 
-    private void rebuildChart() {
-        graphPane.getChildren().clear();
+    public void addSeries(XYChart.Series series, Color lineColor, String seriesName) {
+        baseChart.getData().add(series);
 
-        graphPane.getChildren().add(resizeBaseChart(baseChart));
-        for (LineChart lineChart : backgroundCharts) {
-            graphPane.getChildren().add(resizeBackgroundChart(lineChart));
-        }
-        graphPane.getChildren().add(detailsWindow);
-    }
+        styleBackgroundChart(series, lineColor);
+        //setFixedAxisWidth(baseChart);
 
-    private Node resizeBaseChart(LineChart lineChart) {
-        HBox hBox = new HBox(lineChart);
-        graphPane.getChildren().add(hBox);
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.prefHeightProperty().bind(graphPane.heightProperty());
-        hBox.prefWidthProperty().bind(graphPane.widthProperty());
-
-        lineChart.minWidthProperty().bind(graphPane.widthProperty().subtract((yAxisWidth+yAxisSeparation)*backgroundCharts.size()));
-        lineChart.prefWidthProperty().bind(graphPane.widthProperty().subtract((yAxisWidth+yAxisSeparation)*backgroundCharts.size()));
-        lineChart.maxWidthProperty().bind(graphPane.widthProperty().subtract((yAxisWidth+yAxisSeparation)*backgroundCharts.size()));
-
-        return lineChart;
-    }
-
-    private Node resizeBackgroundChart(LineChart lineChart) {
-        HBox hBox = new HBox(lineChart);
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.prefHeightProperty().bind(graphPane.heightProperty());
-        hBox.prefWidthProperty().bind(graphPane.widthProperty());
-        hBox.setMouseTransparent(true);
-
-        lineChart.minWidthProperty().bind(graphPane.widthProperty().subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size()));
-        lineChart.prefWidthProperty().bind(graphPane.widthProperty().subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size()));
-        lineChart.maxWidthProperty().bind(graphPane.widthProperty().subtract((yAxisWidth + yAxisSeparation) * backgroundCharts.size()));
-
-        lineChart.translateXProperty().bind(baseChart.getYAxis().widthProperty());
-        lineChart.getYAxis().setTranslateX((yAxisWidth + yAxisSeparation) * backgroundCharts.indexOf(lineChart));
-
-        return hBox;
-    }
-
-    public LineChart addSeries(XYChart.Series series, Color lineColor, String seriesName) {
-        //baseChart.getData().add(series);
-        NumberAxis yAxis = new NumberAxis();
-        NumberAxis xAxis = new NumberAxis();
-
-        // style x-axis
-        xAxis.setAutoRanging(false);
-        xAxis.setVisible(false);
-        xAxis.setLabel("Время, мс");
-        xAxis.setOpacity(0.0); // somehow the upper setVisible does not work
-
-        ObservableList<XYChart.Data> dataFromPlot = series.getData();
-        ArrayList<Number> xValues = new ArrayList<>();
-        ArrayList<Number> yValues = new ArrayList<>();
-        for (XYChart.Data newData : dataFromPlot) {
-            xValues.add((Number) newData.getXValue());
-            yValues.add((Number) newData.getYValue());
-//            logger.debug("x = " + newData.getXValue());
-//            logger.debug("y = " + newData.getYValue());
-        }
-        if(xValue.doubleValue() > xValues.get(xValues.size() - 1).doubleValue()){
-            xValue =  xValues.get(xValues.size() - 1);
-        }
-        for (Number number : yValues) {
-            if (number.doubleValue() > yMaxValue.doubleValue()){
-                yMaxValue = number;
-            } else if (number.doubleValue() < yMinValue.doubleValue()){
-                yMinValue = number;
-            }
-
-        }
-        logger.debug(yMaxValue);
-        logger.debug(yMinValue);
-        logger.debug(((NumberAxis) baseChart.getXAxis()).upperBoundProperty().getValue());
-        logger.debug(xValue.doubleValue());
-        logger.debug(baseChart.getData().size());
-
-
-        if(  xValue.doubleValue() > ((NumberAxis) baseChart.getXAxis()).upperBoundProperty().getValue()){
-            ((NumberAxis) baseChart.getXAxis()).upperBoundProperty().setValue(xValue);
-        }
-
-        if(  yMaxValue.doubleValue() > ((NumberAxis) baseChart.getYAxis()).upperBoundProperty().getValue()){
-            ((NumberAxis) baseChart.getYAxis()).upperBoundProperty().setValue(yMaxValue);
-        }
-
-        if(  yMinValue.doubleValue() < ((NumberAxis) baseChart.getYAxis()).lowerBoundProperty().getValue()){
-            ((NumberAxis) baseChart.getYAxis()).lowerBoundProperty().setValue(yMinValue);
-        }
-        logger.debug(((NumberAxis) baseChart.getXAxis()).upperBoundProperty().getValue());
-
-        xAxis.lowerBoundProperty().bind(((NumberAxis) baseChart.getXAxis()).lowerBoundProperty());
-        xAxis.upperBoundProperty().bind(((NumberAxis) baseChart.getXAxis()).upperBoundProperty());
-        xAxis.tickUnitProperty().bind(((NumberAxis) baseChart.getXAxis()).tickUnitProperty());
-
-        // style y-axis
-        yAxis.setAutoRanging(false);
-        yAxis.setSide(Side.RIGHT);
-        yAxis.setLabel(seriesName);
-        //yAxis.setVisible(false);
-        //yAxis.setOpacity(0.0); // somehow the upper setVisible does not work
-        yAxis.lowerBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).lowerBoundProperty());
-        yAxis.upperBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).upperBoundProperty());
-        yAxis.tickUnitProperty().bind(((NumberAxis) baseChart.getYAxis()).tickUnitProperty());
-//        ((NumberAxis)baseChart.getYAxis()).setAutoRanging(false);
-//        ((NumberAxis)baseChart.getYAxis()).lowerBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).lowerBoundProperty());
-//        ((NumberAxis)baseChart.getYAxis()).upperBoundProperty().bind(((NumberAxis) baseChart.getYAxis()).upperBoundProperty());
-//        ((NumberAxis)baseChart.getYAxis()).tickUnitProperty().bind(((NumberAxis) baseChart.getYAxis()).tickUnitProperty());
-
-        // create chart
-        LineChart lineChart = new LineChart(xAxis, yAxis);
-        graphPane.getChildren().add(lineChart);
-
-        lineChart.setAnimated(false);
-        lineChart.setLegendVisible(false);
-        //lineChart.setHorizontalGridLinesVisible(false);
-        lineChart.getData().add(series);
-        setPlotTooltip(lineChart);
-
-        styleBackgroundChart(lineChart, lineColor);
-        setFixedAxisWidth(lineChart);
-
-        chartColorMap.put(lineChart, lineColor);
-        backgroundCharts.add(lineChart);
-        return lineChart;
+        chartColorMap.put(series, lineColor);
+        backgroundCharts.add(series);
 
     }
 
-    private void setPlotTooltip(LineChart lineChart) {
-//        Node chartSeries = visualPlot.lookup(".chart-series-line");
-//        chartSeries.setOnMouseMoved(event -> {
-//            System.out.println("hi");
-//            coordinateLabel.setText(
-//                    String.format(
-//                            "(%.2f, %.2f)",
-//                            visualPlot.getXAxis().getValueForDisplay(event.getX()),
-//                            visualPlot.getYAxis().getValueForDisplay(event.getY())
-//                    )
-//            );
-//        });
-        ObservableList<XYChart.Data> dataList = ((XYChart.Series) lineChart.getData().get(0)).getData();
-        dataList.forEach(data -> {
-            Node node = data.getNode();
-            Tooltip tooltip = new Tooltip("Время = " + data.getXValue().toString() + ", мс\nАмплитуда = " + data.getYValue().toString() + ", мВ");
-            Tooltip.install(node, tooltip);
-        });
-    }
-
-    private void styleBackgroundChart(LineChart lineChart, Color lineColor) {
-        styleChartLine(lineChart, lineColor);
+    private void styleBackgroundChart(XYChart.Series series, Color lineColor) {
+        styleChartLine(series, lineColor);
 
 //        Node contentBackground = lineChart.lookup(".chart-content").lookup(".chart-plot-background");
 //        contentBackground.setStyle("-fx-background-color: transparent;");
 
-        lineChart.setVerticalZeroLineVisible(false);
-        lineChart.setHorizontalZeroLineVisible(false);
-        lineChart.setVerticalGridLinesVisible(false);
-        lineChart.setHorizontalGridLinesVisible(false);
 //        lineChart.setCreateSymbols(false);
     }
 
@@ -334,9 +182,8 @@ public class MultipleSameAxesLineChart {
                 (int) (color.getBlue() * 255));
     }
 
-    private void styleChartLine(LineChart chart, Color lineColor) {
-        chart.getYAxis().lookup(".axis-label").setStyle("-fx-text-fill: " + toRGBCode(lineColor) + "; -fx-font-weight: bold;");
-        Node seriesLine = chart.lookup(".chart-series-line");
+    private void styleChartLine(XYChart.Series series, Color lineColor) {
+        Node seriesLine = series.getNode().lookup(".chart-series-line");
         seriesLine.setStyle("-fx-stroke: " + toRGBCode(lineColor) + "; -fx-stroke-width: " + 2.0 + ";");
     }
 
@@ -354,15 +201,15 @@ public class MultipleSameAxesLineChart {
         baseChartCheckBox.setOnAction(event -> baseChartCheckBox.setSelected(true));
         hBox.getChildren().add(baseChartCheckBox);
 
-        for (final LineChart lineChart : backgroundCharts) {
-            CheckBox checkBox = new CheckBox(lineChart.getYAxis().getLabel());
-            checkBox.setStyle("-fx-text-fill: " + toRGBCode(chartColorMap.get(lineChart)) + "; -fx-font-weight: bold");
+        for (final XYChart.Series series1 : backgroundCharts) {
+            CheckBox checkBox = new CheckBox(series1.getName());
+            checkBox.setStyle("-fx-text-fill: " + toRGBCode(chartColorMap.get(series1)) + "; -fx-font-weight: bold");
             checkBox.setSelected(true);
             checkBox.setOnAction(event -> {
-                if (backgroundCharts.contains(lineChart)) {
-                    backgroundCharts.remove(lineChart);
+                if (backgroundCharts.contains(series1)) {
+                    backgroundCharts.remove(series1);
                 } else {
-                    backgroundCharts.add(lineChart);
+                    backgroundCharts.add(series1);
                 }
             });
             hBox.getChildren().add(checkBox);
@@ -385,19 +232,19 @@ public class MultipleSameAxesLineChart {
         public void showChartDescription(MouseEvent event) {
             getChildren().clear();
 
-            Long xValueLong = Math.round((double)baseChart.getXAxis().getValueForDisplay(event.getX()));
+            Long xValueLong = Math.round((double) baseChart.getXAxis().getValueForDisplay(event.getX()));
 
             HBox baseChartPopupRow = buildPopupRow(event, xValueLong, baseChart);
             if (baseChartPopupRow != null) {
                 getChildren().add(baseChartPopupRow);
             }
 
-            for (LineChart lineChart : backgroundCharts) {
-                HBox popupRow = buildPopupRow(event, xValueLong, lineChart);
-                if (popupRow == null) continue;
+            //for (XYChart.Series series : backgroundCharts) {
+            HBox popupRow = buildPopupRow(event, xValueLong, baseChart);
+            //   if (popupRow == null) continue;
 
-                getChildren().add(popupRow);
-            }
+            //getChildren().add(popupRow);
+            //}
         }
 
         private HBox buildPopupRow(MouseEvent event, Long xValueLong, LineChart lineChart) {
@@ -422,11 +269,7 @@ public class MultipleSameAxesLineChart {
             Number time = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
             Number amplitude = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
             HBox popupRow;
-            if(series.getName().contains("Напряжение")){
-                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мВ\nвремя = "+time+" мс"));
-            } else{
-                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мА\nвремя = "+time+" мс"));
-            }
+            popupRow = new HBox( new Label("амплитуда = " + amplitude + " мкА\nвремя = " + time + " мс"));
 
             return popupRow;
         }
@@ -445,10 +288,10 @@ public class MultipleSameAxesLineChart {
         }
 
         public Number getYValueForX(LineChart chart, Number xValue) {
-            List<XYChart.Data> dataList = ((List<XYChart.Data>)((XYChart.Series)chart.getData().get(0)).getData());
+            List<XYChart.Data> dataList = ((List<XYChart.Data>) ((XYChart.Series) chart.getData().get(0)).getData());
             for (XYChart.Data data : dataList) {
                 if (data.getXValue().equals(xValue)) {
-                    return (Number)data.getYValue();
+                    return (Number) data.getYValue();
                 }
             }
             return null;

@@ -14,7 +14,10 @@
    <children>
       <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="422.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <bottom>
-            <AnchorPane fx:id="legendPane" prefHeight="22.0" prefWidth="500.0" BorderPane.alignment="CENTER" />
+            <AnchorPane fx:id="legendPane" prefHeight="35.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="legendLabel" layoutX="38.0" layoutY="3.0" prefHeight="22.0" prefWidth="500.0" text="Label" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children></AnchorPane>
          </bottom>
          <center>
             <AnchorPane BorderPane.alignment="CENTER">
@@ -23,10 +26,10 @@
                      <children>
                         <LineChart fx:id="glucoChart">
                           <xAxis>
-                            <NumberAxis side="BOTTOM" fx:id="xAxis" />
+                            <NumberAxis label="Время, мс" side="BOTTOM" fx:id="xAxis" />
                           </xAxis>
                           <yAxis>
-                            <NumberAxis fx:id="yAxis" side="LEFT" />
+                            <NumberAxis fx:id="yAxis" label="Амплитуда, мкА" side="LEFT" />
                           </yAxis>
                         </LineChart>
                      </children>

@@ -363,7 +363,7 @@ public class MultipleAxesLineChart/* extends StackPane*/ {
             if(series.getName().contains("Напряжение")){
                 popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мВ\nвремя = "+time+" мс"));
             } else{
-                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мА\nвремя = "+time+" мс"));
+                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мкА\nвремя = "+time+" мс"));
             }
 
             return popupRow;

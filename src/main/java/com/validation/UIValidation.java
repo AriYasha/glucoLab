@@ -1,9 +1,10 @@
 package com.validation;
 
 
+import com.sample.Controller;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import com.sample.Controller;
+import javafx.scene.image.Image;
 
 
 public class UIValidation {
@@ -31,7 +32,7 @@ public class UIValidation {
         String positiveTimeMeasure = controller.positiveTimeMeasureEdit.getText();
         String negativeAmpMeasure = controller.negativeAmpMeasureEdit.getText();
         String positiveAmpMeasure = controller.positiveAmpMeasureEdit.getText();
-        if (    isDigit(waitingTime) &&
+        if (isDigit(waitingTime) &&
                 isDigit(pauseTime) &&
                 isDigit(negativeAmpFast) &&
                 isDigit(negativeAmpMeasure) &&
@@ -47,11 +48,11 @@ public class UIValidation {
             hideErrorLabels();
         }
         if (isValid) {
-            if (!waitingTime.isEmpty() && checkRange(waitingTime, MAX_TIME_VALUE) ) {
+            if (!waitingTime.isEmpty() && checkRange(waitingTime, MAX_TIME_VALUE)) {
                 showErrorLabel(controller.waitingErrorLabel);
                 isValid = false;
             }
-            if (!pauseTime.isEmpty() && checkRange(pauseTime, MAX_TIME_VALUE)  ) {
+            if (!pauseTime.isEmpty() && checkRange(pauseTime, MAX_TIME_VALUE)) {
                 showErrorLabel(controller.pauseErrorLabel);
                 isValid = false;
             }
@@ -59,7 +60,7 @@ public class UIValidation {
                 showErrorLabel(controller.positiveTimeFastErrorLabel);
                 isValid = false;
             }
-            if (!negativeTimeFastWaves.isEmpty() && checkRange(negativeTimeFastWaves, MAX_TIME_VALUE) ) {
+            if (!negativeTimeFastWaves.isEmpty() && checkRange(negativeTimeFastWaves, MAX_TIME_VALUE)) {
                 showErrorLabel(controller.negativeTimeFastErrorLabel);
                 isValid = false;
             }
@@ -117,8 +118,8 @@ public class UIValidation {
         });
     }
 
-    private boolean checkRange(String string, int secondValue){
-        return  Integer.parseInt(string) < 0 ||
+    private boolean checkRange(String string, int secondValue) {
+        return Integer.parseInt(string) < 0 ||
                 Integer.parseInt(string) > secondValue;
 
     }
@@ -137,7 +138,21 @@ public class UIValidation {
         return isDigit;
     }
 
-    public void help() {
+    public void setOnConnected() {
+        Platform.runLater(() -> {
+            Image picture = new Image("images/green Ball.png", true);
+            controller.connectImage.setImage(picture);
+            controller.connectionLabel.setText("Подключено");
+            controller.deviceStatus.setText("Ожидание полоски");
+            controller.openPortButton.setText("Прервать соединение");
+        });
+    }
 
+    public void setOnDisconnected() {
+        Platform.runLater(() -> {
+            Image picture = new Image("images/red Ball.png", true);
+            controller.connectImage.setImage(picture);
+            controller.connectionLabel.setText("Не подключено");
+        });
     }
 }

@@ -178,4 +178,23 @@ public class MeasurementSetup implements Serializable {
         transmitBytes[29] = Control.SETUP_CMD;
         return transmitBytes;
     }
+
+    @Override
+    public String toString() {
+        return "MeasurementSetup{" +
+                "Ожидание протекания = " + leakingTime +
+                ", пауза = " + pauseTime +
+                ", positiveFastPolarityReversalTime=" + positiveFastPolarityReversalTime +
+                ", negativeFastPolarityReversalTime=" + negativeFastPolarityReversalTime +
+                ", firstPolarityReversal=" + firstPolarityReversal +
+                ", negativeAmplitudeFastPolarityPulses=" + negativeAmplitudeFastPolarityPulses +
+                ", positiveAmplitudeFastPolarityPulses=" + positiveAmplitudeFastPolarityPulses +
+                ", quantityFastPolarityPulses=" + quantityFastPolarityPulses +
+                ", positiveMeasureTime=" + positiveMeasureTime +
+                ", negativeMeasureTime=" + negativeMeasureTime +
+                ", firstPolarityMeasure=" + firstPolarityMeasure +
+                ", positiveAmplitudeMeasurePulses=" + positiveAmplitudeMeasurePulses +
+                ", negativeAmplitudeMeasurePulses=" + negativeAmplitudeMeasurePulses +
+                '}';
+    }
 }
