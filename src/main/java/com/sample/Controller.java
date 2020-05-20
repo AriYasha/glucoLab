@@ -75,6 +75,16 @@ public class Controller implements Initializable {
     public Label quantityErorLabel;
     public MenuBar menuBar;
     public Label deviceStatus;
+    public Tab measureTab;
+    public Tab polyTab;
+    public ImageView sendImage;
+    public Button sendPolyButton;
+    public LineChart visualPolyPlot;
+    public Tab setupPolyTab;
+    public Tab graphPolyTab;
+    public StackPane graphPolyStackPane;
+    public LineChart polyChart;
+    public AnchorPane legendPolyPane;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -133,12 +143,15 @@ public class Controller implements Initializable {
         }
         uiValidation = new UIValidation(this);
         uiValidation.hideErrorLabels();
+        uiValidation.setTabImages();
         menuBarSetup();
         //control = new Control();
         Image picture = new Image("images/red Ball.png", true);
         Image stripType = new Image("images/stripNoName.jpg", true);
+        Image send = new Image("images/install.png", true);
         stripTypeLabel.setVisible(false);
         connectImage.setImage(picture);
+        sendImage.setImage(send);
         stripTypeImage.setImage(stripType);
         setTooltips();
         portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
@@ -774,5 +787,8 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
 
+    }
+
+    public void sendPolyData(ActionEvent actionEvent) {
     }
 }

@@ -5,6 +5,7 @@ import com.sample.Controller;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 
 public class UIValidation {
@@ -154,5 +155,24 @@ public class UIValidation {
             controller.connectImage.setImage(picture);
             controller.connectionLabel.setText("Не подключено");
         });
+    }
+
+    public void setTabImages(){
+        Platform.runLater(() -> {
+            controller.measureTab.setGraphic(buildImage("images/measure.png", 27));
+            controller.polyTab.setGraphic(buildImage("images/Hysteresis.png", 27));
+            controller.setupTab.setGraphic(buildImage("images/settings.png", 27));
+            controller.graphTab.setGraphic(buildImage("images/graph.png", 27));
+        });
+    }
+
+    private static ImageView buildImage(String imgPatch, int size) {
+        Image i = new Image(imgPatch);
+        ImageView imageView = new ImageView();
+        //You can set width and height
+        imageView.setFitHeight(size);
+        imageView.setFitWidth(size);
+        imageView.setImage(i);
+        return imageView;
     }
 }

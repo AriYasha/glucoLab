@@ -15,7 +15,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception{
-        String fxmlFile = "/fxml/main.fxml";
+        String fxmlFile = "/fxml/main_NEW.fxml";
         String css = "/styles/labStyle.css";
         String icons = "/images/";
 
