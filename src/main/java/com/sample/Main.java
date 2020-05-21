@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -30,6 +31,7 @@ public class Main extends Application {
         loader.setLocation(getClass().getResource(fxmlFile));
         Parent root = (Parent) loader.load();
         Scene scene = new Scene(root);
+        stage.getIcons().add(new Image("images/iconfinder_blood-test-laboratory-lab-virus_5986147.png"));
         stage.setTitle("GlucoLab");
         stage.resizableProperty().setValue(Boolean.FALSE);
         scene.getStylesheets().add(css);
@@ -63,6 +65,6 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        launch(args);
+            launch(args);
     }
 }

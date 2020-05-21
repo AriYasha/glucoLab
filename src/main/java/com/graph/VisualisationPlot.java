@@ -1,6 +1,7 @@
 package com.graph;
 
 import com.entity.MeasurementSetup;
+import com.entity.PolySetup;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -12,7 +13,7 @@ public class VisualisationPlot {
         this.visualPlot = visualPlot;
     }
 
-    public LineChart drawGraphic(LineChart visualPlot, MeasurementSetup setup) {
+    public LineChart drawMeasureGraphic(LineChart visualPlot, MeasurementSetup setup) {
         //visualPlot.getData().clear();
         int time = 0;
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -60,5 +61,19 @@ public class VisualisationPlot {
 
         return visualPlot;
 
+    }
+
+    public LineChart drawPolyGraphic(LineChart visualPlot, PolySetup setup) {
+        int time = 0;
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        visualPlot.setLegendVisible(false);
+        for(int i = 1; i <= setup.getQuantityReapeted(); i++) {
+            series.getData().add(new XYChart.Data<>(time, setup.getBeginPoint()));
+            series.getData().add(new XYChart.Data<>(time += setup.getIncreaseTime(), setup.getMediumPoint()));
+            series.getData().add(new XYChart.Data<>(time += setup.getDecreaseTime(), setup.getLastPoint()));
+        }
+        visualPlot.getData().clear();
+        visualPlot.getData().add(series);
+        return visualPlot;
     }
 }

@@ -4,6 +4,7 @@ import com.comPort.ComPortConnection;
 import com.comPort.Control;
 import com.entity.Data;
 import com.entity.MeasurementSetup;
+import com.entity.PolySetup;
 import com.exception.ComPortException;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -11,6 +12,7 @@ import com.file.ChooseFile;
 import com.file.Read;
 import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
+import com.jfoenix.controls.JFXTabPane;
 import com.sun.org.apache.xpath.internal.operations.Mult;
 import com.validation.DataFromComPortValidation;
 import com.validation.UIValidation;
@@ -58,7 +60,7 @@ public class Controller implements Initializable {
     public StackPane graphStackPane;
     public AnchorPane legendPane;
     public MeasurementSetup setup;
-    public VisualisationPlot visualisationPlot;
+    public PolySetup polySetup;
     public Label measureStatLabel;
     public ImageView stripTypeImage;
     public Label stripTypeLabel;
@@ -79,12 +81,28 @@ public class Controller implements Initializable {
     public Tab polyTab;
     public ImageView sendImage;
     public Button sendPolyButton;
-    public LineChart visualPolyPlot;
+    public LineChart<Number, Number> visualPolyPlot;
     public Tab setupPolyTab;
     public Tab graphPolyTab;
     public StackPane graphPolyStackPane;
     public LineChart polyChart;
     public AnchorPane legendPolyPane;
+    public JFXTabPane mainTabPane;
+    public NumberAxis xTimeVisualPoly;
+    public NumberAxis yAmpVisualPoly;
+    public ImageView sendPolyImage;
+    public TextField mediumPointEdit;
+    public TextField increaseTimeEdit;
+    public TextField decreaseTimeEdit;
+    public TextField lastPointEdit;
+    public TextField quantityReapetedEdit;
+    public TextField beginPointEdit;
+    public Label mediumPointError;
+    public Label beginPointError;
+    public Label increaseTimeError;
+    public Label decreaseTimeError;
+    public Label quantityReapetedError;
+    public Label lastPointError;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -136,73 +154,22 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        for (Tab tab : tabPane.getTabs()) {
-            if (tab.getText().equals("Подключение")) {
-                tab.setDisable(true);
-            }
-        }
         uiValidation = new UIValidation(this);
         uiValidation.hideErrorLabels();
-        uiValidation.setTabImages();
+        uiValidation.setImages();
         menuBarSetup();
         //control = new Control();
-        Image picture = new Image("images/red Ball.png", true);
-        Image stripType = new Image("images/stripNoName.jpg", true);
-        Image send = new Image("images/install.png", true);
-        stripTypeLabel.setVisible(false);
-        connectImage.setImage(picture);
-        sendImage.setImage(send);
-        stripTypeImage.setImage(stripType);
         setTooltips();
-        portChoiceBox.getItems().removeAll(portChoiceBox.getItems());
-        String[] portNames = ComPortConnection.getPortNames();
-        portChoiceBox.getItems().addAll(portNames);
-        portChoiceBox.setValue(portNames[0]);
-        speedChoiceBox.getItems().removeAll(speedChoiceBox.getItems());
-        speedChoiceBox.getItems().addAll("9600", "19200", "38400", "57600", "115200");
-        speedChoiceBox.setValue("9600");
-        parityChoiceBox.getItems().removeAll(parityChoiceBox.getItems());
-        parityChoiceBox.getItems().addAll("no", "odd", "even", "mark", "space");
-        parityChoiceBox.setValue("no");
-        stopBitsChoiceBox.getItems().removeAll(stopBitsChoiceBox.getItems());
-        stopBitsChoiceBox.getItems().addAll("1", "1,5", "2");
-        stopBitsChoiceBox.setValue("1");
-        sizeCharChoiceBox.getItems().removeAll(sizeCharChoiceBox.getItems());
-        sizeCharChoiceBox.getItems().addAll("8", "9", "7", "6", "5", "4", "3", "2", "1");
-        sizeCharChoiceBox.setValue("8");
-        defaultPortCheckBox.setSelected(true);
+        uiValidation.connectionSetup();
         setDisableElements();
         setup = new MeasurementSetup();
-        visualisationPlot = new VisualisationPlot(visualPlot);
-        renderVisualization();
+        polySetup = new PolySetup();
+        polySetup = uiValidation.renderPolyVisualisation();
+        renderVisualisation();
         coordinateLabel.setVisible(false);
 
-        Node chartBackground = visualPlot.lookup(".chart-plot-background");
-        Node chartSeries = visualPlot.lookup(".chart-series-line");
-        chartBackground.setOnMouseEntered(event -> {
-            visualPlot.setCursor(Cursor.CROSSHAIR);
-            coordinateLabel.setVisible(true);
-        });
-
-        chartSeries.setOnMouseMoved(event -> {
-            coordinateLabel.setText(
-                    String.format(
-                            "время = %.2f мс, амплитуда = %.2f мВ",
-                            xTimeVisual.getValueForDisplay(event.getX()),
-                            yAmpVisual.getValueForDisplay(event.getY())
-                    )
-            );
-        });
-
-        chartBackground.setOnMouseMoved(event -> {
-            coordinateLabel.setText(
-                    String.format(
-                            "время = %.2f мс,%nамплитуда = %.2f мВ",
-                            xTimeVisual.getValueForDisplay(event.getX()),
-                            yAmpVisual.getValueForDisplay(event.getY())
-                    )
-            );
-        });
+        uiValidation.visualisationSetup(visualPlot, xTimeVisual, yAmpVisual);
+        uiValidation.visualisationSetup(visualPolyPlot, xTimeVisualPoly, yAmpVisualPoly);
 
         setPlotTooltip();
         Runnable task = () -> {
@@ -228,7 +195,7 @@ public class Controller implements Initializable {
 
     private void setConnection() {
         ObservableList portList = portChoiceBox.getItems();
-        byte[] readBytes = new byte[5];
+        byte[] readBytes;
         for (Object port : portList) {
             try {
                 comPortConnection = ComPortConnection.getInstance((String) port);
@@ -540,7 +507,7 @@ public class Controller implements Initializable {
         }
     }
 
-    private void renderVisualization() {
+    private void renderVisualisation() {
         String waitingTime = waitingTimeEdit.getText();
         String pauseTime = pauseTimeEdit.getText();
         String negativeTimeFastWaves = negativeTimeFastWavesEdit.getText();
@@ -621,12 +588,13 @@ public class Controller implements Initializable {
         setup.setPositiveMeasureTime(Integer.parseInt(positiveTimeMeasure));
         setup.setNegativeFastPolarityReversalTime(Integer.parseInt(negativeTimeFastWaves));
         setup.setPositiveFastPolarityReversalTime(Integer.parseInt(positiveTimeFastWaves));
-        visualPlot = visualisationPlot.drawGraphic(visualPlot, setup);
+        VisualisationPlot visualisationPlot = new VisualisationPlot(visualPlot);
+        visualPlot = visualisationPlot.drawMeasureGraphic(visualPlot, setup);
     }
 
     public void render(MouseEvent mouseEvent) {
         if (uiValidation.valuesValidation()) {
-            renderVisualization();
+            renderVisualisation();
         }
         setPlotTooltip();
     }
@@ -644,7 +612,7 @@ public class Controller implements Initializable {
     public void xAxisMouseMove(MouseEvent mouseEvent) {
         coordinateLabel.setText(
                 String.format(
-                        "время - %.2f мс",
+                        "время = %.2f мс",
                         xTimeVisual.getValueForDisplay(mouseEvent.getX())
                 )
         );
@@ -653,7 +621,7 @@ public class Controller implements Initializable {
     public void yAxisMouseMove(MouseEvent mouseEvent) {
         coordinateLabel.setText(
                 String.format(
-                        "амплитуда - %.2f мВ",
+                        "амплитуда = %.2f мВ",
                         yAmpVisual.getValueForDisplay(mouseEvent.getY())
                 )
         );
@@ -790,5 +758,11 @@ public class Controller implements Initializable {
     }
 
     public void sendPolyData(ActionEvent actionEvent) {
+    }
+
+    public void renderPoly(MouseEvent mouseEvent) {
+        if (uiValidation.valuesPolyValidation()) {
+            uiValidation.renderPolyVisualisation();
+        }
     }
 }

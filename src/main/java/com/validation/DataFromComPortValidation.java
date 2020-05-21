@@ -112,7 +112,10 @@ public class DataFromComPortValidation {
             case Control.STRIP_WAITING_STAT:
                 logger.info("STRIP_WAITING");
                 Platform.runLater(() -> controller.deviceStatus.setText("Ожидание полоски"));
-                Platform.runLater(() -> controller.tabPane.getSelectionModel().select(0));
+                Platform.runLater(() -> {
+                    controller.mainTabPane.getSelectionModel().select(0);
+                    controller.tabPane.getSelectionModel().select(0);
+                });
                 //Platform.runLater(() -> controller.glucoChart.getData().clear());
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Вставьте полоску");
@@ -123,7 +126,7 @@ public class DataFromComPortValidation {
                 break;
             case Control.STRIP_INSERTED_STAT:
                 logger.info("STRIP_INSERTED_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Полоска вставлена, Жыве БЕЛАРУСЬ!"));
+                Platform.runLater(() -> controller.deviceStatus.setText("Полоска вставлена"));
                 Platform.runLater(() -> controller.glucoChart.getData().clear());
                 break;
             case Control.DROP_WAITING_STAT:
@@ -208,7 +211,10 @@ public class DataFromComPortValidation {
     }
 
     private void startMeasure() {
-        Platform.runLater(() -> controller.tabPane.getSelectionModel().select(1));
+        Platform.runLater(() -> {
+            controller.mainTabPane.getSelectionModel().select(0);
+            controller.tabPane.getSelectionModel().select(1);
+        });
         series = new XYChart.Series<>();
         currentSeries = new XYChart.Series<>();
         series.setName("Ток");
