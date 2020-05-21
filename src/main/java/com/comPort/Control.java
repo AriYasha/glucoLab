@@ -4,7 +4,7 @@ import com.entity.MeasurementSetup;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import com.sample.Controller;
+import com.controllers.Controller;
 import com.validation.DataFromComPortValidation;
 import javafx.scene.control.TextArea;
 import org.apache.log4j.Logger;

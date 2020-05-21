@@ -5,7 +5,7 @@ import com.entity.Data;
 import com.entity.MeasurementSetup;
 import com.file.Write;
 import com.graph.MultipleAxesLineChart;
-import com.sample.Controller;
+import com.controllers.Controller;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;

@@ -4,7 +4,7 @@ package com.validation;
 import com.comPort.ComPortConnection;
 import com.entity.PolySetup;
 import com.graph.VisualisationPlot;
-import com.sample.Controller;
+import com.controllers.Controller;
 import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Node;

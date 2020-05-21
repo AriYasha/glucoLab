@@ -1,14 +1,10 @@
-package com.sample;
+package com.controllers;
 
-import com.comPort.Control;
 import com.entity.Data;
 import com.file.ChooseFile;
 import com.file.Read;
-import com.graph.MultipleAxesLineChart;
 import com.graph.MultipleSameAxesLineChart;
-import javafx.application.Platform;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;

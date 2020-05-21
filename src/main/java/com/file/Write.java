@@ -3,14 +3,11 @@ package com.file;
 
 
 import com.entity.Data;
-import com.sample.Controller;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Write {

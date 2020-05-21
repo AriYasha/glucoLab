@@ -1,4 +1,4 @@
-package com.sample;
+package com.controllers;
 
 import com.comPort.ComPortConnection;
 import com.comPort.Control;
@@ -13,7 +13,6 @@ import com.file.Read;
 import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
 import com.jfoenix.controls.JFXTabPane;
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import com.validation.DataFromComPortValidation;
 import com.validation.UIValidation;
 import javafx.application.Platform;
@@ -22,7 +21,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;

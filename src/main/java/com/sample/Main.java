@@ -1,7 +1,7 @@
 package com.sample;
 
-import com.comPort.ComPortConnection;
 import com.comPort.Control;
+import com.controllers.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
