@@ -1,4 +1,16 @@
 package com.controllers;
 
-public class OpenWindow {
+import javafx.fxml.Initializable;
+import javafx.scene.control.MenuBar;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class OpenWindow implements Initializable {
+    public MenuBar menu;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+
+    }
 }
