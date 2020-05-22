@@ -628,11 +628,10 @@ public class Controller implements Initializable {
     private void menuBarSetup() {
         menuBar.getMenus().clear();
 
-        SeparatorMenuItem separator = new SeparatorMenuItem();
-
         Menu file = new Menu("Файл");
 
         MenuItem open = new MenuItem("Открыть");
+        MenuItem openDetails = new MenuItem("Открыть с подробностями");
         MenuItem setup = new MenuItem("Настройки");
         MenuItem close = new MenuItem("Выход");
         open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
@@ -640,6 +639,9 @@ public class Controller implements Initializable {
         close.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
         open.setOnAction((event) -> {
             openPlotWindow();
+        });
+        openDetails.setOnAction((event) -> {
+            openChooseWindow();
         });
         setup.setOnAction((event) -> {
         });
@@ -666,10 +668,32 @@ public class Controller implements Initializable {
         getSetup.setOnAction((event) -> control.sendSetupRequest());
         connection.setOnAction((event) -> connectionAvailable());
 
-        file.getItems().addAll(open, setup, separator, close);
-        commands.getItems().addAll(sendTest, getStatus, getSetup, separator, connection);
+        file.getItems().addAll(open, setup, new SeparatorMenuItem(), openDetails, new SeparatorMenuItem(), close);
+        commands.getItems().addAll(sendTest, getStatus, getSetup, new SeparatorMenuItem(), connection);
 
         menuBar.getMenus().addAll(file, commands);
+    }
+
+    private void openChooseWindow() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/newWindow.fxml"));
+            Parent parent = fxmlLoader.load();
+            Scene scene = new Scene(parent);
+            Stage stage = new Stage();
+            stage.setTitle("Открытие ...");
+            scene.getStylesheets().add("/styles/labStyle.css");
+            stage.setScene(scene);
+            stage.show();
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent t) {
+                    stage.close();
+                }
+            });
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void connectionAvailable() {
