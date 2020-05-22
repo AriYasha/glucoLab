@@ -1,5 +1,6 @@
 package com.graph;
 
+import com.entity.Data;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -31,6 +32,7 @@ public class MultipleSameAxesLineChart {
     private StackPane graphPane;
     private final ObservableList<XYChart.Series> backgroundCharts = FXCollections.observableArrayList();
     private final Map<XYChart.Series, Color> chartColorMap = new HashMap<>();
+    private final Map<XYChart.Series, Data> chartDataMap = new HashMap<>();
 
     private final double yAxisWidth = 60;
     private final AnchorPane detailsWindow;
@@ -155,12 +157,12 @@ public class MultipleSameAxesLineChart {
         chart.getYAxis().setMaxWidth(yAxisWidth);
     }
 
-    public void addSeries(XYChart.Series series, Color lineColor, String seriesName) {
+    public void addSeries(XYChart.Series series, Color lineColor, String seriesName, Data data) {
         baseChart.getData().add(series);
 
         styleBackgroundChart(series, lineColor);
         //setFixedAxisWidth(baseChart);
-
+        chartDataMap.put(series, data);
         chartColorMap.put(series, lineColor);
         backgroundCharts.add(series);
 
@@ -182,9 +184,10 @@ public class MultipleSameAxesLineChart {
                 (int) (color.getBlue() * 255));
     }
 
-    private void styleChartLine(XYChart.Series series, Color lineColor) {
+    public XYChart.Series styleChartLine(XYChart.Series series, Color lineColor) {
         Node seriesLine = series.getNode().lookup(".chart-series-line");
         seriesLine.setStyle("-fx-stroke: " + toRGBCode(lineColor) + "; -fx-stroke-width: " + 2.0 + ";");
+        return series;
     }
 
     public Node getLegend() {
@@ -220,6 +223,18 @@ public class MultipleSameAxesLineChart {
         hBox.setStyle("-fx-padding: 0 10 20 10");
 
         return hBox;
+    }
+
+    public Color getSeriesColor(XYChart.Series series){
+        return chartColorMap.get(series);
+    }
+
+    public void setColor(XYChart.Series series, Color color){
+        chartColorMap.put(series, color);
+    }
+
+    public Data getChartData(XYChart.Series series){
+        return chartDataMap.get(series);
     }
 
     private class DetailsPopup extends VBox {
