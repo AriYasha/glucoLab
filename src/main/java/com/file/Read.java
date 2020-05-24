@@ -33,7 +33,7 @@ public class Read {
     public static Data reading(String filename){
         String filePath = "C:\\GlucoLab\\";
         Data record = null;
-        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath + filename)))
+        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(/*filePath +*/ filename)))
         {
             record = (Data) objectInputStream.readObject();
             logger.debug(record);

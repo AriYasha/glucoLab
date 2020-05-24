@@ -16,7 +16,11 @@ public class ChooseFile {
         File selectedFile = fileChooser.showOpenDialog(null);
         if(selectedFile != null){
             logger.debug(selectedFile.getName());
-            return selectedFile.getName();
+            logger.debug(selectedFile.getAbsoluteFile());
+            logger.debug(selectedFile.getCanonicalPath());
+            logger.debug(selectedFile.getPath());
+
+            return selectedFile.getAbsolutePath();
         } else {
             throw new IOException("File not selected");
         }

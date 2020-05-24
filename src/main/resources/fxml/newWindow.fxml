@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
 <?import com.jfoenix.validation.*?>
 <?import com.jfoenix.controls.*?>
 <?import java.lang.*?>
@@ -10,28 +11,22 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.OpenWindow">
    <children>
-      <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <top>
-            <MenuBar fx:id="menu" BorderPane.alignment="CENTER">
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-         </top>
-      </BorderPane>
+      <Pane fx:id="workPane" prefHeight="401.0" prefWidth="602.0">
+         <children>
+            <ComboBox fx:id="files" layoutX="17.0" layoutY="24.0" prefHeight="31.0" prefWidth="157.0" />
+            <ListView id="viewFile" fx:id="viewFile" layoutX="17.0" layoutY="97.0" prefHeight="268.0" prefWidth="157.0" />
+            <ListView fx:id="choiceFile" layoutX="229.0" layoutY="97.0" prefHeight="268.0" prefWidth="157.0" />
+            <Button fx:id="openFile" layoutX="428.0" layoutY="24.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="157.0" text="Button" />
+            <TextArea fx:id="textFromFile" layoutX="428.0" layoutY="81.0" prefHeight="132.0" prefWidth="157.0" />
+            <LineChart fx:id="chart" layoutX="396.0" layoutY="231.0" prefHeight="150.0" prefWidth="190.0">
+              <xAxis>
+                <CategoryAxis side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis side="LEFT" />
+              </yAxis>
+            </LineChart>
+         </children>
+      </Pane>
    </children>
 </AnchorPane>
