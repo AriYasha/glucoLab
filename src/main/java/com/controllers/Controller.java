@@ -171,6 +171,11 @@ public class Controller implements Initializable {
 
         setPlotTooltip();
         Runnable task = () -> {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             setConnection();
             //connectionRequest();
         };
@@ -203,7 +208,7 @@ public class Controller implements Initializable {
                 int timeOut = 0;
                 while (control.bytesAvailable() <= 5) {
                     timeOut++;
-                    if (timeOut > 65535) break;
+                    if (timeOut > 165535) break;
                 }
                 readBytes = control.readBytes();
                 if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
@@ -720,12 +725,14 @@ public class Controller implements Initializable {
         try {
             String fileName = ChooseFile.chooseFile();
             Data data = Read.reading(fileName);
-            newWindow(fileName, data);
+            newWindow();
+            graphController.addFirstSeries(fileName, data);
 
-            ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
-            ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
-            currentSeries = new XYChart.Series<>();
-            currentSeries.setName(fileName);
+//            ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+//            ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
+//            currentSeries = new XYChart.Series<>();
+//            currentSeries.setName(fileName);
+
 //            Platform.runLater(() -> {
 //                for (int i = 0; i < xValues.size(); i++) {
 //                    currentSeries.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
@@ -735,16 +742,16 @@ public class Controller implements Initializable {
 //                //graphController.legendPane.getChildren().add(currentSeries.getLegend());
 //            });
 
-            Platform.runLater(() -> {
-                for (int i = 0; i < xValues.size(); i++) {
-                    currentSeries.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
-                }
-                MultipleSameAxesLineChart multipleSameAxesLineChart = new MultipleSameAxesLineChart(graphController.glucoChart, graphController.stackPane);
-                graphController.glucoChart.setAnimated(false);
-                //graphController.glucoChart.getData().add(currentSeries);
-                multipleSameAxesLineChart.addSeries(currentSeries, Color.RED, fileName);
-                //graphController.legendPane.getChildren().add(currentSeries.getLegend());
-            });
+//            Platform.runLater(() -> {
+//                for (int i = 0; i < xValues.size(); i++) {
+//                    currentSeries.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+//                }
+//                MultipleSameAxesLineChart multipleSameAxesLineChart = new MultipleSameAxesLineChart(graphController.glucoChart, graphController.stackPane);
+//                graphController.glucoChart.setAnimated(false);
+//                //graphController.glucoChart.getData().add(currentSeries);
+//                multipleSameAxesLineChart.addSeries(currentSeries, Color.RED, fileName);
+//                //graphController.legendPane.getChildren().add(currentSeries.getLegend());
+//            });
 
 
         } catch (IOException e) {
@@ -753,13 +760,13 @@ public class Controller implements Initializable {
         }
     }
 
-    private void newWindow(String title, Data data) {
+    private void newWindow() {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/graph.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/graphMain.fxml"));
             Parent root1 = fxmlLoader.load();
             Scene scene = new Scene(root1);
             Stage stage = new Stage();
-            stage.setTitle(title);
+            stage.setTitle("Измерения глюкозы");
             scene.getStylesheets().add("/styles/labStyle.css");
             stage.setScene(scene);
             stage.show();
@@ -770,8 +777,6 @@ public class Controller implements Initializable {
                 }
             });
             graphController = fxmlLoader.getController();
-            //graphController.setFirstData(data);
-            //graphController.setFileName(title);
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
