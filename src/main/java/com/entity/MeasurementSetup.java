@@ -21,6 +21,8 @@ public class MeasurementSetup implements Serializable {
     private int positiveAmplitudeMeasurePulses;
     private int negativeAmplitudeMeasurePulses;
 
+    private Data data;
+
     public MeasurementSetup() {
     }
 
@@ -142,6 +144,14 @@ public class MeasurementSetup implements Serializable {
 
     public void setNegativeAmplitudeMeasurePulses(int negativeAmplitudeMeasurePulses) {
         this.negativeAmplitudeMeasurePulses = negativeAmplitudeMeasurePulses;
+    }
+
+    public Data getData() {
+        return data;
+    }
+
+    public void setData(Data data) {
+        this.data = data;
     }
 
     public byte[] getTransmitArray(){

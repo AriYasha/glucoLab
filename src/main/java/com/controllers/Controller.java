@@ -18,6 +18,7 @@ import com.validation.UIValidation;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -101,6 +102,8 @@ public class Controller implements Initializable {
     public Label decreaseTimeError;
     public Label quantityReapetedError;
     public Label lastPointError;
+    public JFXTabPane polyTabPane;
+    public Label comPortStatus;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -197,42 +200,46 @@ public class Controller implements Initializable {
     }
 
     private void setConnection() {
+        boolean isConnected = false;
         ObservableList portList = portChoiceBox.getItems();
         byte[] readBytes;
-        for (Object port : portList) {
-            try {
-                comPortConnection = ComPortConnection.getInstance((String) port);
-                comPortConnection.openPort();
-                control = new Control(comPortConnection, this, setup);
-                control.sendTest();
-                int timeOut = 0;
-                while (control.bytesAvailable() <= 5) {
-                    timeOut++;
-                    if (timeOut > 165535) break;
-                }
-                readBytes = control.readBytes();
-                if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
-                    control.addListener();
-                    control.serialEvent(new SerialPortEvent(control.getUserPort(), SerialPort.LISTENING_EVENT_DATA_AVAILABLE));
-                    Image picture = new Image("images/green Ball.png", true);
-                    connectImage.setImage(picture);
-                    Platform.runLater(() -> connectionLabel.setText("Подключено"));
-                    Platform.runLater(() -> deviceStatus.setText("Ожидание полоски"));
-                    Platform.runLater(() -> openPortButton.setText("Прервать соединение"));
-                    openPortButton.setSelected(true);
-                    //control.addListener();
-                    break;
-                } else {
-                    comPortConnection.close();
-                }
+        while (!isConnected) {
+            for (Object port : portList) {
+                try {
+                    comPortConnection = ComPortConnection.getInstance((String) port);
+                    comPortConnection.openPort();
+                    control = new Control(comPortConnection, this, setup, polySetup);
+                    control.sendTest();
+                    int timeOut = 0;
+                    while (control.bytesAvailable() <= 5) {
+                        timeOut++;
+                        if (timeOut > 165535) break;
+                    }
+                    readBytes = control.readBytes();
+                    if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
+                        control.addListener();
+                        control.serialEvent(new SerialPortEvent(control.getUserPort(), SerialPort.LISTENING_EVENT_DATA_AVAILABLE));
+                        Image picture = new Image("images/green Ball.png", true);
+                        connectImage.setImage(picture);
+                        Platform.runLater(() -> connectionLabel.setText("Подключено"));
+                        Platform.runLater(() -> deviceStatus.setText("Ожидание полоски"));
+                        Platform.runLater(() -> openPortButton.setText("Прервать соединение"));
+                        openPortButton.setSelected(true);
+                        //control.addListener();
+                        isConnected = true;
+                        break;
+                    } else {
+                        comPortConnection.close();
+                    }
 
-            } catch (ComPortException e) {
-                Platform.runLater(() -> connectionLabel.setText("Не удалось подключиться автоматически"));
-                logger.error(e);
-                logger.error(e.getMessage());
-            } catch (IOException e) {
-                logger.error(e);
-                logger.error(e.getMessage());
+                } catch (ComPortException e) {
+                    Platform.runLater(() -> connectionLabel.setText("Не удалось подключиться автоматически"));
+                    logger.error(e);
+                    logger.error(e.getMessage());
+                } catch (IOException e) {
+                    logger.error(e);
+                    logger.error(e.getMessage());
+                }
             }
         }
         logger.debug("end trying to connect");
@@ -279,7 +286,7 @@ public class Controller implements Initializable {
             try {
                 comPortConnection = ComPortConnection.getInstance(ComPortConnection.getPortName());
                 comPortConnection.openPort();
-                control = new Control(comPortConnection, this, setup);
+                control = new Control(comPortConnection, this, setup, polySetup);
                 control.addListener();
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
@@ -320,7 +327,7 @@ public class Controller implements Initializable {
                 String portName = portChoiceBox.getValue();
                 comPortConnection = ComPortConnection.getInstance(portName);
                 comPortConnection.openPort(baudRate, size, stopBits, parity);
-                control = new Control(comPortConnection, this, setup);
+                control = new Control(comPortConnection, this, setup, polySetup);
                 control.addListener();
                 Image picture = new Image("images/green Ball.png", true);
                 connectImage.setImage(picture);
@@ -462,7 +469,7 @@ public class Controller implements Initializable {
 //        byte[] byes = {0x55, (byte) 0x99, 0x00, (byte) 0x99, (byte) 0xAA};
 //        control.sendByteArray(byes);
         //renderVisualization();
-        if (comPortConnection.isBusy() /*&& control.isTestOk()*/) {
+        if (comPortConnection != null && comPortConnection.isBusy() /*&& control.isTestOk()*/) {
             control.sendByteArray(setup.getTransmitArray());
         } else {
             //uiValidation.setOnDisconnected();
@@ -664,17 +671,20 @@ public class Controller implements Initializable {
         MenuItem sendTest = new MenuItem("Тест");
         MenuItem getStatus = new MenuItem("Получить статус");
         MenuItem getSetup = new MenuItem("Получить настройки");
+        MenuItem getPolySetup = new MenuItem("Получить настройки полярограммы");
         MenuItem connection = new MenuItem("Подключение");
         sendTest.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+T"));
         getStatus.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
+        getPolySetup.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+E"));
         getSetup.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+D"));
         sendTest.setOnAction((event) -> control.sendTest());
         getStatus.setOnAction((event) -> control.sendStatusRequest());
         getSetup.setOnAction((event) -> control.sendSetupRequest());
+        getPolySetup.setOnAction((event) -> control.sendPolySetupRequest());
         connection.setOnAction((event) -> connectionAvailable());
 
         file.getItems().addAll(open, setup, new SeparatorMenuItem(), openDetails, new SeparatorMenuItem(), close);
-        commands.getItems().addAll(sendTest, getStatus, getSetup, new SeparatorMenuItem(), connection);
+        commands.getItems().addAll(sendTest, getStatus, getSetup, getPolySetup, new SeparatorMenuItem(), connection);
 
         menuBar.getMenus().addAll(file, commands);
     }
@@ -785,11 +795,35 @@ public class Controller implements Initializable {
     }
 
     public void sendPolyData(ActionEvent actionEvent) {
+        if (uiValidation.valuesPolyValidation()) {
+            polySetup = uiValidation.renderPolyVisualisation();
+            if (comPortConnection != null && comPortConnection.isBusy() /*&& control.isTestOk()*/) {
+                control.sendByteArray(polySetup.getTransmitArray());
+            }
+        }
     }
 
     public void renderPoly(MouseEvent mouseEvent) {
         if (uiValidation.valuesPolyValidation()) {
-            uiValidation.renderPolyVisualisation();
+            polySetup = uiValidation.renderPolyVisualisation();
+        }
+    }
+
+    public void sendPolySetupRequest(Event event) {
+        if (polyTab.isSelected()) {
+            if (comPortConnection != null && comPortConnection.isBusy()) {
+                control.sendPolySetupRequest();
+            }
+            logger.debug("sendPolySetupRequest");
+        }
+    }
+
+    public void sendSetupRequest(Event event) {
+        if (measureTab.isSelected()) {
+            if (comPortConnection != null && comPortConnection.isBusy()) {
+                control.sendSetupRequest();
+            }
+            logger.debug("sendSetupRequest");
         }
     }
 }

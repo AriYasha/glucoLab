@@ -3,11 +3,13 @@ package com.validation;
 import com.comPort.Control;
 import com.entity.Data;
 import com.entity.MeasurementSetup;
+import com.entity.PolySetup;
 import com.file.Write;
 import com.graph.MultipleAxesLineChart;
 import com.controllers.Controller;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -26,6 +28,7 @@ public class DataFromComPortValidation {
     private Controller controller;
     private Control control;
     private MeasurementSetup setup;
+    private PolySetup polySetup;
     private XYChart.Series<Number, Number> series;
     private XYChart.Series<Number, Number> currentSeries;
     private boolean isPolarityChanged = false;
@@ -37,8 +40,9 @@ public class DataFromComPortValidation {
         currentData = new Data();
     }
 
-    public void checkCmd(List<Byte> command, MeasurementSetup setup) throws IOException {
+    public void checkCmd(List<Byte> command, MeasurementSetup setup, PolySetup polySetup) throws IOException {
         this.setup = setup;
+        this.polySetup = polySetup;
         if (isCommand(command)) {
             logger.info("Command detected");
 //            Platform.runLater(() -> controller.connectionLabel.setText("bye"));
@@ -54,6 +58,9 @@ public class DataFromComPortValidation {
                     break;
                 case Control.O_CMD:
                     testChecker();
+                    break;
+                case Control.NOT_FOUND_CMD:
+                    logger.debug("NOT_FOUND_CMD");
                     break;
             }
         } else if (isData(command)) {
@@ -76,28 +83,39 @@ public class DataFromComPortValidation {
                     addToSeries(data, setup.getPositiveAmplitudeMeasurePulses(), time);
                 }
             }
-
-
         } else if (isSetup(command)) {
             logger.info("Setup detected");
-            Platform.runLater(() -> controller.deviceStatus.setText("Настройка устройства принята"));
+            Platform.runLater(() -> controller.comPortStatus.setText("Настройка устройства принята"));
             parseSetupCMD(command);
+        } else if (isPolySetup(command)) {
+            logger.info("Setup poly detected");
+            Platform.runLater(() -> controller.comPortStatus.setText("Настройка полярограммы устройства принята"));
+            parsePolySetupCMD(command);
+        } else if (isPolyData(command)) {
+//            logger.info("Data poly detected");
+            byte[] bytes = {command.get(3), command.get(2)};
+            int voltage = control.getIntFromArray(bytes);
+            if (command.get(1) == 1) {
+                voltage = 0 - voltage;
+            }
+            bytes[0] = command.get(6);
+            bytes[1] = command.get(5);
+            int current = control.getIntFromArray(bytes);
+            if (command.get(4) == 1) {
+                current = 0 - current;
+            }
+            addToPolySeries(current, voltage);
+
         }
 
     }
 
     private void testChecker() {
         isTest = true;
-        Platform.runLater(() -> controller.deviceStatus.setText("Тестовая команда принята"));
+        Platform.runLater(() -> controller.comPortStatus.setText("Тестовая команда принята"));
         logger.debug("TEST_CMD");
     }
 
-    private boolean isSetup(List<Byte> command) {
-        return command.get(0).equals(Control.SETUP_CMD) &&
-                command.get(6).equals(Control.END_CMD) &&
-                command.get(18).equals(Control.END_CMD) &&
-                command.get(29).equals(Control.SETUP_CMD);
-    }
 
     private void statusChecker(byte command) {
         switch (command) {
@@ -128,6 +146,7 @@ public class DataFromComPortValidation {
                 logger.info("STRIP_INSERTED_STAT");
                 Platform.runLater(() -> controller.deviceStatus.setText("Полоска вставлена"));
                 Platform.runLater(() -> controller.glucoChart.getData().clear());
+                Platform.runLater(() -> controller.polyChart.getData().clear());
                 break;
             case Control.DROP_WAITING_STAT:
                 logger.info("DROP_WAITING_STAT");
@@ -172,6 +191,15 @@ public class DataFromComPortValidation {
                 endMeasure();
                 isPolarityChanged = false;
                 isMeasure = false;
+                break;
+            case Control.START_POLY_STAT:
+                logger.info("START_POLY_STAT");
+                startPolyMeasure();
+                break;
+            case Control.END_POLY_STAT:
+                logger.info("END_POLY_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Построение полярограммы окончено"));
+                endPolyMeasure();
                 break;
 
         }
@@ -229,6 +257,47 @@ public class DataFromComPortValidation {
         });
     }
 
+    private void startPolyMeasure() {
+        Platform.runLater(() -> {
+            controller.mainTabPane.getSelectionModel().select(1);
+            controller.polyTabPane.getSelectionModel().select(1);
+        });
+        series = new XYChart.Series<>();
+        currentSeries = new XYChart.Series<>();
+        series.setName("Полярограмма");
+        Platform.runLater(() -> {
+            controller.polyChart.setAnimated(false);
+            controller.polyChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
+            controller.polyChart.getData().add(series);
+            controller.measureStatLabel.setText("Построение полярограммы . . .");
+        });
+    }
+
+
+    private void endPolyMeasure() {
+//        currentData.setMeasurementSetup(setup);
+        Platform.runLater(() -> {
+            controller.measureStatLabel.setText("Полярограмма завершена");
+        });
+        XYChart.Series series = (XYChart.Series) controller.polyChart.getData().get(0);
+        ObservableList<XYChart.Data> dataFromPlot = series.getData();
+        ArrayList<Number> xValues = new ArrayList<>();
+        ArrayList<Number> yValues = new ArrayList<>();
+        for (XYChart.Data newData : dataFromPlot) {
+            xValues.add((Number) newData.getXValue());
+            yValues.add((Number) newData.getYValue());
+//            logger.debug("x = " + newData.getXValue());
+//            logger.debug("y = " + newData.getYValue());
+        }
+        logger.debug("dataFromPlot");
+        logger.debug(dataFromPlot);
+//        currentData.setCurrentXMeasurement(xValues);
+//        currentData.setCurrentYMeasurement(yValues);
+//        logger.debug(currentData.toString());
+//        Write.writeNewData(currentData);
+
+    }
+
     private void addToSeries(int data, int voltage, int time) {
         Platform.runLater(() -> {
             series.getData().add(new XYChart.Data<>(time, data));
@@ -237,7 +306,20 @@ public class DataFromComPortValidation {
         });
     }
 
+    private void addToPolySeries(int current, int voltage) {
+        Platform.runLater(() -> {
+            series.getData().add(new XYChart.Data<>(voltage, current));
+            //series.getData().ad
+            //controller.polyChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
+
+        });
+    }
+
     private void parseSetupCMD(List<Byte> command) {
+        Platform.runLater(() -> {
+            controller.mainTabPane.getSelectionModel().select(0);
+            controller.tabPane.getSelectionModel().select(0);
+        });
         byte[] bytes = {command.get(3), command.get(2)};
         setup.setLeakingTime(control.getIntFromArray(bytes));
         controller.waitingTimeEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
@@ -294,6 +376,69 @@ public class DataFromComPortValidation {
         setup.setNegativeAmplitudeMeasurePulses(control.getIntFromArray(bytes));
         controller.negativeAmpMeasureEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
         logger.debug("end setup");
+
+    }
+
+    private void parsePolySetupCMD(List<Byte> command) {
+        Platform.runLater(() -> {
+            controller.mainTabPane.getSelectionModel().select(1);
+            controller.polyTabPane.getSelectionModel().select(0);
+        });
+        logger.debug(command);
+        byte[] bytes = {command.get(3), command.get(2)};
+        int digit = control.getIntFromArray(bytes);
+        if (command.get(1) == 1) {
+            digit = 0 - digit;
+        }
+        polySetup.setBeginPoint(digit);
+        final int value = digit;
+        Platform.runLater(() -> controller.beginPointEdit.setText(String.valueOf(value)));
+
+        bytes[0] = command.get(6);
+        bytes[1] = command.get(5);
+        digit = control.getIntFromArray(bytes);
+        if (command.get(4) == 1) {
+            digit = 0 - digit;
+        }
+        polySetup.setMediumPoint(digit);
+        final int value1 = digit;
+        Platform.runLater(() -> controller.mediumPointEdit.setText(String.valueOf(value1)));
+        bytes[0] = command.get(9);
+        bytes[1] = command.get(8);
+        digit = control.getIntFromArray(bytes);
+        if (command.get(7) == 1) {
+            digit = 0 - digit;
+        }
+        polySetup.setLastPoint(digit);
+        final int value2 = digit;
+        Platform.runLater(() -> controller.lastPointEdit.setText(String.valueOf(value2)));
+        byte[] timeBytes = {command.get(13), command.get(12), command.get(11)};
+        digit = control.getIntFromArray(timeBytes);
+        polySetup.setIncreaseTime(digit);
+        final int value3 = digit;
+        Platform.runLater(() -> controller.increaseTimeEdit.setText(String.valueOf(value3)));
+        timeBytes[0] = command.get(16);
+        timeBytes[1] = command.get(15);
+        timeBytes[2] = command.get(14);
+        digit = control.getIntFromArray(timeBytes);
+        polySetup.setDecreaseTime(digit);
+        final int value4 = digit;
+        Platform.runLater(() -> controller.decreaseTimeEdit.setText(String.valueOf(value4)));
+        bytes[0] = command.get(19);
+        bytes[1] = command.get(18);
+        digit = control.getIntFromArray(bytes);
+        polySetup.setQuantityReapeted(digit);
+        final int value5 = digit;
+        Platform.runLater(() -> controller.quantityReapetedEdit.setText(String.valueOf(value5)));
+        bytes[0] = command.get(21);
+        bytes[1] = command.get(20);
+        digit = control.getIntFromArray(bytes);
+        polySetup.setDiscrDACmV(digit);
+        bytes[0] = command.get(23);
+        bytes[1] = command.get(22);
+        digit = control.getIntFromArray(bytes);
+        polySetup.setNullDiscrDAC(digit);
+        logger.debug("end poly setup");
 
     }
 
@@ -356,5 +501,25 @@ public class DataFromComPortValidation {
         return command.get(0).equals(Control.END_CMD) &&
                 command.get(6).equals(Control.END_CMD) /*&&
                 (byte) (command.get(1) + command.get(2)) == command.get(3)*/;
+    }
+
+    private boolean isPolyData(List<Byte> command) {
+        return command.get(0).equals(Control.POLY_DATA_CMD) &&
+                command.get(8).equals(Control.POLY_DATA_CMD) /*&&
+                (byte) (command.get(1) + command.get(2)) == command.get(3)*/;
+    }
+
+    private boolean isPolySetup(List<Byte> command) {
+        return command.get(0).equals(Control.POLY_SETUP_CMD) &&
+                command.get(10).equals(Control.END_CMD) &&
+                command.get(17).equals(Control.END_CMD) &&
+                command.get(25).equals(Control.POLY_SETUP_CMD);
+    }
+
+    private boolean isSetup(List<Byte> command) {
+        return command.get(0).equals(Control.SETUP_CMD) &&
+                command.get(6).equals(Control.END_CMD) &&
+                command.get(18).equals(Control.END_CMD) &&
+                command.get(29).equals(Control.SETUP_CMD);
     }
 }

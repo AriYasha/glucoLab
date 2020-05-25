@@ -20,6 +20,10 @@ public class Main extends Application {
         String css = "/styles/labStyle.css";
         String icons = "/images/";
 
+        byte[] bytes = {0x64, 0x00, 0x01};
+        Control control = new Control();
+        System.out.println(control.getIntFromArray(bytes));
+
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(fxmlFile));
         Parent root = (Parent) loader.load();

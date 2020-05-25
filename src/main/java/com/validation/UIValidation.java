@@ -135,11 +135,11 @@ public class UIValidation {
                 showErrorLabel(controller.lastPointError);
                 isValid = false;
             }
-            if (!increaseTime.isEmpty() && checkRange(increaseTime, 300)) {
+            if (!increaseTime.isEmpty() && checkRange(increaseTime, 300000)) {
                 showErrorLabel(controller.increaseTimeError);
                 isValid = false;
             }
-            if (!decreaseTime.isEmpty() && checkRange(decreaseTime, 300)) {
+            if (!decreaseTime.isEmpty() && checkRange(decreaseTime, 300000)) {
                 showErrorLabel(controller.decreaseTimeError);
                 isValid = false;
             }

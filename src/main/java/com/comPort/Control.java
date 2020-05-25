@@ -1,11 +1,13 @@
 package com.comPort;
 
 import com.entity.MeasurementSetup;
+import com.entity.PolySetup;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.controllers.Controller;
 import com.validation.DataFromComPortValidation;
+import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import org.apache.log4j.Logger;
 
@@ -35,16 +37,18 @@ public class Control extends Thread implements SerialPortDataListener {
     private Controller controller;
     private DataFromComPortValidation validation;
     private MeasurementSetup setup;
+    private PolySetup polySetup;
 
     public Control() {
 
     }
 
-    public Control(ComPortConnection comPortConnection, Controller controller, MeasurementSetup setup) {
+    public Control(ComPortConnection comPortConnection, Controller controller, MeasurementSetup setup, PolySetup polySetup) {
         this.comPortConnection = comPortConnection;
         this.controller = controller;
         this.userPort = comPortConnection.getUserPort();
         this.setup = setup;
+        this.polySetup = polySetup;
         bytesReceived = new ArrayList<>();
         validation = new DataFromComPortValidation(controller, this);
         //addListener();
@@ -83,6 +87,13 @@ public class Control extends Thread implements SerialPortDataListener {
         userPort.writeBytes(command, command.length);
     }
 
+    public void sendPolySetupRequest() {
+        command[1] = CMD;
+        command[2] = 0x01;
+        command[3] = (byte) (command[1] + command[2]);
+        userPort.writeBytes(command, command.length);
+    }
+
     public boolean isTestOk(){
         Runnable task = () -> {
             sendTest();
@@ -112,8 +123,12 @@ public class Control extends Thread implements SerialPortDataListener {
     }
 
     public int getIntFromArray(byte[] bytes) {
-
-        return fromBinToInt(dataToBin(bytes[1]) + dataToBin(bytes[0]));
+        String binaryString = "";
+        for(int i = bytes.length - 1; i >= 0; i--){
+            binaryString += dataToBin(bytes[i]);
+        }
+        //return fromBinToInt(dataToBin(bytes[1]) + dataToBin(bytes[0]));
+        return fromBinToInt(binaryString);
     }
 
 
@@ -167,6 +182,17 @@ public class Control extends Thread implements SerialPortDataListener {
         return decDigit;
     }
 
+    private int addByteToList(int numBytes){
+        byte[] setupData = new byte[numBytes];
+        while (userPort.bytesAvailable() < numBytes) ;
+        userPort.readBytes(setupData, numBytes);
+        for (byte aNewData : setupData) {
+            bytesReceived.add(aNewData);
+        }
+        logger.debug(bytesReceived);
+        return userPort.bytesAvailable();
+    }
+
     public int bytesAvailable() {
         return userPort.bytesAvailable();
     }
@@ -201,32 +227,28 @@ public class Control extends Thread implements SerialPortDataListener {
                 }
 
             } else if (firstByte[0] == SETUP_CMD) {
-                byte[] setupData = new byte[29];
                 bytesReceived.add(firstByte[0]);
-                while (userPort.bytesAvailable() < 29) ;
-                numRead = userPort.readBytes(setupData, 29);
-                for (byte aNewData : setupData) {
-                    bytesReceived.add(aNewData);
-                }
-                numRead = userPort.bytesAvailable();
+                numRead = addByteToList(29);
                 //logger.debug("available " + numRead);
             } else if (firstByte[0] == END_CMD){
-                byte[] measureData = new byte[6];
                 bytesReceived.add(firstByte[0]);
-                while (userPort.bytesAvailable() < 6) ;
-                userPort.readBytes(measureData, 6);
-                for (byte aNewData : measureData) {
-                    bytesReceived.add(aNewData);
-                }
-                numRead = userPort.bytesAvailable();
+                numRead = addByteToList(6);
+            } else if(firstByte[0] == POLY_SETUP_CMD){
+                bytesReceived.add(firstByte[0]);
+                numRead = addByteToList(25);
+            } else if(firstByte[0] == POLY_DATA_CMD){
+                bytesReceived.add(firstByte[0]);
+                numRead = addByteToList(8);
             } else{
+                Platform.runLater(() -> controller.comPortStatus.setText(String.valueOf(userPort.bytesAvailable())));
                 byte[] notRecognize = new byte[userPort.bytesAvailable()];
                 userPort.readBytes(notRecognize, userPort.bytesAvailable());
-                logger.debug("notRecognize : ");
-                logger.debug(Arrays.toString(notRecognize));
+                logger.warn("notRecognize : ");
+                logger.warn(firstByte[0]);
+                logger.warn(Arrays.toString(notRecognize));
             }
             try {
-                validation.checkCmd(bytesReceived, setup);
+                validation.checkCmd(bytesReceived, setup, polySetup);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
@@ -245,6 +267,9 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte CMD = 0x64;                 // 0x64
     static final public byte O_CMD = 79;                // 0x4F
     static final public byte k_CMD = 104;               // 0x68
+    static final public byte NOT_FOUND_CMD = 0x20;               // 0x20
+    static final public byte POLY_SETUP_CMD = (byte)0xDD;               // 0xDD
+    static final public byte POLY_DATA_CMD = (byte)0xBB;               // 0xBB
     static final public byte[] CONTROL_ARRAY = {Control.START_CMD,
             Control.O_CMD,
             Control.k_CMD,
@@ -265,6 +290,8 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte START_MEASURE_STAT = 10;
     static final public byte POLARITY_CHANGED_STAT = 11;
     static final public byte END_MEASURE_STAT = 12;
+    static final public byte START_POLY_STAT = 13;
+    static final public byte END_POLY_STAT = 14;
 
     //    STRIP TYPES
     static final public byte FIRST_STRIP_TYPE = 1;
