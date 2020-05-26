@@ -2,6 +2,7 @@ package com.file;
 
 
 import com.entity.Data;
+import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import org.apache.log4j.Logger;
 
@@ -31,12 +32,12 @@ public class Read {
 //        return string;
 //    }
 
-    public static Data reading(String filename){
-        String filePath = "C:\\GlucoLab\\";
-        Data record = null;
+    public static MeasurementSetup reading(String filename){
+        String filePath = Write.fileMeasurePath;
+        MeasurementSetup record = null;
         try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(/*filePath +*/ filename)))
         {
-            record = (Data) objectInputStream.readObject();
+            record = (MeasurementSetup) objectInputStream.readObject();
             logger.debug(record);
         }
         catch(Exception ex){

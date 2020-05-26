@@ -1,6 +1,8 @@
 package com.controllers;
 
 import com.entity.Data;
+import com.entity.MeasurementSetup;
+import com.entity.PolySetup;
 import com.file.ChooseFile;
 import com.file.Read;
 import com.graph.MultipleSameAxesLineChart;
@@ -57,12 +59,23 @@ public class GraphController implements Initializable {
 
     }
 
-    public void addFirstSeries(String seriesName, Data data){
+    public void addFirstSeries(String seriesName, MeasurementSetup measurementSetup){
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
         glucoChart.setAnimated(false);
         //graphController.glucoChart.getData().add(currentSeries);
-        multipleAxesLineChart.addSeries(prepareSeries(seriesName, data), Color.RED, fileName, data);
-        legendLabel.setText(data.getMeasurementSetup().toString());
+        multipleAxesLineChart.addSeries(prepareSeries(seriesName, measurementSetup.getData()), Color.RED, fileName, measurementSetup.getData());
+//        legendLabel.setText(data.getMeasurementSetup().toString());
+        //graphController.legendPane.getChildren().add(currentSeries.getLegend());
+        showDetails();
+    }
+
+
+    public void addFirstSeries(String seriesName, PolySetup measurementSetup){
+        multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
+        glucoChart.setAnimated(false);
+        //graphController.glucoChart.getData().add(currentSeries);
+        multipleAxesLineChart.addSeries(prepareSeries(seriesName, measurementSetup.getData()), Color.RED, fileName, measurementSetup.getData());
+//        legendLabel.setText(data.getMeasurementSetup().toString());
         //graphController.legendPane.getChildren().add(currentSeries.getLegend());
         showDetails();
     }
@@ -119,13 +132,18 @@ public class GraphController implements Initializable {
 
     private void openPlotWindow() throws IOException {
         String fileName = ChooseFile.chooseFile();
-        Data data = Read.reading(fileName);
+        MeasurementSetup measurementSetup = Read.reading(fileName);
       //  glucoChart.getData().add(prepareSeries(fileName, data));
 //        if (!isOpen) {
 //            createMultiAxesLineChart();
 //        }
-        multipleAxesLineChart.addSeries(prepareSeries(fileName, data), Color.color(Math.random(), 0, Math.random()), fileName, data);
-        legendLabel.setText(data.getMeasurementSetup().toString());
+        multipleAxesLineChart.addSeries(
+                prepareSeries(fileName, measurementSetup.getData()),
+                Color.color(Math.random(),0, Math.random()),
+                fileName,
+                measurementSetup.getData()
+        );
+//       legendLabel.setText(data.getMeasurementSetup().toString());
         //legendPane.getChildren().add(multipleAxesLineChart.getLegend());
         //glucoChart.getData().add(prepareSeries(fileName, data));
         showDetails();

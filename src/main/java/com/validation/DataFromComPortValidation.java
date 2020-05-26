@@ -62,6 +62,10 @@ public class DataFromComPortValidation {
                 case Control.NOT_FOUND_CMD:
                     logger.debug("NOT_FOUND_CMD");
                     break;
+                case Control.DEVICE_MODE_CMD:
+                    logger.debug("DEVICE_MODE_CMD");
+                    deviceMode(command.get(2));
+                    break;
             }
         } else if (isData(command)) {
             //logger.info("Data detected");
@@ -108,6 +112,25 @@ public class DataFromComPortValidation {
 
         }
 
+    }
+
+    private void deviceMode(byte command) {
+        switch (command){
+            case Control.MEASURE_MODE:
+                logger.debug("MEASURE_MODE");
+                Platform.runLater(() -> {
+                    controller.mainTabPane.getSelectionModel().select(0);
+                    controller.tabPane.getSelectionModel().select(0);
+                });
+                break;
+            case Control.POLY_MODE:
+                logger.debug("POLY_MODE");
+                Platform.runLater(() -> {
+                    controller.mainTabPane.getSelectionModel().select(1);
+                    controller.tabPane.getSelectionModel().select(0);
+                });
+                break;
+        }
     }
 
     private void testChecker() {
@@ -234,7 +257,7 @@ public class DataFromComPortValidation {
         currentData.setCurrentYMeasurement(yValues);
         logger.debug(currentData.toString());
         setup.setData(currentData);
-        Write.writeNewData(currentData);
+        Write.writeNewData(setup);
 
     }
 

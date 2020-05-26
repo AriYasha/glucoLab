@@ -263,6 +263,7 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte SETUP_CMD = (byte) 0xCC;      // 0xCC
     static final public byte STAT_CMD = (byte) 153;     // 0x99
     static final public byte STRIP_NUMBER_CMD = 83;     // 0x53
+    static final public byte DEVICE_MODE_CMD = 0x4D;     // 0x4D
     static final public byte ERR_CMD = 69;              // 0x45
     static final public byte CMD = 0x64;                 // 0x64
     static final public byte O_CMD = 79;                // 0x4F
@@ -299,6 +300,10 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte THIRD_STRIP_TYPE = 3;
     static final public byte FOURTH_STRIP_TYPE = 4;
     static final public byte ZERO_STRIP_TYPE = 5;
+
+    //    DEVICE MODE
+    static final public byte MEASURE_MODE = 1;
+    static final public byte POLY_MODE = 2;
 
     public void sendOnExit() {
     }

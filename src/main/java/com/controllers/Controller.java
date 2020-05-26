@@ -643,6 +643,7 @@ public class Controller implements Initializable {
         Menu file = new Menu("Файл");
 
         MenuItem open = new MenuItem("Открыть");
+        MenuItem openPoly = new MenuItem("Открыть полярограмму");
         MenuItem openDetails = new MenuItem("Открыть с подробностями");
         MenuItem setup = new MenuItem("Настройки");
         MenuItem close = new MenuItem("Выход");
@@ -651,6 +652,9 @@ public class Controller implements Initializable {
         close.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
         open.setOnAction((event) -> {
             openPlotWindow();
+        });
+        openPoly.setOnAction((event) -> {
+            openPolyWindow();
         });
         openDetails.setOnAction((event) -> {
             openChooseWindow();
@@ -683,7 +687,7 @@ public class Controller implements Initializable {
         getPolySetup.setOnAction((event) -> control.sendPolySetupRequest());
         connection.setOnAction((event) -> connectionAvailable());
 
-        file.getItems().addAll(open, setup, new SeparatorMenuItem(), openDetails, new SeparatorMenuItem(), close);
+        file.getItems().addAll(open, openPoly, setup, new SeparatorMenuItem(), openDetails, new SeparatorMenuItem(), close);
         commands.getItems().addAll(sendTest, getStatus, getSetup, getPolySetup, new SeparatorMenuItem(), connection);
 
         menuBar.getMenus().addAll(file, commands);
@@ -734,9 +738,9 @@ public class Controller implements Initializable {
     private void openPlotWindow() {
         try {
             String fileName = ChooseFile.chooseFile();
-            Data data = Read.reading(fileName);
+            MeasurementSetup measurementSetup = Read.reading(fileName);
             newWindow();
-            graphController.addFirstSeries(fileName, data);
+            graphController.addFirstSeries(fileName, measurementSetup);
 
 //            ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
 //            ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
@@ -764,6 +768,19 @@ public class Controller implements Initializable {
 //            });
 
 
+        } catch (IOException e) {
+            logger.warn(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void openPolyWindow() {
+        String fileName = null;
+        try {
+            fileName = ChooseFile.chooseFile();
+            PolySetup polySetup = Read.readingPoly(fileName);
+            newWindow();
+            graphController.addFirstSeries(fileName, polySetup);
         } catch (IOException e) {
             logger.warn(e.getMessage());
             e.printStackTrace();

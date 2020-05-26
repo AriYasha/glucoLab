@@ -3,6 +3,7 @@ package com.file;
 
 
 import com.entity.Data;
+import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import org.apache.log4j.Logger;
 
@@ -47,7 +48,7 @@ public class Write {
         }
     }
 
-    public static void writeNewData(Data data){
+    public static void writeNewData(MeasurementSetup measurementSetup){
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm-ss");
         LocalDateTime nowDateTime = LocalDateTime.now();
         File directory = new File(fileMeasurePath);
@@ -57,9 +58,9 @@ public class Write {
                 logger.warn("directory not created");
             }
         }
-        String fileName = data.getUserName() + " " + dateTimeFormatter.format(nowDateTime) + ".gl";
+        String fileName = measurementSetup.getData().getUserName() + " " + dateTimeFormatter.format(nowDateTime) + ".gl";
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileMeasurePath + "\\" + fileName))) {
-            objectOutputStream.writeObject(data);
+            objectOutputStream.writeObject(measurementSetup);
         } catch (Exception ex) {
             logger.error(ex.getMessage());
             logger.error(ex);
