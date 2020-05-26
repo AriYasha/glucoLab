@@ -10,6 +10,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.file.ChooseFile;
 import com.file.Read;
+import com.file.Write;
 import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
 import com.jfoenix.controls.JFXTabPane;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -107,7 +109,6 @@ public class Controller implements Initializable {
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
-    private GraphController graphController;
     private XYChart.Series<Number, Number> currentSeries;
 
     public Label coordinateLabel;
@@ -201,7 +202,8 @@ public class Controller implements Initializable {
 
     private void setConnection() {
         boolean isConnected = false;
-        ObservableList portList = portChoiceBox.getItems();
+        List portList = new ArrayList();
+        portList.addAll(portChoiceBox.getItems());
         byte[] readBytes;
         while (!isConnected) {
             for (Object port : portList) {
@@ -241,6 +243,9 @@ public class Controller implements Initializable {
                     logger.error(e.getMessage());
                 }
             }
+            portList.clear();
+            portList.addAll(Arrays.asList(ComPortConnection.getPortNames()));
+            logger.debug(portList);
         }
         logger.debug("end trying to connect");
 
@@ -737,10 +742,12 @@ public class Controller implements Initializable {
 
     private void openPlotWindow() {
         try {
-            String fileName = ChooseFile.chooseFile();
-            MeasurementSetup measurementSetup = Read.reading(fileName);
-            newWindow();
+            String fileName = ChooseFile.chooseFile(Write.fileMeasurePath);
+            MeasurementSetup measurementSetup = Read.reading(Write.fileMeasurePath + "\\" + fileName);
+            FXMLLoader fxmlLoader = newWindow("/fxml/graphMain.fxml", "Измерения глюкозы");
+            GraphController graphController = fxmlLoader.getController();
             graphController.addFirstSeries(fileName, measurementSetup);
+
 
 //            ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
 //            ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
@@ -777,23 +784,24 @@ public class Controller implements Initializable {
     private void openPolyWindow() {
         String fileName = null;
         try {
-            fileName = ChooseFile.chooseFile();
-            PolySetup polySetup = Read.readingPoly(fileName);
-            newWindow();
-            graphController.addFirstSeries(fileName, polySetup);
+            fileName = ChooseFile.chooseFile(Write.filePolyPath);
+            PolySetup polySetup = Read.readingPoly(Write.filePolyPath + "\\" + fileName);
+            FXMLLoader fxmlLoader = newWindow("/fxml/polyGraph.fxml", "Полярограмма");
+            PolyGraphController polyGraphController = fxmlLoader.getController();
+            polyGraphController.addFirstSeries(fileName, polySetup);
         } catch (IOException e) {
             logger.warn(e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void newWindow() {
+    private FXMLLoader newWindow(String fxml, String title) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/graphMain.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxml));
             Parent root1 = fxmlLoader.load();
             Scene scene = new Scene(root1);
             Stage stage = new Stage();
-            stage.setTitle("Измерения глюкозы");
+            stage.setTitle(title);
             scene.getStylesheets().add("/styles/labStyle.css");
             stage.setScene(scene);
             stage.show();
@@ -803,11 +811,13 @@ public class Controller implements Initializable {
                     stage.close();
                 }
             });
-            graphController = fxmlLoader.getController();
+            return fxmlLoader;
+            //graphController = fxmlLoader.getController();
         } catch (IOException e) {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
+        return null;
 
     }
 

@@ -2,10 +2,13 @@ package com.comPort;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.exception.ComPortException;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class ComPortConnection implements AutoCloseable {
+
+    final static Logger logger = Logger.getLogger(ComPortConnection.class);
 
     private static ComPortConnection comPortConnection;
 
@@ -76,6 +79,8 @@ public class ComPortConnection implements AutoCloseable {
     public void closePort() {
         if (userPort.isOpen()) {
             userPort.closePort();
+            logger.debug(userPort.getSystemPortName());
+            logger.debug("portClosed");
         }
     }
 
@@ -91,6 +96,8 @@ public class ComPortConnection implements AutoCloseable {
     public void close() throws IOException {
         if (userPort.isOpen()) {
             userPort.closePort();
+            logger.debug(userPort.getSystemPortName());
+            logger.debug("portClosed");
         }
     }
 

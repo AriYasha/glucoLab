@@ -115,7 +115,7 @@ public class DataFromComPortValidation {
     }
 
     private void deviceMode(byte command) {
-        switch (command){
+        switch (command) {
             case Control.MEASURE_MODE:
                 logger.debug("MEASURE_MODE");
                 Platform.runLater(() -> {
@@ -127,7 +127,7 @@ public class DataFromComPortValidation {
                 logger.debug("POLY_MODE");
                 Platform.runLater(() -> {
                     controller.mainTabPane.getSelectionModel().select(1);
-                    controller.tabPane.getSelectionModel().select(0);
+                    controller.polyTabPane.getSelectionModel().select(0);
                 });
                 break;
         }
@@ -153,10 +153,6 @@ public class DataFromComPortValidation {
             case Control.STRIP_WAITING_STAT:
                 logger.info("STRIP_WAITING");
                 Platform.runLater(() -> controller.deviceStatus.setText("Ожидание полоски"));
-//                Platform.runLater(() -> {
-//                    controller.mainTabPane.getSelectionModel().select(0);
-//                    controller.tabPane.getSelectionModel().select(0);
-//                });
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Вставьте полоску");
                     Image stripType = new Image("images/stripNoName.jpg", true);

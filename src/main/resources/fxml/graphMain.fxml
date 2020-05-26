@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.chart.*?>
@@ -13,9 +14,21 @@
         <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="422.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <bottom>
                 <AnchorPane fx:id="legendPane" prefHeight="35.0" prefWidth="500.0" BorderPane.alignment="CENTER">
-                    <children>
-                        <Label fx:id="legendLabel" layoutX="38.0" layoutY="3.0" prefHeight="22.0" prefWidth="500.0" text="Label" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                    </children></AnchorPane>
+               <children>
+                  <AnchorPane prefHeight="200.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <LineChart fx:id="visualPlot" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" layoutX="11.0" layoutY="504.0" legendVisible="false" prefHeight="794.0" prefWidth="1012.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <xAxis>
+                        <NumberAxis side="BOTTOM" fx:id="xTimeVisual">
+                           <cursor>
+                              <Cursor fx:constant="CROSSHAIR" />
+                           </cursor>
+                        </NumberAxis>
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis fx:id="yAmpVisual" side="LEFT" />
+                     </yAxis>
+                  </LineChart>
+               </children></AnchorPane>
             </bottom>
             <center>
                 <AnchorPane BorderPane.alignment="CENTER">

@@ -15,8 +15,8 @@ import java.util.List;
 public class Write {
 
     final static Logger logger = Logger.getLogger(Write.class);
-    final static String fileMeasurePath = "C:\\GlucoLab\\Измерения";
-    final static String filePolyPath = "C:\\GlucoLab\\Полярограмма";
+    final public static String fileMeasurePath = "C:\\GlucoLab\\Измерения";
+    final public static String filePolyPath = "C:\\GlucoLab\\Полярограмма";
 
     public static void writing(String path, List<Integer> list) {
         try (FileWriter writer = new FileWriter(path, true)) {

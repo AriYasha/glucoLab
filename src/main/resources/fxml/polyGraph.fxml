@@ -1,14 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
+<?import javafx.scene.chart.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0">
-
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.PolyGraphController">
+    <children>
+        <BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="422.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <bottom>
+                <AnchorPane fx:id="legendPane" prefHeight="35.0" prefWidth="500.0" BorderPane.alignment="CENTER">
+               <children>
+                  <LineChart fx:id="visualPlot" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" legendVisible="false" prefHeight="794.0" prefWidth="1012.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <xAxis>
+                        <NumberAxis side="BOTTOM" fx:id="xTimeVisual">
+                           <cursor>
+                              <Cursor fx:constant="CROSSHAIR" />
+                           </cursor>
+                        </NumberAxis>
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis fx:id="yAmpVisual" side="LEFT" />
+                     </yAxis>
+                  </LineChart>
+               </children></AnchorPane>
+            </bottom>
+            <center>
+                <AnchorPane BorderPane.alignment="CENTER">
+                    <children>
+                        <StackPane fx:id="stackPane" prefHeight="400.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <children>
+                                <LineChart fx:id="glucoChart">
+                                    <xAxis>
+                                        <NumberAxis label="Напряжение, мВ" side="BOTTOM" fx:id="xAxis" />
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis fx:id="yAxis" label="Амплитуда, мкА" side="LEFT" />
+                                    </yAxis>
+                                </LineChart>
+                            </children>
+                        </StackPane>
+                    </children>
+                </AnchorPane>
+            </center>
+            <top>
+                <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Close" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Edit">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Delete" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Help">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="About" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+            </top>
+            <right>
+                <AnchorPane BorderPane.alignment="CENTER">
+                    <children>
+                        <ColorPicker fx:id="colorChoice" layoutX="100.0" onAction="#setGraphColor" prefHeight="25.0" prefWidth="40.0" />
+                        <ChoiceBox fx:id="graphChoice" prefHeight="25.0" prefWidth="100.0" />
+                        <Label fx:id="descriptionLabel" layoutX="15.0" layoutY="26.0" prefWidth="140.0" text="Label" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font></Label>
+                    </children>
+                </AnchorPane>
+            </right>
+        </BorderPane>
+    </children>
 </AnchorPane>

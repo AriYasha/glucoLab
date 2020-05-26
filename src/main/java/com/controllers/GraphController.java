@@ -5,7 +5,9 @@ import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import com.file.ChooseFile;
 import com.file.Read;
+import com.file.Write;
 import com.graph.MultipleSameAxesLineChart;
+import com.graph.VisualisationPlot;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
@@ -25,11 +27,14 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class GraphController implements Initializable {
 
     final static Logger logger = Logger.getLogger(GraphController.class);
+    private final Map<XYChart.Series, MeasurementSetup> chartDataMap = new HashMap<>();
 
     public LineChart glucoChart;
     public StackPane stackPane;
@@ -41,11 +46,12 @@ public class GraphController implements Initializable {
     public ChoiceBox graphChoice;
     public ColorPicker colorChoice;
     public Label descriptionLabel;
+    public LineChart visualPlot;
+    public NumberAxis xTimeVisual;
+    public NumberAxis yAmpVisual;
 
     private Data firstData;
     private String fileName;
-
-    private boolean isOpen = false;
 
     MultipleSameAxesLineChart multipleAxesLineChart;
 
@@ -53,7 +59,6 @@ public class GraphController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         menuBarSetup();
         graphChoice.setOnAction((event) -> seriesChooser());
-
 //        createMultiAxesLineChart();
 //        multipleAxesLineChart.addSeries(prepareSeries(fileName, firstData), Color.color(Math.random(), 0, Math.random()), fileName);
 
@@ -63,7 +68,9 @@ public class GraphController implements Initializable {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
         glucoChart.setAnimated(false);
         //graphController.glucoChart.getData().add(currentSeries);
-        multipleAxesLineChart.addSeries(prepareSeries(seriesName, measurementSetup.getData()), Color.RED, fileName, measurementSetup.getData());
+        XYChart.Series series = prepareSeries(seriesName, measurementSetup.getData());
+        multipleAxesLineChart.addSeries(series, Color.RED, fileName, measurementSetup.getData());
+        chartDataMap.put(series, measurementSetup);
 //        legendLabel.setText(data.getMeasurementSetup().toString());
         //graphController.legendPane.getChildren().add(currentSeries.getLegend());
         showDetails();
@@ -120,7 +127,6 @@ public class GraphController implements Initializable {
             }
         });
         close.setOnAction((event) -> {
-            isOpen = false;
             Stage stage = (Stage) menuBar.getScene().getWindow();
             stage.close();
         });
@@ -131,18 +137,20 @@ public class GraphController implements Initializable {
     }
 
     private void openPlotWindow() throws IOException {
-        String fileName = ChooseFile.chooseFile();
-        MeasurementSetup measurementSetup = Read.reading(fileName);
+        String fileName = ChooseFile.chooseFile(Write.fileMeasurePath);
+        MeasurementSetup measurementSetup = Read.reading(Write.fileMeasurePath + "\\" + fileName);
       //  glucoChart.getData().add(prepareSeries(fileName, data));
 //        if (!isOpen) {
 //            createMultiAxesLineChart();
 //        }
+        XYChart.Series series = prepareSeries(fileName, measurementSetup.getData());
         multipleAxesLineChart.addSeries(
-                prepareSeries(fileName, measurementSetup.getData()),
+                series,
                 Color.color(Math.random(),0, Math.random()),
                 fileName,
                 measurementSetup.getData()
         );
+        chartDataMap.put(series, measurementSetup);
 //       legendLabel.setText(data.getMeasurementSetup().toString());
         //legendPane.getChildren().add(multipleAxesLineChart.getLegend());
         //glucoChart.getData().add(prepareSeries(fileName, data));
@@ -150,7 +158,6 @@ public class GraphController implements Initializable {
     }
 
     private void createMultiAxesLineChart() {
-        isOpen = true;
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
     }
 
@@ -170,6 +177,8 @@ public class GraphController implements Initializable {
         Color color = multipleAxesLineChart.getSeriesColor(series);
         colorChoice.setValue(color);
         setDescriptionLabel(multipleAxesLineChart.getChartData(series));
+        VisualisationPlot visualisationPlot = new VisualisationPlot(visualPlot);
+        visualisationPlot.drawMeasureGraphic(visualPlot, chartDataMap.get(series));
     }
 
     public void setGraphColor(ActionEvent actionEvent) {
@@ -186,20 +195,19 @@ public class GraphController implements Initializable {
     }
 
     private void setDescriptionLabel(Data data){
-        System.out.println(data.toString());
         descriptionLabel.setText("Описание выбранного графика :\n" +
                 "\nТип полоски :\n\t" + data.getStripType() +
-                "\nВремя протекания :\n\t" + data.getMeasurementSetup().getLeakingTime() +
-                "\nВремя паузы :\n\t" + data.getMeasurementSetup().getPauseTime() +
+                "\nВремя протекания :\n\t" + data.getMeasurementSetup().getLeakingTime() + ", мс" +
+                "\nВремя паузы :\n\t" + data.getMeasurementSetup().getPauseTime() + ", мс" +
                 "\nКоличество импульсов ПП :\n\t" + data.getMeasurementSetup().getQuantityFastPolarityPulses() +
-                "\nАмплитуда положительных импульсов ПП :\n\t" + data.getMeasurementSetup().getPositiveAmplitudeFastPolarityPulses() +
+                "\nАмплитуда положительных импульсов ПП :\n\t" + data.getMeasurementSetup().getPositiveAmplitudeFastPolarityPulses() + ", мВ" +
                 "\nАмплитуда отрицательных импульсов ПП :\n\t" + data.getMeasurementSetup().getNegativeAmplitudeFastPolarityPulses() +
-                "\nВремя отрицательных импульсов ПП :\n\t" + data.getMeasurementSetup().getNegativeFastPolarityReversalTime() +
-                "\nВремя положительных импульсов ПП :\n\t" + data.getMeasurementSetup().getPositiveFastPolarityReversalTime() +
-                "\nАмплитуда положительного импульса измерения :\n\t" + data.getMeasurementSetup().getNegativeAmplitudeMeasurePulses() +
-                "\nАмплитуда отрицательного импульса измерения :\n\t" + data.getMeasurementSetup().getPositiveAmplitudeMeasurePulses() +
-                "\nВремя отрицательного импульса измерения :\n\t" + data.getMeasurementSetup().getNegativeMeasureTime() +
-                "\nВремя положительного импульса измерения :\n\t" + data.getMeasurementSetup().getPositiveMeasureTime() +
+                "\nВремя отрицательных импульсов ПП :\n\t" + data.getMeasurementSetup().getNegativeFastPolarityReversalTime() + ", мс" +
+                "\nВремя положительных импульсов ПП :\n\t" + data.getMeasurementSetup().getPositiveFastPolarityReversalTime() + ", мс" +
+                "\nАмплитуда положительного импульса измерения :\n\t" + data.getMeasurementSetup().getNegativeAmplitudeMeasurePulses() + ", мВ" +
+                "\nАмплитуда отрицательного импульса измерения :\n\t" + data.getMeasurementSetup().getPositiveAmplitudeMeasurePulses() + ", мВ" +
+                "\nВремя отрицательного импульса измерения :\n\t" + data.getMeasurementSetup().getNegativeMeasureTime() + ", мс" +
+                "\nВремя положительного импульса измерения :\n\t" + data.getMeasurementSetup().getPositiveMeasureTime() + ", мс" +
                 ""
         );
     }

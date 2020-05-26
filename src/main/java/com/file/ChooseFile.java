@@ -10,9 +10,9 @@ public class ChooseFile {
 
     final static Logger logger = Logger.getLogger(ChooseFile.class);
 
-    public static String chooseFile() throws IOException {
+    public static String chooseFile(String filePath) throws IOException {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("C:\\GlucoLab"));
+        fileChooser.setInitialDirectory(new File(filePath));
         File selectedFile = fileChooser.showOpenDialog(null);
         if(selectedFile != null){
             logger.debug(selectedFile.getName());
@@ -20,7 +20,7 @@ public class ChooseFile {
             logger.debug(selectedFile.getCanonicalPath());
             logger.debug(selectedFile.getPath());
 
-            return selectedFile.getAbsolutePath();
+            return selectedFile.getName();
         } else {
             throw new IOException("File not selected");
         }
