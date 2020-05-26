@@ -130,11 +130,10 @@ public class DataFromComPortValidation {
             case Control.STRIP_WAITING_STAT:
                 logger.info("STRIP_WAITING");
                 Platform.runLater(() -> controller.deviceStatus.setText("Ожидание полоски"));
-                Platform.runLater(() -> {
-                    controller.mainTabPane.getSelectionModel().select(0);
-                    controller.tabPane.getSelectionModel().select(0);
-                });
-                //Platform.runLater(() -> controller.glucoChart.getData().clear());
+//                Platform.runLater(() -> {
+//                    controller.mainTabPane.getSelectionModel().select(0);
+//                    controller.tabPane.getSelectionModel().select(0);
+//                });
                 Platform.runLater(() -> {
                     controller.measureStatLabel.setText("Вставьте полоску");
                     Image stripType = new Image("images/stripNoName.jpg", true);
@@ -234,6 +233,7 @@ public class DataFromComPortValidation {
         currentData.setCurrentXMeasurement(xValues);
         currentData.setCurrentYMeasurement(yValues);
         logger.debug(currentData.toString());
+        setup.setData(currentData);
         Write.writeNewData(currentData);
 
     }
@@ -275,7 +275,7 @@ public class DataFromComPortValidation {
 
 
     private void endPolyMeasure() {
-//        currentData.setMeasurementSetup(setup);
+        currentData.setMeasurementSetup(setup);
         Platform.runLater(() -> {
             controller.measureStatLabel.setText("Полярограмма завершена");
         });
@@ -286,15 +286,14 @@ public class DataFromComPortValidation {
         for (XYChart.Data newData : dataFromPlot) {
             xValues.add((Number) newData.getXValue());
             yValues.add((Number) newData.getYValue());
-//            logger.debug("x = " + newData.getXValue());
-//            logger.debug("y = " + newData.getYValue());
         }
         logger.debug("dataFromPlot");
         logger.debug(dataFromPlot);
-//        currentData.setCurrentXMeasurement(xValues);
-//        currentData.setCurrentYMeasurement(yValues);
-//        logger.debug(currentData.toString());
-//        Write.writeNewData(currentData);
+        currentData.setCurrentXMeasurement(xValues);
+        currentData.setCurrentYMeasurement(yValues);
+        logger.debug(currentData.toString());
+        polySetup.setData(currentData);
+        Write.writePolyData(polySetup);
 
     }
 

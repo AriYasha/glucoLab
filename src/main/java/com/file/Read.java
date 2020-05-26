@@ -2,6 +2,7 @@ package com.file;
 
 
 import com.entity.Data;
+import com.entity.PolySetup;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -36,6 +37,22 @@ public class Read {
         try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(/*filePath +*/ filename)))
         {
             record = (Data) objectInputStream.readObject();
+            logger.debug(record);
+        }
+        catch(Exception ex){
+            logger.error(ex.getMessage());
+            ex.printStackTrace();
+
+        }
+        return record;
+    }
+
+    public static PolySetup readingPoly(String filename){
+        String filePath = Write.filePolyPath;
+        PolySetup record = null;
+        try(ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(/*filePath +*/ filename)))
+        {
+            record = (PolySetup) objectInputStream.readObject();
             logger.debug(record);
         }
         catch(Exception ex){
