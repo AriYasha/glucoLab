@@ -49,8 +49,8 @@ public class GraphController implements Initializable {
     public LineChart visualPlot;
     public NumberAxis xTimeVisual;
     public NumberAxis yAmpVisual;
+    public Button deleteSeriesButton;
 
-    private Data firstData;
     private String fileName;
 
     MultipleSameAxesLineChart multipleAxesLineChart;
@@ -59,6 +59,7 @@ public class GraphController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         menuBarSetup();
         graphChoice.setOnAction((event) -> seriesChooser());
+        deleteSeriesButton.setBackground(null);
 //        createMultiAxesLineChart();
 //        multipleAxesLineChart.addSeries(prepareSeries(fileName, firstData), Color.color(Math.random(), 0, Math.random()), fileName);
 
@@ -69,19 +70,8 @@ public class GraphController implements Initializable {
         glucoChart.setAnimated(false);
         //graphController.glucoChart.getData().add(currentSeries);
         XYChart.Series series = prepareSeries(seriesName, measurementSetup.getData());
-        multipleAxesLineChart.addSeries(series, Color.RED, fileName, measurementSetup.getData());
+        multipleAxesLineChart.addSeries(series, Color.RED, seriesName, measurementSetup.getData());
         chartDataMap.put(series, measurementSetup);
-//        legendLabel.setText(data.getMeasurementSetup().toString());
-        //graphController.legendPane.getChildren().add(currentSeries.getLegend());
-        showDetails();
-    }
-
-
-    public void addFirstSeries(String seriesName, PolySetup measurementSetup){
-        multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
-        glucoChart.setAnimated(false);
-        //graphController.glucoChart.getData().add(currentSeries);
-        multipleAxesLineChart.addSeries(prepareSeries(seriesName, measurementSetup.getData()), Color.RED, fileName, measurementSetup.getData());
 //        legendLabel.setText(data.getMeasurementSetup().toString());
         //graphController.legendPane.getChildren().add(currentSeries.getLegend());
         showDetails();
@@ -96,11 +86,6 @@ public class GraphController implements Initializable {
         XYChart.Series series = (XYChart.Series) graphChoice.getValue();
         Color color = multipleAxesLineChart.getSeriesColor(series);
         colorChoice.setValue(color);
-    }
-
-
-    public void setFirstData(Data firstData) {
-        this.firstData = firstData;
     }
 
     public void setFileName(String fileName) {
@@ -210,5 +195,26 @@ public class GraphController implements Initializable {
                 "\nВремя положительного импульса измерения :\n\t" + data.getMeasurementSetup().getPositiveMeasureTime() + ", мс" +
                 ""
         );
+    }
+
+    public void deleteSeries(ActionEvent actionEvent) {
+        String choosedSeriesName = ((XYChart.Series) graphChoice.getValue()).getName();
+        graphChoice.getItems().remove(graphChoice.getValue());
+        for (int i = 0; i < glucoChart.getData().size(); i++) {
+            XYChart.Series series = (XYChart.Series) glucoChart.getData().get(i);
+            if (series.getName().equals(choosedSeriesName)) {
+                chartDataMap.remove(series);
+                glucoChart.getData().clear();
+                for (Map.Entry<XYChart.Series, MeasurementSetup> entry : chartDataMap.entrySet()) {
+                    XYChart.Series series1 = entry.getKey();
+                    multipleAxesLineChart.addSeries(
+                            series1,
+                            multipleAxesLineChart.getSeriesColor(series1),
+                            series1.getName(),
+                            multipleAxesLineChart.getChartData(series1));
+                }
+            }
+        }
+        graphChoice.getSelectionModel().select(0);
     }
 }

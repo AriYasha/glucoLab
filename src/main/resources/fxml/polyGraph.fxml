@@ -71,14 +71,19 @@
                 </MenuBar>
             </top>
             <right>
-                <AnchorPane BorderPane.alignment="CENTER">
+                <AnchorPane prefWidth="190.0" BorderPane.alignment="CENTER">
                     <children>
-                        <ColorPicker fx:id="colorChoice" layoutX="100.0" onAction="#setGraphColor" prefHeight="25.0" prefWidth="40.0" />
-                        <ChoiceBox fx:id="graphChoice" prefHeight="25.0" prefWidth="100.0" />
+                        <ColorPicker fx:id="colorChoice" layoutX="150.0" onAction="#setGraphColor" prefHeight="25.0" prefWidth="40.0" />
+                        <ChoiceBox fx:id="graphChoice" layoutX="20.0" prefHeight="25.0" prefWidth="130.0" />
                         <Label fx:id="descriptionLabel" layoutX="15.0" layoutY="26.0" prefWidth="140.0" text="Label" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="26.0">
                             <font>
                                 <Font name="System Bold" size="12.0" />
                             </font></Label>
+                  <Button fx:id="deleteSeriesButton" mnemonicParsing="false" onAction="#deleteSeries" prefWidth="20.0" text="-" textFill="#f20000">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Button>
                     </children>
                 </AnchorPane>
             </right>

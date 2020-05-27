@@ -357,13 +357,16 @@ public class MultipleAxesLineChart/* extends StackPane*/ {
 //                seriesName.setStyle("-fx-font-weight: bold");
 //            }
 
-            Number time = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
-            Number amplitude = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
+            Number timeRounded = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
+            Number time = (Double) lineChart.getXAxis().getValueForDisplay(event.getX());
+            Number amplitudeN = (Double) lineChart.getYAxis().getValueForDisplay(event.getY());
+            String amplitude = String.format("%.2f", amplitudeN);
+            Number amplitudeRounded = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
             HBox popupRow;
             if(series.getName().contains("Напряжение")){
-                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мВ\nвремя = "+time+" мс"));
+                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мВ\nвремя = "+timeRounded+" мс"));
             } else{
-                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мкА\nвремя = "+time+" мс"));
+                popupRow = new HBox(10, seriesName, new Label("амплитуда = "+amplitude+" мкА\nвремя = "+timeRounded+" мс"));
             }
 
             return popupRow;

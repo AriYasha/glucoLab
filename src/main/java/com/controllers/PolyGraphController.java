@@ -45,12 +45,14 @@ public class PolyGraphController implements Initializable {
     public LineChart visualPlot;
     public NumberAxis xTimeVisual;
     public NumberAxis yAmpVisual;
+    public Button deleteSeriesButton;
 
     MultipleSameAxesLineChart multipleAxesLineChart;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         menuBarSetup();
+        deleteSeriesButton.setBackground(null);
         graphChoice.setOnAction((event) -> seriesChooser());
         glucoChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
     }
@@ -164,5 +166,26 @@ public class PolyGraphController implements Initializable {
                 "\nКоличество повторений :\n\t" + polySetup.getQuantityReapeted() +
                 ""
         );
+    }
+
+    public void deleteSeries(ActionEvent actionEvent) {
+        String choosedSeriesName = ((XYChart.Series) graphChoice.getValue()).getName();
+        graphChoice.getItems().remove(graphChoice.getValue());
+        for (int i = 0; i < glucoChart.getData().size(); i++) {
+            XYChart.Series series = (XYChart.Series) glucoChart.getData().get(i);
+            if (series.getName().equals(choosedSeriesName)) {
+                chartDataMap.remove(series);
+                glucoChart.getData().clear();
+                for (Map.Entry<XYChart.Series, PolySetup> entry : chartDataMap.entrySet()) {
+                    XYChart.Series series1 = entry.getKey();
+                    multipleAxesLineChart.addSeries(
+                            series1,
+                            multipleAxesLineChart.getSeriesColor(series1),
+                            series1.getName(),
+                            multipleAxesLineChart.getChartData(series1));
+                }
+            }
+        }
+        graphChoice.getSelectionModel().select(0);
     }
 }

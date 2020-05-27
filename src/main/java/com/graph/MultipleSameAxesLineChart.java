@@ -281,10 +281,17 @@ public class MultipleSameAxesLineChart {
 //                seriesName.setStyle("-fx-font-weight: bold");
 //            }
 
-            Number time = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
-            Number amplitude = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
+            Number timeRounded = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
+            Number time = (Double) lineChart.getXAxis().getValueForDisplay(event.getX());
+            Number amplitudeN = (Double) lineChart.getYAxis().getValueForDisplay(event.getY());
+            String amplitude = String.format("%.2f", amplitudeN);
+            Number amplitudeRounded = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
             HBox popupRow;
-            popupRow = new HBox( new Label("амплитуда = " + amplitude + " мкА\nвремя = " + time + " мс"));
+            if(series.getName().contains(".gl")) {
+                popupRow = new HBox(new Label("амплитуда = " + amplitude + " мкА\nвремя = " + timeRounded + " мс"));
+            } else {
+                popupRow = new HBox(new Label("ток = " + amplitude + " мкА\nнапряжение = " + timeRounded + " мВ"));
+            }
 
             return popupRow;
         }

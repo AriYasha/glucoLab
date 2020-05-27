@@ -73,7 +73,8 @@ public class DataFromComPortValidation {
             int time = control.getIntFromArray(bytes);
             bytes[0] = command.get(4);
             bytes[1] = command.get(3);
-            int data = control.getIntFromArray(bytes);
+            int dataInt = control.getIntFromArray(bytes);
+            float data = dataInt / 100;
             if (setup.isFirstPolarityMeasure()) {
                 if (isPolarityChanged) {
                     addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
@@ -108,7 +109,8 @@ public class DataFromComPortValidation {
             if (command.get(4) == 1) {
                 current = 0 - current;
             }
-            addToPolySeries(current, voltage);
+            float cur = current / 100;
+            addToPolySeries(cur, voltage);
 
         }
 
@@ -316,7 +318,7 @@ public class DataFromComPortValidation {
 
     }
 
-    private void addToSeries(int data, int voltage, int time) {
+    private void addToSeries(float data, int voltage, int time) {
         Platform.runLater(() -> {
             series.getData().add(new XYChart.Data<>(time, data));
             currentSeries.getData().add(new XYChart.Data<>(time, voltage));
@@ -324,7 +326,7 @@ public class DataFromComPortValidation {
         });
     }
 
-    private void addToPolySeries(int current, int voltage) {
+    private void addToPolySeries(float current, int voltage) {
         Platform.runLater(() -> {
             series.getData().add(new XYChart.Data<>(voltage, current));
             //series.getData().ad
