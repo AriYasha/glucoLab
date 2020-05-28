@@ -23,7 +23,7 @@ public class OpenWindow implements Initializable {
     public LineChart chart;
     public Button back;
     public Button ahead;
-
+    public Button deleteFile;
 
 
     String path = "C:\\Glucolab";
@@ -31,20 +31,23 @@ public class OpenWindow implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        List<File> filesList = (List<File>) FileUtils.listFiles(new File("C:\\Glucolab"), null, true);
-//        for (File f:filesList) {
-//         System.out.println(f.getName());
-//}
         choiceFile.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         viewFile.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         File dir = new File("C:\\Glucolab");
         ArrayList<File> forWork = new ArrayList<>();
         List<File> directories = getDirectory(dir);
         for (File file:directories) {
-            files.getItems().add(file.getName());
-        }
+            if (file.isDirectory()) {
+                files.getSelectionModel().selectFirst();
+                files.getItems().add(file.getName());
+            }
 
+
+              }
+
+              getFiles();
     }
+
 
 
 //    public ArrayList<File> getFiles(File inputVal,String directory, ArrayList<File> filess) {
@@ -78,16 +81,8 @@ public class OpenWindow implements Initializable {
     }
 
     public void addFiles(ActionEvent actionEvent) {
-        String newPath = path+"\\"+files.getValue();
-        File newFile = new File(newPath);
-        System.out.println(newPath);
-        viewFile.getItems().clear();
-        if(files.getValue()!=null) {
-            ArrayList<File> path = new ArrayList<File>(Arrays.asList(newFile.listFiles()));
-            for (File file:path) {
-                viewFile.getItems().add(file.getName());
-            }
-        }
+
+        getFiles();
     }
 
     public void moveFiles(ActionEvent actionEvent) {
@@ -103,5 +98,27 @@ public class OpenWindow implements Initializable {
         ObservableList<String> selectedItems = choiceFile.getSelectionModel().getSelectedItems();
         choiceFile.getItems().removeAll(selectedItems);
 
+    }
+
+    private void getFiles(){
+        String newPath = path+"\\"+files.getValue();
+        File newFile = new File(newPath);
+        viewFile.getItems().clear();
+        if(files.getValue()!=null) {
+            ArrayList<File> path = new ArrayList<File>(Arrays.asList(newFile.listFiles()));
+            for (File file:path) {
+                viewFile.getItems().add(file.getName());
+            }
+        }
+    }
+
+    public void deleteFiles(ActionEvent actionEvent) {
+        String newPath = path+"\\"+files.getValue();
+        ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
+        for (String name:selectedItems) {
+            File fileForDelete = new File(newPath+"\\"+name);
+            fileForDelete.delete();
+        }
+        getFiles();
     }
 }

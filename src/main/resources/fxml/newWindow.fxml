@@ -28,6 +28,7 @@
             </LineChart>
             <Button fx:id="back" layoutX="184.0" layoutY="193.0" mnemonicParsing="false" onAction="#removeFiles" prefHeight="23.0" prefWidth="36.0" text="Button" />
             <Button fx:id="ahead" layoutX="184.0" layoutY="231.0" mnemonicParsing="false" onAction="#moveFiles" prefHeight="31.0" prefWidth="36.0" text="Button" />
+            <Button fx:id="deleteFile" layoutX="138.0" layoutY="366.0" mnemonicParsing="false" onAction="#deleteFiles" prefHeight="31.0" prefWidth="36.0" text="Button" />
          </children>
       </Pane>
    </children>
