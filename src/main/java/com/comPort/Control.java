@@ -232,7 +232,7 @@ public class Control extends Thread implements SerialPortDataListener {
                 //logger.debug("available " + numRead);
             } else if (firstByte[0] == END_CMD){
                 bytesReceived.add(firstByte[0]);
-                numRead = addByteToList(6);
+                numRead = addByteToList(8);
             } else if(firstByte[0] == POLY_SETUP_CMD){
                 bytesReceived.add(firstByte[0]);
                 numRead = addByteToList(25);

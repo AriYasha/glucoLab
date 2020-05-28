@@ -71,21 +71,24 @@ public class DataFromComPortValidation {
             //logger.info("Data detected");
             byte[] bytes = {command.get(2), command.get(1)};
             int time = control.getIntFromArray(bytes);
+            bytes[0] = command.get(6);
+            bytes[1] = command.get(5);
+            int dataInt = control.getIntFromArray(bytes);
             bytes[0] = command.get(4);
             bytes[1] = command.get(3);
-            int dataInt = control.getIntFromArray(bytes);
-            float data = dataInt / 100;
+            int voltage = control.getIntFromArray(bytes);
+            float data = ((float)dataInt) / 100;
             if (setup.isFirstPolarityMeasure()) {
                 if (isPolarityChanged) {
-                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
+                    addToSeries(-data, -voltage, time);
                 } else {
-                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses(), time);
+                    addToSeries(data, voltage, time);
                 }
             } else {
                 if (!isPolarityChanged) {
-                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
+                    addToSeries(-data, -voltage, time);
                 } else {
-                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses(), time);
+                    addToSeries(data, voltage, time);
                 }
             }
         } else if (isSetup(command)) {
@@ -109,7 +112,7 @@ public class DataFromComPortValidation {
             if (command.get(4) == 1) {
                 current = 0 - current;
             }
-            float cur = current / 100;
+            float cur = ((float)current) / 100;
             addToPolySeries(cur, voltage);
 
         }
@@ -214,6 +217,7 @@ public class DataFromComPortValidation {
                 break;
             case Control.START_POLY_STAT:
                 logger.info("START_POLY_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Построение полярограммы . . ."));
                 startPolyMeasure();
                 break;
             case Control.END_POLY_STAT:
@@ -519,7 +523,7 @@ public class DataFromComPortValidation {
 
     private boolean isData(List<Byte> command) {
         return command.get(0).equals(Control.END_CMD) &&
-                command.get(6).equals(Control.END_CMD) /*&&
+                command.get(8).equals(Control.END_CMD) /*&&
                 (byte) (command.get(1) + command.get(2)) == command.get(3)*/;
     }
 

@@ -2,8 +2,10 @@ package com.sample;
 
 import com.comPort.Control;
 import com.controllers.Controller;
+import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.application.Preloader;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -59,9 +61,14 @@ public class Main extends Application {
     }
 
 
-
+    public static void launchApplication(final Class<? extends Application> appClass,
+                                         final Class<? extends Preloader> preloaderClass,
+                                         final String[] args) {
+    }
 
     public static void main(String[] args) {
+        System.setProperty("javafx.preloader", PreloaderMain.class.getCanonicalName());
             launch(args);
+//        LauncherImpl.launchApplication(Main.class, PreloaderMain.class,);
     }
 }
