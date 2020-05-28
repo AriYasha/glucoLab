@@ -14,6 +14,7 @@ import com.file.Write;
 import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
 import com.jfoenix.controls.JFXTabPane;
+import com.sample.CreateStage;
 import com.validation.DataFromComPortValidation;
 import com.validation.UIValidation;
 import javafx.application.Platform;
@@ -106,6 +107,7 @@ public class Controller implements Initializable {
     public Label lastPointError;
     public JFXTabPane polyTabPane;
     public Label comPortStatus;
+    public CheckBox filterCheckBox;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -156,6 +158,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        filterCheckBox.setVisible(false);
         uiValidation = new UIValidation(this);
         uiValidation.hideErrorLabels();
         uiValidation.setImages();
@@ -741,7 +744,11 @@ public class Controller implements Initializable {
 //    }
 
     private void openPlotWindow() {
+        CreateStage dialog = new CreateStage();
+        System.out.println(dialog.getText());
         try {
+
+
             String fileName = ChooseFile.chooseFile(Write.fileMeasurePath);
             MeasurementSetup measurementSetup = Read.reading(Write.fileMeasurePath + "\\" + fileName);
             FXMLLoader fxmlLoader = newWindow("/fxml/graphMain.fxml", "Измерения глюкозы");
@@ -837,6 +844,7 @@ public class Controller implements Initializable {
     }
 
     public void sendPolySetupRequest(Event event) {
+        filterCheckBox.setVisible(true);
         if (polyTab.isSelected()) {
             if (comPortConnection != null && comPortConnection.isBusy()) {
                 control.sendPolySetupRequest();
@@ -846,11 +854,19 @@ public class Controller implements Initializable {
     }
 
     public void sendSetupRequest(Event event) {
+        try {
+            filterCheckBox.setVisible(false);
+        } catch (NullPointerException e) {
+            logger.debug(e.toString());
+        }
         if (measureTab.isSelected()) {
             if (comPortConnection != null && comPortConnection.isBusy()) {
                 control.sendSetupRequest();
             }
             logger.debug("sendSetupRequest");
         }
+    }
+
+    public void addFiltration(ActionEvent actionEvent) {
     }
 }

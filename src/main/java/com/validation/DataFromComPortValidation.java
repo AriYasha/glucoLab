@@ -45,7 +45,6 @@ public class DataFromComPortValidation {
         this.polySetup = polySetup;
         if (isCommand(command)) {
             logger.info("Command detected");
-//            Platform.runLater(() -> controller.connectionLabel.setText("bye"));
             switch (command.get(1)) {
                 case Control.STAT_CMD:
                     statusChecker(command.get(2));
@@ -71,21 +70,24 @@ public class DataFromComPortValidation {
             //logger.info("Data detected");
             byte[] bytes = {command.get(2), command.get(1)};
             int time = control.getIntFromArray(bytes);
+            bytes[0] = command.get(6);
+            bytes[1] = command.get(5);
+            int dataInt = control.getIntFromArray(bytes);
             bytes[0] = command.get(4);
             bytes[1] = command.get(3);
-            int dataInt = control.getIntFromArray(bytes);
-            float data = dataInt / 100;
+            int voltage = control.getIntFromArray(bytes);
+            float data = ((float) dataInt) / 100;
             if (setup.isFirstPolarityMeasure()) {
                 if (isPolarityChanged) {
-                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
+                    addToSeries(-data, -voltage, time);
                 } else {
-                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses(), time);
+                    addToSeries(data, voltage, time);
                 }
             } else {
                 if (!isPolarityChanged) {
-                    addToSeries(-data, -setup.getNegativeAmplitudeMeasurePulses(), time);
+                    addToSeries(-data, -voltage, time);
                 } else {
-                    addToSeries(data, setup.getPositiveAmplitudeMeasurePulses(), time);
+                    addToSeries(data, voltage, time);
                 }
             }
         } else if (isSetup(command)) {
@@ -105,12 +107,24 @@ public class DataFromComPortValidation {
             }
             bytes[0] = command.get(6);
             bytes[1] = command.get(5);
-            int current = control.getIntFromArray(bytes);
+            int voltageReal = control.getIntFromArray(bytes);
             if (command.get(4) == 1) {
+                voltageReal = 0 - voltageReal;
+            }
+
+            bytes[0] = command.get(9);
+            bytes[1] = command.get(8);
+            int current = control.getIntFromArray(bytes);
+            if (command.get(7) == 1) {
                 current = 0 - current;
             }
-            float cur = current / 100;
-            addToPolySeries(cur, voltage);
+            float cur = ((float) current) / 100;
+            if (controller.filterCheckBox.isSelected()) {
+                addToPolySeries(cur, voltage);
+            } else {
+                addToPolySeries(cur, voltageReal);
+            }
+
 
         }
 
@@ -154,8 +168,8 @@ public class DataFromComPortValidation {
                 break;
             case Control.STRIP_WAITING_STAT:
                 logger.info("STRIP_WAITING");
-                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание полоски"));
                 Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Ожидание полоски");
                     controller.measureStatLabel.setText("Вставьте полоску");
                     Image stripType = new Image("images/stripNoName.jpg", true);
                     controller.stripTypeImage.setImage(stripType);
@@ -164,14 +178,16 @@ public class DataFromComPortValidation {
                 break;
             case Control.STRIP_INSERTED_STAT:
                 logger.info("STRIP_INSERTED_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Полоска вставлена"));
-                Platform.runLater(() -> controller.glucoChart.getData().clear());
-                Platform.runLater(() -> controller.polyChart.getData().clear());
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Полоска вставлена");
+                    controller.glucoChart.getData().clear();
+                    controller.polyChart.getData().clear();
+                });
                 break;
             case Control.DROP_WAITING_STAT:
                 logger.info("DROP_WAITING_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание капли"));
                 Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Ожидание капли");
                     controller.measureStatLabel.setText("Ожидание капли");
                 });
                 break;
@@ -214,6 +230,7 @@ public class DataFromComPortValidation {
                 break;
             case Control.START_POLY_STAT:
                 logger.info("START_POLY_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Построение полярограммы . . ."));
                 startPolyMeasure();
                 break;
             case Control.END_POLY_STAT:
@@ -412,7 +429,6 @@ public class DataFromComPortValidation {
         }
         polySetup.setBeginPoint(digit);
         final int value = digit;
-        Platform.runLater(() -> controller.beginPointEdit.setText(String.valueOf(value)));
 
         bytes[0] = command.get(6);
         bytes[1] = command.get(5);
@@ -422,7 +438,6 @@ public class DataFromComPortValidation {
         }
         polySetup.setMediumPoint(digit);
         final int value1 = digit;
-        Platform.runLater(() -> controller.mediumPointEdit.setText(String.valueOf(value1)));
         bytes[0] = command.get(9);
         bytes[1] = command.get(8);
         digit = control.getIntFromArray(bytes);
@@ -431,25 +446,21 @@ public class DataFromComPortValidation {
         }
         polySetup.setLastPoint(digit);
         final int value2 = digit;
-        Platform.runLater(() -> controller.lastPointEdit.setText(String.valueOf(value2)));
         byte[] timeBytes = {command.get(13), command.get(12), command.get(11)};
         digit = control.getIntFromArray(timeBytes);
         polySetup.setIncreaseTime(digit);
         final int value3 = digit;
-        Platform.runLater(() -> controller.increaseTimeEdit.setText(String.valueOf(value3)));
         timeBytes[0] = command.get(16);
         timeBytes[1] = command.get(15);
         timeBytes[2] = command.get(14);
         digit = control.getIntFromArray(timeBytes);
         polySetup.setDecreaseTime(digit);
         final int value4 = digit;
-        Platform.runLater(() -> controller.decreaseTimeEdit.setText(String.valueOf(value4)));
         bytes[0] = command.get(19);
         bytes[1] = command.get(18);
         digit = control.getIntFromArray(bytes);
         polySetup.setQuantityReapeted(digit);
         final int value5 = digit;
-        Platform.runLater(() -> controller.quantityReapetedEdit.setText(String.valueOf(value5)));
         bytes[0] = command.get(21);
         bytes[1] = command.get(20);
         digit = control.getIntFromArray(bytes);
@@ -458,6 +469,14 @@ public class DataFromComPortValidation {
         bytes[1] = command.get(22);
         digit = control.getIntFromArray(bytes);
         polySetup.setNullDiscrDAC(digit);
+        Platform.runLater(() -> {
+            controller.beginPointEdit.setText(String.valueOf(value));
+            controller.mediumPointEdit.setText(String.valueOf(value1));
+            controller.lastPointEdit.setText(String.valueOf(value2));
+            controller.increaseTimeEdit.setText(String.valueOf(value3));
+            controller.decreaseTimeEdit.setText(String.valueOf(value4));
+            controller.quantityReapetedEdit.setText(String.valueOf(value5));
+        });
         logger.debug("end poly setup");
 
     }
@@ -467,7 +486,9 @@ public class DataFromComPortValidation {
     }
 
     private void errorChecker(byte command) {
-
+        Platform.runLater(() -> {
+            controller.comPortStatus.setText("Ошибка устройства");
+        });
     }
 
     private void stripChecker(byte command) {
@@ -506,9 +527,7 @@ public class DataFromComPortValidation {
                     controller.stripTypeLabel.setText("Полоска № 0");
                 });
                 break;
-
         }
-
     }
 
     private boolean isCommand(List<Byte> command) {
@@ -519,13 +538,13 @@ public class DataFromComPortValidation {
 
     private boolean isData(List<Byte> command) {
         return command.get(0).equals(Control.END_CMD) &&
-                command.get(6).equals(Control.END_CMD) /*&&
+                command.get(8).equals(Control.END_CMD) /*&&
                 (byte) (command.get(1) + command.get(2)) == command.get(3)*/;
     }
 
     private boolean isPolyData(List<Byte> command) {
         return command.get(0).equals(Control.POLY_DATA_CMD) &&
-                command.get(8).equals(Control.POLY_DATA_CMD) /*&&
+                command.get(11).equals(Control.POLY_DATA_CMD) /*&&
                 (byte) (command.get(1) + command.get(2)) == command.get(3)*/;
     }
 

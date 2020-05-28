@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class PolySetup implements Serializable {
+public class PolySetup implements Serializable, MeasureMode {
 
     final private static Logger logger = Logger.getLogger(PolySetup.class);
 

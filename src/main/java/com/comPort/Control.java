@@ -232,13 +232,13 @@ public class Control extends Thread implements SerialPortDataListener {
                 //logger.debug("available " + numRead);
             } else if (firstByte[0] == END_CMD){
                 bytesReceived.add(firstByte[0]);
-                numRead = addByteToList(6);
+                numRead = addByteToList(8);
             } else if(firstByte[0] == POLY_SETUP_CMD){
                 bytesReceived.add(firstByte[0]);
                 numRead = addByteToList(25);
             } else if(firstByte[0] == POLY_DATA_CMD){
                 bytesReceived.add(firstByte[0]);
-                numRead = addByteToList(8);
+                numRead = addByteToList(11);
             } else{
                 Platform.runLater(() -> controller.comPortStatus.setText(String.valueOf(userPort.bytesAvailable())));
                 byte[] notRecognize = new byte[userPort.bytesAvailable()];
