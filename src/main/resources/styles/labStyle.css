@@ -146,3 +146,14 @@
     -fx-background-color: null;
     -fx-color-label-visible: false ;
 }
+
+
+/*
+ *
+ *ComboBox styling
+ *
+ */
+
+.combo-box  {
+    -fx-background-color: null;
+}

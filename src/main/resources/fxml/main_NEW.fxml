@@ -311,7 +311,7 @@
                 </AnchorPane>
             </center>
             <right>
-                <AnchorPane prefHeight="813.0" prefWidth="161.0" BorderPane.alignment="CENTER">
+                <AnchorPane prefHeight="813.0" prefWidth="165.0" BorderPane.alignment="CENTER">
                     <children>
                         <Label fx:id="measureStatLabel" layoutX="22.0" layoutY="17.0" prefHeight="74.0" prefWidth="161.0" text="Вставьте полоску" textAlignment="CENTER" wrapText="true">
                             <font>
@@ -324,6 +324,7 @@
                                 <Font size="20.0" />
                             </font>
                         </Label>
+                  <CheckBox fx:id="filterCheckBox" layoutX="25.0" layoutY="819.0" mnemonicParsing="false" onAction="#addFiltration" text="Включить фильтрацию" />
                     </children>
                 </AnchorPane>
             </right></BorderPane>

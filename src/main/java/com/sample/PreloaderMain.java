@@ -14,7 +14,6 @@ public class PreloaderMain extends Preloader {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-       // Thread.sleep(1000);
         this.preloaderStage = primaryStage;
         System.out.println("hello");
 
@@ -33,8 +32,6 @@ public class PreloaderMain extends Preloader {
         primaryStage.setHeight(600);
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        //Thread.sleep(1000);
     }
 
     @Override

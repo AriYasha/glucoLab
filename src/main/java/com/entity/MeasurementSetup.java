@@ -4,7 +4,7 @@ import com.comPort.Control;
 
 import java.io.Serializable;
 
-public class MeasurementSetup implements Serializable {
+public class MeasurementSetup implements Serializable, MeasureMode {
     private int leakingTime;
     private int pauseTime;
 
