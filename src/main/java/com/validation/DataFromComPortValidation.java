@@ -270,7 +270,6 @@ public class DataFromComPortValidation {
         logger.debug(dataFromPlot);
         currentData.setCurrentXMeasurement(xValues);
         currentData.setCurrentYMeasurement(yValues);
-        logger.debug(currentData.toString());
         setup.setData(currentData);
         Write.writeNewData(setup);
 
@@ -317,6 +316,9 @@ public class DataFromComPortValidation {
         Platform.runLater(() -> {
             controller.measureStatLabel.setText("Полярограмма завершена");
         });
+        try {
+
+
         XYChart.Series series = (XYChart.Series) controller.polyChart.getData().get(0);
         ObservableList<XYChart.Data> dataFromPlot = series.getData();
         ArrayList<Number> xValues = new ArrayList<>();
@@ -329,9 +331,11 @@ public class DataFromComPortValidation {
         logger.debug(dataFromPlot);
         currentData.setCurrentXMeasurement(xValues);
         currentData.setCurrentYMeasurement(yValues);
-        logger.debug(currentData.toString());
         polySetup.setData(currentData);
         Write.writePolyData(polySetup);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 

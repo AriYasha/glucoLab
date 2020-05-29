@@ -21,7 +21,7 @@ public class CreateStage {
         dialog.setHeaderText("Look, a Custom Login Dialog");
 
 // Set the icon (must be included in the project).
-        dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
+//        dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
 
 // Set the button types.
         ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);

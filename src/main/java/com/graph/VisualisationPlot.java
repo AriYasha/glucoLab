@@ -1,10 +1,13 @@
 package com.graph;
 
+import com.entity.Data;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+
+import java.util.ArrayList;
 
 public class VisualisationPlot {
     private LineChart<Number, Number> visualPlot;
@@ -75,5 +78,16 @@ public class VisualisationPlot {
         visualPlot.getData().clear();
         visualPlot.getData().add(series);
         return visualPlot;
+    }
+
+    public static XYChart.Series<Number, Number> prepareSeries(String name, Data data) {
+        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName(name);
+        for (int i = 0; i < xValues.size(); i++) {
+            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+        }
+        return series;
     }
 }

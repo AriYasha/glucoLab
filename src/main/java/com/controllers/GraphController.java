@@ -69,7 +69,7 @@ public class GraphController implements Initializable {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
         glucoChart.setAnimated(false);
         //graphController.glucoChart.getData().add(currentSeries);
-        XYChart.Series series = prepareSeries(seriesName, measurementSetup.getData());
+        XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, measurementSetup.getData());
         multipleAxesLineChart.addSeries(series, Color.RED, seriesName, measurementSetup.getData());
         chartDataMap.put(series, measurementSetup);
 //        legendLabel.setText(data.getMeasurementSetup().toString());
@@ -123,12 +123,12 @@ public class GraphController implements Initializable {
 
     private void openPlotWindow() throws IOException {
         String fileName = ChooseFile.chooseFile(Write.fileMeasurePath);
-        MeasurementSetup measurementSetup = Read.reading(Write.fileMeasurePath + "\\" + fileName);
+        MeasurementSetup measurementSetup = Read.reading1(Write.fileMeasurePath + "\\" + fileName);
       //  glucoChart.getData().add(prepareSeries(fileName, data));
 //        if (!isOpen) {
 //            createMultiAxesLineChart();
 //        }
-        XYChart.Series series = prepareSeries(fileName, measurementSetup.getData());
+        XYChart.Series series = VisualisationPlot.prepareSeries(fileName, measurementSetup.getData());
         multipleAxesLineChart.addSeries(
                 series,
                 Color.color(Math.random(),0, Math.random()),
@@ -146,16 +146,16 @@ public class GraphController implements Initializable {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
     }
 
-    private XYChart.Series<Number, Number> prepareSeries(String name, Data data) {
-        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
-        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(name);
-        for (int i = 0; i < xValues.size(); i++) {
-            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
-        }
-        return series;
-    }
+//    private XYChart.Series<Number, Number> prepareSeries(String name, Data data) {
+//        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+//        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
+//        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+//        series.setName(name);
+//        for (int i = 0; i < xValues.size(); i++) {
+//            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+//        }
+//        return series;
+//    }
 
     public void seriesChooser() {
         XYChart.Series series = (XYChart.Series) graphChoice.getValue();

@@ -61,7 +61,7 @@ public class PolyGraphController implements Initializable {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
         glucoChart.setAnimated(false);
         //graphController.glucoChart.getData().add(currentSeries);
-        XYChart.Series series = prepareSeries(fileName, polySetup.getData());
+        XYChart.Series series = VisualisationPlot.prepareSeries(fileName, polySetup.getData());
         multipleAxesLineChart.addSeries(series, Color.RED, fileName, polySetup.getData());
         chartDataMap.put(series, polySetup);
 //        legendLabel.setText(data.getMeasurementSetup().toString());
@@ -112,7 +112,7 @@ public class PolyGraphController implements Initializable {
     private void openPlotWindow() throws IOException {
         String fileName = ChooseFile.chooseFile(Write.filePolyPath);
         PolySetup polySetup = Read.readingPoly(Write.filePolyPath + "\\" + fileName);
-        XYChart.Series series = prepareSeries(fileName, polySetup.getData());
+        XYChart.Series series = VisualisationPlot.prepareSeries(fileName, polySetup.getData());
         multipleAxesLineChart.addSeries(
                 series,
                 Color.color(Math.random(),0, Math.random()),
@@ -121,17 +121,6 @@ public class PolyGraphController implements Initializable {
         );
         chartDataMap.put(series, polySetup);
         showDetails();
-    }
-
-    private XYChart.Series<Number, Number> prepareSeries(String name, Data data) {
-        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
-        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        series.setName(name);
-        for (int i = 0; i < xValues.size(); i++) {
-            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
-        }
-        return series;
     }
 
     public void seriesChooser() {

@@ -745,12 +745,12 @@ public class Controller implements Initializable {
 
     private void openPlotWindow() {
         CreateStage dialog = new CreateStage();
-        System.out.println(dialog.getText());
+//        System.out.println(dialog.getText());
         try {
 
 
             String fileName = ChooseFile.chooseFile(Write.fileMeasurePath);
-            MeasurementSetup measurementSetup = Read.reading(Write.fileMeasurePath + "\\" + fileName);
+            MeasurementSetup measurementSetup = Read.reading1(Write.fileMeasurePath + "\\" + fileName);
             FXMLLoader fxmlLoader = newWindow("/fxml/graphMain.fxml", "Измерения глюкозы");
             GraphController graphController = fxmlLoader.getController();
             graphController.addFirstSeries(fileName, measurementSetup);

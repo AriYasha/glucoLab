@@ -15,7 +15,7 @@ public class Read {
 
     final static Logger logger = Logger.getLogger(Read.class);
 
-    public static MeasurementSetup reading(String filename) {
+    public static MeasurementSetup reading1(String filename) {
         String filePath = Write.fileMeasurePath;
         MeasurementSetup record = null;
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(/*filePath +*/ filename))) {
@@ -43,16 +43,28 @@ public class Read {
         return record;
     }
 
-    public static MeasureMode reading(MeasureMode mode) {
-        if (MeasurementSetup.class == mode.getClass()) {
-            mode = new MeasurementSetup();
-        } else if (PolySetup.class == mode.getClass()) {
-
+    public static MeasureMode reading(String filePath) {
+        MeasureMode mode = null;
+        if (filePath.contains(".gl")) {
+            mode = readFromFile(filePath, new MeasurementSetup());
+        } else if (filePath.contains(".pl")) {
+            mode = readFromFile(filePath, new PolySetup());
         }
         return mode;
     }
 
-    private static MeasureMode readFromFile(String fileName) {
+    private static MeasureMode readFromFile(String filePath, MeasureMode mode) {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath))) {
+            if(mode.getClass().getName().equals(MeasurementSetup.class.getName())){
+                return (MeasurementSetup) objectInputStream.readObject();
+            } else {
+                return (PolySetup) objectInputStream.readObject();
+            }
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
+            ex.printStackTrace();
+
+        }
         return null;
     }
 }

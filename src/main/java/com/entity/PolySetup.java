@@ -145,4 +145,17 @@ public class PolySetup implements Serializable, MeasureMode {
         logger.debug(Arrays.toString(transmitBytes));
         return transmitBytes;
     }
+
+    @Override
+    public String toString() {
+        return "Описание выбранного графика :\n" +
+                "\nТип полоски :\n\t" + data.getStripType() +
+                "\nАмплитуда начальной точки :\n\t" + getBeginPoint() + ", мВ" +
+                "\nАмплитуда средней точки :\n\t" + getMediumPoint() + ", мВ" +
+                "\nАмплитуда конечной точки :\n\t" + getLastPoint() + ", мВ" +
+                "\nВремя нарастания :\n\t" + getIncreaseTime() + ", мс" +
+                "\nВремя спада :\n\t" + getDecreaseTime() + ", мс" +
+                "\nКоличество повторений :\n\t" + getQuantityReapeted() +
+                "";
+    }
 }
