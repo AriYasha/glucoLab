@@ -12,20 +12,22 @@ import java.util.Optional;
 
 public class CreateStage {
 
-    private TextField textBox;
+    private TextField fileName;
+    private TextField comment;
 
-    public CreateStage() {
+    public CreateStage(String fName) {
         // Create the custom dialog.
         Dialog<Pair<String, String>> dialog = new Dialog<>();
-        dialog.setTitle("Login Dialog");
-        dialog.setHeaderText("Look, a Custom Login Dialog");
+        dialog.setTitle("Сохранение...");
+        dialog.setHeaderText("Можно добавить комментарий и изменить название");
 
 // Set the icon (must be included in the project).
 //        dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
 
 // Set the button types.
-        ButtonType loginButtonType = new ButtonType("Login", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
+        ButtonType saveButtonType = new ButtonType("Сахранить", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButtonType = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
 
 // Create the username and password labels and fields.
         GridPane grid = new GridPane();
@@ -33,34 +35,35 @@ public class CreateStage {
         grid.setVgap(10);
         grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField username = new TextField();
-        username.setPromptText("Username");
-        PasswordField password = new PasswordField();
-        password.setPromptText("Password");
+        fileName = new TextField();
+        fileName.setPromptText("Имя файла");
+        fileName.setText(fName);
+        comment = new TextField();
+        comment.setPromptText("Комментарий");
 
-        grid.add(new Label("Username:"), 0, 0);
-        grid.add(username, 1, 0);
-        grid.add(new Label("Password:"), 0, 1);
-        grid.add(password, 1, 1);
+        grid.add(new Label("Имя файла:"), 0, 0);
+        grid.add(fileName, 1, 0);
+        grid.add(new Label("Комментарий:"), 0, 1);
+        grid.add(comment, 1, 1);
 
 // Enable/Disable login button depending on whether a username was entered.
-        Node loginButton = dialog.getDialogPane().lookupButton(loginButtonType);
+        Node loginButton = dialog.getDialogPane().lookupButton(saveButtonType);
         loginButton.setDisable(true);
 
 // Do some validation (using the Java 8 lambda syntax).
-        username.textProperty().addListener((observable, oldValue, newValue) -> {
+        fileName.textProperty().addListener((observable, oldValue, newValue) -> {
             loginButton.setDisable(newValue.trim().isEmpty());
         });
 
         dialog.getDialogPane().setContent(grid);
 
 // Request focus on the username field by default.
-        Platform.runLater(() -> username.requestFocus());
+        Platform.runLater(() -> fileName.requestFocus());
 
 // Convert the result to a username-password-pair when the login button is clicked.
         dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == loginButtonType) {
-                return new Pair<>(username.getText(), password.getText());
+            if (dialogButton == saveButtonType) {
+                return new Pair<>(fileName.getText(), comment.getText());
             }
             return null;
         });
@@ -72,7 +75,11 @@ public class CreateStage {
         });
     }
 
-    public String getText() {
-        return textBox.getText();
+    public String getFileName() {
+        return fileName.getText();
+    }
+
+    public String getComment() {
+        return fileName.getText();
     }
 }

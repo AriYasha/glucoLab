@@ -18,7 +18,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
-public class OpenWindow implements Initializable {
+public class OpenWindowController implements Initializable {
     public Pane workPane;
     public ComboBox files;
     public ListView viewFile;
@@ -29,6 +29,8 @@ public class OpenWindow implements Initializable {
     public Button back;
     public Button ahead;
     public Button deleteFile;
+
+    private boolean isNewWindow = true;
 
 
     private String path = "C:\\Glucolab";
@@ -58,8 +60,11 @@ public class OpenWindow implements Initializable {
         getFiles();
     }
 
+    public void setNewWindow(boolean newWindow) {
+        isNewWindow = newWindow;
+    }
 
-//    public ArrayList<File> getFiles(File inputVal,String directory, ArrayList<File> filess) {
+    //    public ArrayList<File> getFiles(File inputVal,String directory, ArrayList<File> filess) {
 //
 //        if (inputVal.isDirectory()) {
 //            ArrayList<File> path = new ArrayList<File>(Arrays.asList(inputVal.listFiles()));
@@ -160,5 +165,16 @@ public class OpenWindow implements Initializable {
     }
 
     public void openFiles(ActionEvent actionEvent) {
+        ObservableList<String> selectedItems = choiceFile.getItems();
+        System.out.println(selectedItems);
+        if(!selectedItems.isEmpty()){
+            if(files.getValue().equals("Измерение")){
+
+            } else if(files.getValue().equals("Полярограмма")){
+
+            }
+        } else {
+            throw new NullPointerException("no items choosed");
+        }
     }
 }

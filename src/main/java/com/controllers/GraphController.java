@@ -146,17 +146,6 @@ public class GraphController implements Initializable {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
     }
 
-//    private XYChart.Series<Number, Number> prepareSeries(String name, Data data) {
-//        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
-//        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
-//        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-//        series.setName(name);
-//        for (int i = 0; i < xValues.size(); i++) {
-//            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
-//        }
-//        return series;
-//    }
-
     public void seriesChooser() {
         XYChart.Series series = (XYChart.Series) graphChoice.getValue();
         Color color = multipleAxesLineChart.getSeriesColor(series);

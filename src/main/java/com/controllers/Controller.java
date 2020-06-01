@@ -2,7 +2,6 @@ package com.controllers;
 
 import com.comPort.ComPortConnection;
 import com.comPort.Control;
-import com.entity.Data;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import com.exception.ComPortException;
@@ -11,7 +10,6 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 import com.file.ChooseFile;
 import com.file.Read;
 import com.file.Write;
-import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
 import com.jfoenix.controls.JFXTabPane;
 import com.sample.CreateStage;
@@ -37,7 +35,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.log4j.Logger;
@@ -665,7 +662,9 @@ public class Controller implements Initializable {
             openPolyWindow();
         });
         openDetails.setOnAction((event) -> {
-            openChooseWindow();
+            FXMLLoader loader = openChooseWindow();
+            OpenWindowController openWindowController = loader.getController();
+            openWindowController.setNewWindow(true);
         });
         setup.setOnAction((event) -> {
         });
@@ -701,9 +700,10 @@ public class Controller implements Initializable {
         menuBar.getMenus().addAll(file, commands);
     }
 
-    private void openChooseWindow() {
+    private FXMLLoader openChooseWindow() {
+        FXMLLoader fxmlLoader = null;
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/newWindow.fxml"));
+            fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/newWindow.fxml"));
             Parent parent = fxmlLoader.load();
             Scene scene = new Scene(parent);
             Stage stage = new Stage();
@@ -721,6 +721,7 @@ public class Controller implements Initializable {
             logger.error(e.getMessage());
             e.printStackTrace();
         }
+        return fxmlLoader;
     }
 
     private void connectionAvailable() {
