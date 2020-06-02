@@ -193,6 +193,7 @@ public class MeasurementSetup implements Serializable, MeasureMode {
     public String toString() {
         return "Описание выбранного графика :\n" +
                 "\nТип полоски :\n\t" + data.getStripType() +
+                "\nКомментарий :\n\t" + data.getComment() +
                 "\nВремя протекания :\n\t" + getLeakingTime() + ", мс" +
                 "\nВремя паузы :\n\t" + getPauseTime() + ", мс" +
                 "\nКоличество импульсов ПП :\n\t" + getQuantityFastPolarityPulses() +

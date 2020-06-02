@@ -142,7 +142,7 @@ public class GraphController extends DrawMeasure implements Initializable {
     }
 
     public void seriesChooser() {
-        XYChart.Series series = (XYChart.Series) graphChoice.getValue();
+        XYChart.Series series = getSeriesByName((String) graphChoice.getValue());
         Color color = multipleAxesLineChart.getSeriesColor(series);
         colorChoice.setValue(color);
         setDescriptionLabel(multipleAxesLineChart.getChartData(series));
@@ -155,7 +155,7 @@ public class GraphController extends DrawMeasure implements Initializable {
     }
 
     public void setGraphColor(ActionEvent actionEvent) {
-        XYChart.Series series = (XYChart.Series) graphChoice.getValue();
+        XYChart.Series series = getSeriesByName((String) graphChoice.getValue());
         Color color = colorChoice.getValue();
         multipleAxesLineChart.setColor(series, color);
         for (int i = 0; i < glucoChart.getData().size(); i++) {
@@ -191,7 +191,7 @@ public class GraphController extends DrawMeasure implements Initializable {
     }
 
     public void deleteSeries(ActionEvent actionEvent) {
-        String choosedSeriesName = ((XYChart.Series) graphChoice.getValue()).getName();
+        String choosedSeriesName = (String) graphChoice.getValue();
         graphChoice.getItems().remove(graphChoice.getValue());
         deleteSerie(choosedSeriesName);
 //        String choosedSeriesName = ((XYChart.Series) graphChoice.getValue()).getName();

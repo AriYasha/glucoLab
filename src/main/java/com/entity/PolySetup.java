@@ -150,6 +150,7 @@ public class PolySetup implements Serializable, MeasureMode {
     public String toString() {
         return "Описание выбранного графика :\n" +
                 "\nТип полоски :\n\t" + data.getStripType() +
+                "\nКомментарий :\n\t" + data.getComment() +
                 "\nАмплитуда начальной точки :\n\t" + getBeginPoint() + ", мВ" +
                 "\nАмплитуда средней точки :\n\t" + getMediumPoint() + ", мВ" +
                 "\nАмплитуда конечной точки :\n\t" + getLastPoint() + ", мВ" +

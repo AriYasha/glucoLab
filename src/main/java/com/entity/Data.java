@@ -14,8 +14,9 @@ public class Data implements Serializable {
     private int stripType;
     private List<Number> currentXMeasurement;
     private List<Number> currentYMeasurement;
+    private String comment = "Комментарии отсутствуют";
 
-    private MeasurementSetup measurementSetup;
+    //private MeasurementSetup measurementSetup;
 
     public Data() {
         currentXMeasurement = new ArrayList<>();
@@ -54,6 +55,14 @@ public class Data implements Serializable {
         this.stripType = stripType;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     public List<Number> getCurrentXMeasurement() {
         return currentXMeasurement;
     }
@@ -70,14 +79,6 @@ public class Data implements Serializable {
         this.currentYMeasurement = currentYMeasurement;
     }
 
-    public MeasurementSetup getMeasurementSetup() {
-        return measurementSetup;
-    }
-
-    public void setMeasurementSetup(MeasurementSetup measurementSetup) {
-        this.measurementSetup = measurementSetup;
-    }
-
     @Override
     public String toString() {
         return "Data{" +
@@ -87,7 +88,7 @@ public class Data implements Serializable {
                 ", stripType=" + stripType +
                 ", currentXMeasurement=" + currentXMeasurement +
                 ", currentYMeasurement=" + currentYMeasurement +
-                ", measurementSetup=" + measurementSetup +
+                ", comment='" + comment + '\'' +
                 '}';
     }
 }

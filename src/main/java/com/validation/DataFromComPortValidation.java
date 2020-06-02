@@ -7,6 +7,8 @@ import com.entity.PolySetup;
 import com.file.Write;
 import com.graph.MultipleAxesLineChart;
 import com.controllers.Controller;
+import com.graph.MultipleSameAxesLineChart;
+import com.sample.CreateStage;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
@@ -244,9 +246,10 @@ public class DataFromComPortValidation {
     }
 
     private void endMeasure() {
-        currentData.setMeasurementSetup(setup);
-        Platform.runLater(() -> {
-            controller.measureStatLabel.setText("Измерение завершено");
+        try {
+            //currentData.setMeasurementSetup(setup);
+            Platform.runLater(() -> {
+                controller.measureStatLabel.setText("Измерение завершено");
 //            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
 //            ObservableList<XYChart.Data> dataFromPlot = series.getData();
 //            currentData.setCurrentMeasurement(dataFromPlot);
@@ -255,23 +258,41 @@ public class DataFromComPortValidation {
 //                logger.debug("x = " + newData.getXValue());
 //                logger.debug("y = " + newData.getYValue());
 //            }
-        });
-        XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
-        ObservableList<XYChart.Data> dataFromPlot = series.getData();
-        ArrayList<Number> xValues = new ArrayList<>();
-        ArrayList<Number> yValues = new ArrayList<>();
-        for (XYChart.Data newData : dataFromPlot) {
-            xValues.add((Number) newData.getXValue());
-            yValues.add((Number) newData.getYValue());
+            });
+            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
+            ObservableList<XYChart.Data> dataFromPlot = series.getData();
+            ArrayList<Number> xValues = new ArrayList<>();
+            ArrayList<Number> yValues = new ArrayList<>();
+            for (XYChart.Data newData : dataFromPlot) {
+                xValues.add((Number) newData.getXValue());
+                yValues.add((Number) newData.getYValue());
 //            logger.debug("x = " + newData.getXValue());
 //            logger.debug("y = " + newData.getYValue());
+            }
+            logger.debug("dataFromPlot");
+            logger.debug(dataFromPlot);
+            currentData.setCurrentXMeasurement(xValues);
+            currentData.setCurrentYMeasurement(yValues);
+            setup.setData(currentData);
+            Platform.runLater(() -> {
+                String fileName = Write.generateFileName(setup);
+                CreateStage dialog = new CreateStage(fileName);
+                fileName = dialog.getFileName();
+                if (!fileName.contains(".gl")) {
+                    fileName = fileName.concat(".gl");
+                }
+                String comment = dialog.getComment();
+                if (!comment.isEmpty()) {
+                    currentData.setComment(comment);
+                    setup.setData(currentData);
+                }
+                if (dialog.isPressed()) {
+                    Write.writing(setup, fileName);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        logger.debug("dataFromPlot");
-        logger.debug(dataFromPlot);
-        currentData.setCurrentXMeasurement(xValues);
-        currentData.setCurrentYMeasurement(yValues);
-        setup.setData(currentData);
-        Write.writeNewData(setup);
 
     }
 
@@ -312,28 +333,40 @@ public class DataFromComPortValidation {
 
 
     private void endPolyMeasure() {
-        currentData.setMeasurementSetup(setup);
         Platform.runLater(() -> {
             controller.measureStatLabel.setText("Полярограмма завершена");
         });
         try {
-
-
-        XYChart.Series series = (XYChart.Series) controller.polyChart.getData().get(0);
-        ObservableList<XYChart.Data> dataFromPlot = series.getData();
-        ArrayList<Number> xValues = new ArrayList<>();
-        ArrayList<Number> yValues = new ArrayList<>();
-        for (XYChart.Data newData : dataFromPlot) {
-            xValues.add((Number) newData.getXValue());
-            yValues.add((Number) newData.getYValue());
-        }
-        logger.debug("dataFromPlot");
-        logger.debug(dataFromPlot);
-        currentData.setCurrentXMeasurement(xValues);
-        currentData.setCurrentYMeasurement(yValues);
-        polySetup.setData(currentData);
-        Write.writePolyData(polySetup);
-        } catch (Exception e){
+            XYChart.Series series = (XYChart.Series) controller.polyChart.getData().get(0);
+            ObservableList<XYChart.Data> dataFromPlot = series.getData();
+            ArrayList<Number> xValues = new ArrayList<>();
+            ArrayList<Number> yValues = new ArrayList<>();
+            for (XYChart.Data newData : dataFromPlot) {
+                xValues.add((Number) newData.getXValue());
+                yValues.add((Number) newData.getYValue());
+            }
+            logger.debug("dataFromPlot");
+            logger.debug(dataFromPlot);
+            currentData.setCurrentXMeasurement(xValues);
+            currentData.setCurrentYMeasurement(yValues);
+            polySetup.setData(currentData);
+            Platform.runLater(() -> {
+                String fileName = Write.generateFileName(polySetup);
+                CreateStage dialog = new CreateStage(fileName);
+                fileName = dialog.getFileName();
+                if (!fileName.contains(".pl")) {
+                    fileName = fileName.concat(".pl");
+                }
+                String comment = dialog.getComment();
+                if (!comment.isEmpty()) {
+                    currentData.setComment(comment);
+                    polySetup.setData(currentData);
+                }
+                if (dialog.isPressed()) {
+                    Write.writing(polySetup, fileName);
+                }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

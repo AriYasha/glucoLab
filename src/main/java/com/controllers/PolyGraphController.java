@@ -126,7 +126,7 @@ public class PolyGraphController extends DrawMeasure implements Initializable {
     }
 
     public void seriesChooser() {
-        XYChart.Series series = (XYChart.Series) graphChoice.getValue();
+        XYChart.Series series = getSeriesByName((String) graphChoice.getValue());
         Color color = multipleAxesLineChart.getSeriesColor(series);
         colorChoice.setValue(color);
         setDescriptionLabel(chartDataMap.get(series));
@@ -139,7 +139,7 @@ public class PolyGraphController extends DrawMeasure implements Initializable {
     }
 
     public void setGraphColor(ActionEvent actionEvent) {
-        XYChart.Series series = (XYChart.Series) graphChoice.getValue();
+        XYChart.Series series = getSeriesByName((String) graphChoice.getValue());
         Color color = colorChoice.getValue();
         multipleAxesLineChart.setColor(series, color);
         for (int i = 0; i < glucoChart.getData().size(); i++) {
@@ -153,23 +153,25 @@ public class PolyGraphController extends DrawMeasure implements Initializable {
     private void setDescriptionLabel(MeasureMode mode){
         if(mode != null) {
             PolySetup polySetup = (PolySetup) mode;
-            descriptionLabel.setText("Описание выбранного графика :\n" +
-                    "\nТип полоски :\n\t" + polySetup.getData().getStripType() +
-                    "\nАмплитуда начальной точки :\n\t" + polySetup.getBeginPoint() + ", мВ" +
-                    "\nАмплитуда средней точки :\n\t" + polySetup.getMediumPoint() + ", мВ" +
-                    "\nАмплитуда конечной точки :\n\t" + polySetup.getLastPoint() + ", мВ" +
-                    "\nВремя нарастания :\n\t" + polySetup.getIncreaseTime() + ", мс" +
-                    "\nВремя спада :\n\t" + polySetup.getDecreaseTime() + ", мс" +
-                    "\nКоличество повторений :\n\t" + polySetup.getQuantityReapeted() +
-                    ""
-            );
+//            descriptionLabel.setText("Описание выбранного графика :\n" +
+//                    "\nТип полоски :\n\t" + polySetup.getData().getStripType() +
+//                    "\nКомментарий :\n\t" + polySetup.getData().getComment() +
+//                    "\nАмплитуда начальной точки :\n\t" + polySetup.getBeginPoint() + ", мВ" +
+//                    "\nАмплитуда средней точки :\n\t" + polySetup.getMediumPoint() + ", мВ" +
+//                    "\nАмплитуда конечной точки :\n\t" + polySetup.getLastPoint() + ", мВ" +
+//                    "\nВремя нарастания :\n\t" + polySetup.getIncreaseTime() + ", мс" +
+//                    "\nВремя спада :\n\t" + polySetup.getDecreaseTime() + ", мс" +
+//                    "\nКоличество повторений :\n\t" + polySetup.getQuantityReapeted() +
+//                    ""
+//            );
+            descriptionLabel.setText(polySetup.toString());
         } else {
             descriptionLabel.setText("Описание выбранного графика :\n");
         }
     }
 
     public void deleteSeries(ActionEvent actionEvent) {
-        String choosedSeriesName = ((XYChart.Series) graphChoice.getValue()).getName();
+        String choosedSeriesName = (String) graphChoice.getValue();
         graphChoice.getItems().remove(graphChoice.getValue());
         deleteSerie(choosedSeriesName);
 //        String choosedSeriesName = ((XYChart.Series) graphChoice.getValue()).getName();

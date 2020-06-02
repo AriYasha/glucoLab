@@ -65,12 +65,24 @@ public abstract class DrawMeasure {
     void showDetails() {
         graphChoice.getItems().clear();
         for (int i = 0; i < glucoChart.getData().size(); i++) {
-            graphChoice.getItems().add(glucoChart.getData().get(i));
+            XYChart.Series series = (XYChart.Series) glucoChart.getData().get(i);
+            graphChoice.getItems().add(series.getName());
         }
         graphChoice.getSelectionModel().select(0);
-        XYChart.Series series = (XYChart.Series) graphChoice.getValue();
+        XYChart.Series series = getSeriesByName((String) graphChoice.getValue());
+        //XYChart.Series series = (XYChart.Series) graphChoice.getValue();
         Color color = multipleAxesLineChart.getSeriesColor(series);
         colorChoice.setValue(color);
+    }
+
+    XYChart.Series getSeriesByName(String seriesName) {
+        seriesName = (String) graphChoice.getValue();
+        XYChart.Series series = null;
+        for (int i = 0; i < glucoChart.getData().size(); i++) {
+            series = (XYChart.Series) glucoChart.getData().get(i);
+            if (series.getName().equals(seriesName)) break;
+        }
+        return series;
     }
 
     void menuBarSetup() {
@@ -128,7 +140,7 @@ public abstract class DrawMeasure {
                 MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
                 MeasurementSetup measurementSetup = (MeasurementSetup) mode;
                 XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, measurementSetup.getData());
-                Color color = Color.color(Math.random(),0, Math.random());
+                Color color = Color.color(Math.random(), 0, Math.random());
                 multipleAxesLineChart.addSeries(series, color, seriesName, measurementSetup);
                 chartDataMap.put(series, measurementSetup);
                 showDetails();
@@ -138,7 +150,7 @@ public abstract class DrawMeasure {
                 MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
                 PolySetup polySetup = (PolySetup) mode;
                 XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, polySetup.getData());
-                Color color = Color.color(Math.random(),0, Math.random());
+                Color color = Color.color(Math.random(), 0, Math.random());
                 multipleAxesLineChart.addSeries(series, color, seriesName, polySetup);
                 chartDataMap.put(series, polySetup);
                 showDetails();

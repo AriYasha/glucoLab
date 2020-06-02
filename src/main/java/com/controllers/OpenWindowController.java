@@ -182,7 +182,6 @@ public class OpenWindowController implements Initializable {
         if (!selectedItems.isEmpty()) {
             if (files.getValue().equals("Измерения")) {
                 FXMLLoader fxmlLoader = openWindow("/fxml/graphMain.fxml", "Измерения глюкозы");
-                logger.debug(fxmlLoader);
                 GraphController graphController = fxmlLoader.getController();
                 graphController.drawGraphics(selectedItems, Write.fileMeasurePath);
 

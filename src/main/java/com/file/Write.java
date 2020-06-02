@@ -2,6 +2,7 @@ package com.file;
 
 
 import com.entity.Data;
+import com.entity.MeasureMode;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import org.apache.log4j.Logger;
@@ -37,6 +38,16 @@ public class Write {
         }
     }
 
+    public static String generateFileName(MeasureMode mode) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm-ss");
+        if (mode.getClass().getName().equals(MeasurementSetup.class.getName())) {
+            return ((MeasurementSetup) mode).getData().getUserName() + " " + dateTimeFormatter.format(LocalDateTime.now()) + ".gl";
+        } else if (mode.getClass().getName().equals(PolySetup.class.getName())) {
+            return ((PolySetup) mode).getData().getUserName() + " " + dateTimeFormatter.format(LocalDateTime.now()) + ".pl";
+        }
+        return "";
+    }
+
     public static void writePolyData(PolySetup polySetup) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm-ss");
         LocalDateTime nowDateTime = LocalDateTime.now();
@@ -58,22 +69,37 @@ public class Write {
     }
 
 
-//    public static void writing(Object object) {
-//        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH-mm-ss");
-//        LocalDateTime nowDateTime = LocalDateTime.now();
-//        File directory = new File(fileMeasurePath);
-//        if (!directory.exists()) {
-//            boolean created = directory.mkdir();
-//            if (!created) {
-//                logger.warn("directory not created");
-//            }
-//        }
-//        String fileName = object.getData().getUserName() + " " + dateTimeFormatter.format(nowDateTime) + ".gl";
-//        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileMeasurePath + "\\" + fileName))) {
-//            objectOutputStream.writeObject(measurementSetup);
-//        } catch (Exception ex) {
-//            logger.error(ex.getMessage());
-//            logger.error(ex);
-//            ex.printStackTrace();
-//        }
+    public static void writing(MeasureMode mode, String fileName) {
+        if (mode.getClass().getName().equals(MeasurementSetup.class.getName())) {
+            File directory = new File(fileMeasurePath);
+            if (!directory.exists()) {
+                boolean created = directory.mkdir();
+                if (!created) {
+                    logger.warn("directory not created");
+                }
+            }
+            try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(fileMeasurePath + "\\" + fileName))) {
+                objectOutputStream.writeObject(mode);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage());
+                logger.error(ex);
+                ex.printStackTrace();
+            }
+        } else if (mode.getClass().getName().equals(PolySetup.class.getName())) {
+            File directory = new File(filePolyPath);
+            if (!directory.exists()) {
+                boolean created = directory.mkdir();
+                if (!created) {
+                    logger.warn("directory not created");
+                }
+            }
+            try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePolyPath + "\\" + fileName))) {
+                objectOutputStream.writeObject(mode);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage());
+                logger.error(ex);
+                ex.printStackTrace();
+            }
+        }
     }
+}

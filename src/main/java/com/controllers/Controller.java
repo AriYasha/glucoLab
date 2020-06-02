@@ -160,7 +160,6 @@ public class Controller implements Initializable {
         uiValidation.hideErrorLabels();
         uiValidation.setImages();
         menuBarSetup();
-        //control = new Control();
         setTooltips();
         uiValidation.connectionSetup();
         setDisableElements();
@@ -733,21 +732,7 @@ public class Controller implements Initializable {
         tabPane.getSelectionModel().select(2);
     }
 
-//    private XYChart.Series<Number, Number> series(String name, Data data) {
-//        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
-//        ArrayList<Number> yValues = (ArrayList<Number>) data.getCurrentYMeasurement();
-//        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-//        series.setName(name);
-//        for (int i = 0; i < xValues.size(); i++) {
-//            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
-//        }
-//        return series;
-//    }
-
     private void openPlotWindow() {
-        CreateStage dialog = new CreateStage("hello");
-        System.out.println(dialog.getFileName());
-        System.out.println(dialog.getComment());
         try {
 
 
