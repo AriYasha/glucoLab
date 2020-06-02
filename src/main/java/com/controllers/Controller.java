@@ -694,7 +694,7 @@ public class Controller implements Initializable {
         getPolySetup.setOnAction((event) -> control.sendPolySetupRequest());
         connection.setOnAction((event) -> connectionAvailable());
 
-        file.getItems().addAll(open, openPoly, setup, new SeparatorMenuItem(), openDetails, new SeparatorMenuItem(), close);
+        file.getItems().addAll(/*open, openPoly,*/ setup, new SeparatorMenuItem(), openDetails, new SeparatorMenuItem(), close);
         commands.getItems().addAll(sendTest, getStatus, getSetup, getPolySetup, new SeparatorMenuItem(), connection);
 
         menuBar.getMenus().addAll(file, commands);
@@ -745,8 +745,9 @@ public class Controller implements Initializable {
 //    }
 
     private void openPlotWindow() {
-        CreateStage dialog = new CreateStage();
-//        System.out.println(dialog.getText());
+        CreateStage dialog = new CreateStage("hello");
+        System.out.println(dialog.getFileName());
+        System.out.println(dialog.getComment());
         try {
 
 

@@ -4,21 +4,33 @@ import com.entity.MeasureMode;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import com.file.Read;
+import com.file.Write;
 import com.graph.VisualisationPlot;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 public class OpenWindowController implements Initializable {
+
+    final static Logger logger = Logger.getLogger(OpenWindowController.class);
+
     public Pane workPane;
     public ComboBox files;
     public ListView viewFile;
@@ -116,7 +128,7 @@ public class OpenWindowController implements Initializable {
         showDescription(selectedItems.get(0));
     }
 
-    private void showDescription(String fileName){
+    private void showDescription(String fileName) {
         if (fileName.contains(".gl")) {
             MeasurementSetup setup = (MeasurementSetup) Read.reading(
                     path + "\\" +
@@ -166,15 +178,42 @@ public class OpenWindowController implements Initializable {
 
     public void openFiles(ActionEvent actionEvent) {
         ObservableList<String> selectedItems = choiceFile.getItems();
-        System.out.println(selectedItems);
-        if(!selectedItems.isEmpty()){
-            if(files.getValue().equals("Измерение")){
+        logger.debug(selectedItems);
+        if (!selectedItems.isEmpty()) {
+            if (files.getValue().equals("Измерения")) {
+                FXMLLoader fxmlLoader = openWindow("/fxml/graphMain.fxml", "Измерения глюкозы");
+                logger.debug(fxmlLoader);
+                GraphController graphController = fxmlLoader.getController();
+                graphController.drawGraphics(selectedItems, Write.fileMeasurePath);
 
-            } else if(files.getValue().equals("Полярограмма")){
-
+            } else if (files.getValue().equals("Полярограмма")) {
+                FXMLLoader fxmlLoader = openWindow("/fxml/polyGraph.fxml", "Полярограмма");
+                PolyGraphController polyGraphController = fxmlLoader.getController();
+                polyGraphController.drawGraphics(selectedItems, Write.filePolyPath);
             }
         } else {
-            throw new NullPointerException("no items choosed");
+            logger.debug("items not selected");
         }
+        Stage stage = (Stage) openFile.getScene().getWindow();
+        stage.close();
+    }
+
+    private FXMLLoader openWindow(String fxml, String title) {
+        FXMLLoader fxmlLoader = null;
+        try {
+            fxmlLoader = new FXMLLoader(getClass().getResource(fxml));
+            Parent root1 = fxmlLoader.load();
+            Scene scene = new Scene(root1);
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            scene.getStylesheets().add("/styles/labStyle.css");
+            stage.setScene(scene);
+            stage.show();
+            stage.setOnCloseRequest((event) -> stage.close());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return fxmlLoader;
     }
 }

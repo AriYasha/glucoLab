@@ -14,6 +14,7 @@ public class CreateStage {
 
     private TextField fileName;
     private TextField comment;
+    private boolean isPressed = false;
 
     public CreateStage(String fName) {
         // Create the custom dialog.
@@ -27,7 +28,7 @@ public class CreateStage {
 // Set the button types.
         ButtonType saveButtonType = new ButtonType("Сахранить", ButtonBar.ButtonData.OK_DONE);
         ButtonType cancelButtonType = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, cancelButtonType);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType/*, cancelButtonType*/);
 
 // Create the username and password labels and fields.
         GridPane grid = new GridPane();
@@ -48,7 +49,7 @@ public class CreateStage {
 
 // Enable/Disable login button depending on whether a username was entered.
         Node loginButton = dialog.getDialogPane().lookupButton(saveButtonType);
-        loginButton.setDisable(true);
+        //loginButton.setDisable(true);
 
 // Do some validation (using the Java 8 lambda syntax).
         fileName.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -71,8 +72,10 @@ public class CreateStage {
         Optional<Pair<String, String>> result = dialog.showAndWait();
 
         result.ifPresent(usernamePassword -> {
+            isPressed = true;
             System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
         });
+
     }
 
     public String getFileName() {
@@ -80,6 +83,10 @@ public class CreateStage {
     }
 
     public String getComment() {
-        return fileName.getText();
+        return comment.getText();
+    }
+
+    public boolean isPressed() {
+        return isPressed;
     }
 }

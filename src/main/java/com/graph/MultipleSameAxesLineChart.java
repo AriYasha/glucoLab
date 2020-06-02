@@ -1,6 +1,7 @@
 package com.graph;
 
 import com.entity.Data;
+import com.entity.MeasureMode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -32,7 +33,7 @@ public class MultipleSameAxesLineChart {
     private StackPane graphPane;
     private final ObservableList<XYChart.Series> backgroundCharts = FXCollections.observableArrayList();
     private final Map<XYChart.Series, Color> chartColorMap = new HashMap<>();
-    private final Map<XYChart.Series, Data> chartDataMap = new HashMap<>();
+    private final Map<XYChart.Series, MeasureMode> chartDataMap = new HashMap<>();
 
     private final double yAxisWidth = 60;
     private final AnchorPane detailsWindow;
@@ -157,12 +158,12 @@ public class MultipleSameAxesLineChart {
         chart.getYAxis().setMaxWidth(yAxisWidth);
     }
 
-    public void addSeries(XYChart.Series series, Color lineColor, String seriesName, Data data) {
+    public void addSeries(XYChart.Series series, Color lineColor, String seriesName, MeasureMode mode) {
         baseChart.getData().add(series);
 
         styleBackgroundChart(series, lineColor);
         //setFixedAxisWidth(baseChart);
-        chartDataMap.put(series, data);
+        chartDataMap.put(series, mode);
         chartColorMap.put(series, lineColor);
         backgroundCharts.add(series);
 
@@ -233,7 +234,7 @@ public class MultipleSameAxesLineChart {
         chartColorMap.put(series, color);
     }
 
-    public Data getChartData(XYChart.Series series){
+    public MeasureMode getChartData(XYChart.Series series){
         return chartDataMap.get(series);
     }
 
