@@ -655,7 +655,6 @@ public class DataFromComPortValidation {
             alert.setContentText("");
             alert.showAndWait();
         });
-        
     }
 
     private boolean isCommand(List<Byte> command) {

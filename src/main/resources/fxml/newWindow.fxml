@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.chart.*?>
 <?import com.jfoenix.validation.*?>
@@ -31,17 +32,38 @@
                <font>
                   <Font size="16.0" />
                </font></Button>
-            <Button fx:id="ahead" layoutX="215.0" layoutY="244.0" mnemonicParsing="false" onAction="#moveFiles" prefHeight="25.0" prefWidth="35.0" text="&gt;" textFill="#006e00">
+            <Button fx:id="ahead" layoutX="215.0" layoutY="245.0" mnemonicParsing="false" onAction="#moveFiles" prefHeight="25.0" prefWidth="35.0" text="&gt;" textFill="#006e00">
                <font>
                   <Font size="16.0" />
                </font></Button>
-            <Button fx:id="deleteFile" layoutX="215.0" layoutY="464.0" mnemonicParsing="false" onAction="#deleteFiles" prefHeight="25.0" prefWidth="35.0" text="-" textFill="#ff0404">
+            <Button fx:id="deleteFile" layoutX="206.0" layoutY="451.0" mnemonicParsing="false" onAction="#deleteFiles" prefHeight="25.0" prefWidth="35.0" textFill="#ff0404">
                <font>
                   <Font size="13.0" />
-               </font></Button>
+               </font>
+               <graphic>
+                  <ImageView fx:id="trashImage" fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
+               </graphic></Button>
             <Label layoutX="8.0" layoutY="63.0" text="Доступные записи" />
             <Label layoutX="258.0" layoutY="63.0" text="Открыть записи" />
             <Label layoutX="465.0" layoutY="63.0" text="Описание" />
+            <Button fx:id="fastBack" layoutX="209.0" layoutY="135.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="47.0" text="&lt;&lt;" textFill="#006e00">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+            <Button fx:id="fastAhead" layoutX="209.0" layoutY="300.0" mnemonicParsing="false" onAction="#moveFiles" prefHeight="37.0" prefWidth="47.0" text="&gt;&gt;" textFill="#006e00">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+            <Button fx:id="editButton" layoutX="206.0" layoutY="397.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="53.0" textFill="#ff0404">
+               <font>
+                  <Font size="13.0" />
+               </font>
+               <graphic>
+                  <ImageView fx:id="editImage" fitHeight="25.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
+               </graphic>
+            </Button>
          </children>
       </Pane>
    </children>

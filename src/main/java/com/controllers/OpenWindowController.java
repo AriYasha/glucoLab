@@ -15,6 +15,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -41,6 +43,11 @@ public class OpenWindowController implements Initializable {
     public Button back;
     public Button ahead;
     public Button deleteFile;
+    public ImageView trashImage;
+    public Button fastBack;
+    public Button fastAhead;
+    public Button editButton;
+    public ImageView editImage;
 
     private boolean isNewWindow = true;
 
@@ -55,6 +62,11 @@ public class OpenWindowController implements Initializable {
         back.setBackground(null);
         ahead.setBackground(null);
         deleteFile.setBackground(null);
+        editButton.setBackground(null);
+        fastAhead.setBackground(null);
+        fastBack.setBackground(null);
+        trashImage.setImage(new Image("images/trash.png"));
+        editImage.setImage(new Image("images/edit.png"));
         chart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
         chart.setLegendVisible(false);
         chart.setAnimated(false);
@@ -190,11 +202,16 @@ public class OpenWindowController implements Initializable {
                 PolyGraphController polyGraphController = fxmlLoader.getController();
                 polyGraphController.drawGraphics(selectedItems, Write.filePolyPath);
             }
+            Stage stage = (Stage) openFile.getScene().getWindow();
+            stage.close();
         } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Огорчение!");
+            alert.setHeaderText("Для открытия ничего не выбрано.");
+            alert.setContentText("Поле \"Открыть записи\" не может быть пустым.");
+            alert.showAndWait();
             logger.debug("items not selected");
         }
-        Stage stage = (Stage) openFile.getScene().getWindow();
-        stage.close();
     }
 
     private FXMLLoader openWindow(String fxml, String title) {
