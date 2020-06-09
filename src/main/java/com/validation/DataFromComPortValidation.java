@@ -13,9 +13,11 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.apache.log4j.Logger;
+import org.eclipse.fx.ui.controls.dialog.MessageDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -162,7 +164,18 @@ public class DataFromComPortValidation {
         switch (command) {
             case Control.NOT_CONNECTED_STAT:
                 logger.info("NOT CONNECTED");
-                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание подключения"));
+                Platform.runLater(() -> {
+                    control.closeConnection();
+                    controller.deviceStatus.setText("Произошёл сброс устройства");
+                    Image picture = new Image("images/red Ball.png", true);
+                    controller.connectImage.setImage(picture);
+                    controller.connectionLabel.setText("Не подключено");
+                });
+                Runnable task = () -> {
+                    controller.setConnection();
+                };
+                Thread thread = new Thread(task);
+                thread.start();
                 break;
             case Control.CONNECTED_STAT:
                 logger.info("CONNECTED");
@@ -172,6 +185,7 @@ public class DataFromComPortValidation {
                 logger.info("STRIP_WAITING");
                 Platform.runLater(() -> {
                     controller.deviceStatus.setText("Ожидание полоски");
+                    controller.comPortStatus.setText("");
                     controller.measureStatLabel.setText("Вставьте полоску");
                     Image stripType = new Image("images/stripNoName.jpg", true);
                     controller.stripTypeImage.setImage(stripType);
@@ -361,6 +375,10 @@ public class DataFromComPortValidation {
                 if (!comment.isEmpty()) {
                     currentData.setComment(comment);
                     polySetup.setData(currentData);
+
+                } else {
+                    currentData.setComment("Комментарии отсутствуют");
+                    polySetup.setData(currentData);
                 }
                 if (dialog.isPressed()) {
                     Write.writing(polySetup, fileName);
@@ -449,6 +467,7 @@ public class DataFromComPortValidation {
         bytes[1] = command.get(26);
         setup.setNegativeAmplitudeMeasurePulses(control.getIntFromArray(bytes));
         controller.negativeAmpMeasureEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
+        successfulReceive();
         logger.debug("end setup");
 
     }
@@ -514,6 +533,7 @@ public class DataFromComPortValidation {
             controller.decreaseTimeEdit.setText(String.valueOf(value4));
             controller.quantityReapetedEdit.setText(String.valueOf(value5));
         });
+        successfulReceive();
         logger.debug("end poly setup");
 
     }
@@ -525,7 +545,67 @@ public class DataFromComPortValidation {
     private void errorChecker(byte command) {
         Platform.runLater(() -> {
             controller.comPortStatus.setText("Ошибка устройства");
+            controller.measureStatLabel.setText("Произошла ошибка");
         });
+        switch (command) {
+            case Control.STRIP_TYPE_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("Ошибка определения типа полоски"));
+                break;
+            case Control.VOLTAGE_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("Не удалось установить заданное напряжение"));
+                break;
+            case Control.LEAKING_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("Не произошло протекание"));
+                break;
+            case Control.E80_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E80_ERROR"));
+                break;
+            case Control.E81_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E81_ERROR"));
+                break;
+            case Control.E82_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E82_ERROR"));
+                break;
+            case Control.E83_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E83_ERROR"));
+                break;
+            case Control.E84_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E84_ERROR"));
+                break;
+            case Control.E85_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E85_ERROR"));
+                break;
+            case Control.E86_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E86_ERROR"));
+                break;
+            case Control.E87_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E87_ERROR"));
+                break;
+            case Control.E88_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E88_ERROR"));
+                break;
+            case Control.E50_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E50_ERROR"));
+                break;
+            case Control.E51_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E51_ERROR"));
+                break;
+            case Control.E52_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E52_ERROR"));
+                break;
+            case Control.E53_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E53_ERROR"));
+                break;
+            case Control.E54_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E54_ERROR"));
+                break;
+            case Control.E55_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E55_ERROR"));
+                break;
+
+
+        }
+
     }
 
     private void stripChecker(byte command) {
@@ -565,6 +645,17 @@ public class DataFromComPortValidation {
                 });
                 break;
         }
+    }
+
+    private void successfulReceive(){
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Успех");
+            alert.setHeaderText("Настройка принята");
+            alert.setContentText("");
+            alert.showAndWait();
+        });
+        
     }
 
     private boolean isCommand(List<Byte> command) {

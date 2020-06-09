@@ -16,7 +16,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.controllers.Controller">
     <children>
-        <BorderPane layoutX="14.0" layoutY="52.0" prefHeight="873.0" prefWidth="1002.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <BorderPane layoutX="14.0" layoutY="52.0" prefHeight="977.0" prefWidth="1228.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
                 <MenuBar fx:id="menuBar" nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER">
                     <menus>
@@ -55,7 +55,7 @@
                                             <graphic>
                                                 <ImageView fx:id="connectImage" fitHeight="35.0" fitWidth="67.0" pickOnBounds="true" preserveRatio="true">
                                                     <image>
-                                                        <Image url="/images/green-circle.png" />
+                                                        <Image url="/images/red Ball.png" />
                                                     </image>
                                                 </ImageView>
                                             </graphic>
@@ -75,79 +75,78 @@
             <center>
                 <AnchorPane BorderPane.alignment="CENTER">
                     <children>
-                  <JFXTabPane fx:id="mainTabPane">
+                  <JFXTabPane fx:id="mainTabPane" prefHeight="858.0" prefWidth="1002.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <tabs>
                         <Tab fx:id="measureTab" onSelectionChanged="#sendSetupRequest" text="Измерения">
                           <content>
                             <AnchorPane>
                                  <children>
-                                    <JFXTabPane fx:id="tabPane">
+                                    <JFXTabPane fx:id="tabPane" prefHeight="821.0" prefWidth="1002.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <tabs>
                                                   <Tab fx:id="setupTab" text="Настройка">
                                                       <content>
-                                                          <AnchorPane>
+                                                          <AnchorPane prefWidth="1002.0">
                                                               <children>
                                                                   <ImageView fitHeight="483.0" fitWidth="1000.0" pickOnBounds="true" preserveRatio="true">
                                                                       <image>
                                                                           <Image url="/images/plot_0.png" />
                                                                       </image>
                                                                   </ImageView>
-                                                                  <Button fx:id="sendDataButton" alignment="CENTER_RIGHT" layoutX="107.0" layoutY="418.0" mnemonicParsing="false" onAction="#sendData" prefHeight="40.0" prefWidth="187.0" text="Установить параметры" textAlignment="CENTER" wrapText="true">
+                                                                  <Button fx:id="sendDataButton" alignment="CENTER_RIGHT" layoutX="107.0" layoutY="418.0" mnemonicParsing="false" onAction="#sendData" prefHeight="40.0" prefWidth="187.0" text="Записать пареметры в пульт" textAlignment="CENTER" wrapText="true">
                                                                       <graphic>
                                                                           <ImageView fx:id="sendImage" fitHeight="57.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true" />
                                                                       </graphic>
                                                                   </Button>
-                                                                  <Label layoutX="94.0" layoutY="14.0" prefHeight="52.0" prefWidth="63.0" text="Ожидание капли" textAlignment="CENTER" wrapText="true" />
-                                                                  <Label layoutX="200.0" layoutY="20.0" prefHeight="40.0" prefWidth="108.0" text="Ожидание протекания, Тпр" textAlignment="CENTER" wrapText="true" />
-                                                                  <Label layoutX="342.0" layoutY="22.0" prefHeight="36.0" prefWidth="86.0" text="Время паузы, Тпаузы" textAlignment="CENTER" wrapText="true" />
-                                                                  <TextField fx:id="waitingTimeEdit" alignment="TOP_CENTER" layoutX="200.0" layoutY="82.0" maxHeight="-Infinity" minHeight="-Infinity" onMouseExited="#render" prefHeight="25.0" prefWidth="84.0" promptText="Тпр" />
+                                                                  <Label layoutX="94.0" layoutY="15.0" prefHeight="52.0" prefWidth="63.0" text="Ожидание капли" textAlignment="CENTER" wrapText="true" />
+                                                                  <Label layoutX="200.0" layoutY="15.0" prefHeight="54.0" prefWidth="116.0" text="Ожидание протекания, Тпр" textAlignment="CENTER" wrapText="true" />
+                                                                  <Label layoutX="342.0" layoutY="17.0" prefHeight="44.0" prefWidth="99.0" text="Время паузы, Тпаузы" textAlignment="CENTER" wrapText="true" />
                                                                   <Label fx:id="waitTimeLabel" layoutX="284.0" layoutY="86.0" text="  ,мс" />
                                                                   <Label fx:id="pauseTimeLabel" layoutX="400.0" layoutY="86.0" text=" ,мс" />
-                                                                  <TextField fx:id="pauseTimeEdit" alignment="TOP_CENTER" layoutX="342.0" layoutY="82.0" onMouseExited="#render" prefHeight="25.0" prefWidth="56.0" promptText="Тпаузы" />
-                                                                  <CheckBox fx:id="pauseTimeCheckBox" layoutX="345.0" layoutY="107.0" mnemonicParsing="false" onAction="#disablePauseTime" onMouseExited="#render" text="Откл." />
-                                                                  <Label layoutX="500.0" layoutY="20.0" prefHeight="41.0" prefWidth="130.0" text="Время быстрой переполюсовки, Тп" textAlignment="CENTER" wrapText="true" />
-                                                                  <CheckBox fx:id="waitingTimeCheckBox" layoutX="201.0" layoutY="107.0" mnemonicParsing="false" onAction="#disableWaitingTime" onMouseExited="#render" text="Откл." />
+                                                                  <TextField fx:id="pauseTimeEdit" alignment="TOP_CENTER" layoutX="330.0" layoutY="82.0" onMouseExited="#render" prefHeight="31.0" prefWidth="68.0" promptText="Тпаузы" />
+                                                                  <CheckBox fx:id="pauseTimeCheckBox" layoutX="342.0" layoutY="116.0" mnemonicParsing="false" onAction="#disablePauseTime" onMouseExited="#render" text="Откл." />
+                                                                  <Label layoutX="487.0" layoutY="13.0" prefHeight="48.0" prefWidth="156.0" text="Время быстрой переполюсовки, Тп" textAlignment="CENTER" wrapText="true" />
+                                                                  <CheckBox fx:id="waitingTimeCheckBox" layoutX="201.0" layoutY="113.0" mnemonicParsing="false" onAction="#disableWaitingTime" onMouseExited="#render" text="Откл." />
                                                                   <Label layoutX="459.0" layoutY="159.0" text="t+" />
                                                                   <Label layoutX="535.0" layoutY="269.0" text="t-" />
                                                                   <Label layoutX="597.0" layoutY="172.0" text="u+" />
-                                                                  <TextField fx:id="positiveTimeFastWavesEdit" alignment="TOP_CENTER" layoutX="459.0" layoutY="82.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="t+" />
-                                                                  <TextField fx:id="negativeTimeFastWavesEdit" alignment="TOP_CENTER" layoutX="572.0" layoutY="82.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="t-" />
+                                                                  <TextField fx:id="positiveTimeFastWavesEdit" alignment="TOP_CENTER" layoutX="458.0" layoutY="75.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="t+" />
+                                                                  <TextField fx:id="negativeTimeFastWavesEdit" alignment="TOP_CENTER" layoutX="572.0" layoutY="75.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="t-" />
                                                                   <Label layoutX="529.0" layoutY="86.0" text=" ,мс" />
                                                                   <Label layoutX="642.0" layoutY="86.0" text=" ,мс" />
-                                                                  <TextField fx:id="positiveAmpFastWavesEdit" alignment="TOP_CENTER" layoutX="457.0" layoutY="112.0" onMouseExited="#render" prefHeight="25.0" prefWidth="71.0" promptText="u+" />
+                                                                  <TextField fx:id="positiveAmpFastWavesEdit" alignment="TOP_CENTER" layoutX="458.0" layoutY="112.0" onMouseExited="#render" prefHeight="25.0" prefWidth="71.0" promptText="u+" />
                                                                   <Label layoutX="529.0" layoutY="116.0" text=" ,мВ" />
                                                                   <Label layoutX="446.0" layoutY="352.0" prefHeight="38.0" prefWidth="99.0" text="Количество импульсов, N" textAlignment="CENTER" wrapText="true" />
                                                                   <TextField fx:id="quantityFastPulsesEdit" alignment="TOP_CENTER" layoutX="573.0" layoutY="359.0" onMouseExited="#render" prefHeight="25.0" prefWidth="85.0" promptText="N" />
                                                                   <Label layoutX="447.0" layoutY="393.0" prefHeight="38.0" prefWidth="107.0" text="Тп= N  [(t+) + (t-) ]" textAlignment="CENTER" />
                                                                   <TextField fx:id="commonFastPulsesTimeEdit" alignment="TOP_CENTER" editable="false" layoutX="573.0" layoutY="399.0" prefHeight="25.0" prefWidth="85.0" promptText="Тп" />
                                                                   <Label layoutX="658.0" layoutY="403.0" text=" ,c" />
-                                                                  <Label layoutX="732.0" layoutY="22.0" prefHeight="41.0" prefWidth="130.0" text="Время измерения, Тизм" textAlignment="CENTER" wrapText="true" />
-                                                                  <RadioButton fx:id="positiveFastHalfWaveRadioB" layoutX="447.0" layoutY="452.0" mnemonicParsing="false" onMouseExited="#render" selected="true" text="Положительная">
+                                                                  <Label layoutX="725.0" layoutY="7.0" prefHeight="56.0" prefWidth="137.0" text="Время измерения, Тизм" textAlignment="CENTER" wrapText="true" />
+                                                                  <RadioButton fx:id="positiveFastHalfWaveRadioB" layoutX="447.0" layoutY="465.0" mnemonicParsing="false" onMouseExited="#render" selected="true" text="Положительная" wrapText="true">
                                                                       <toggleGroup>
                                                                           <ToggleGroup fx:id="choiceLittleWave" />
                                                                       </toggleGroup>
                                                                   </RadioButton>
-                                                                  <RadioButton fx:id="negativeFastHalfWaveRadioB" layoutX="583.0" layoutY="452.0" mnemonicParsing="false" onMouseExited="#render" text="Отрицательная" toggleGroup="$choiceLittleWave" />
-                                                                  <Label layoutX="456.0" layoutY="430.0" text="Выбор полярности начальной полуволны:" textAlignment="CENTER" wrapText="true" />
-                                                                  <TextField fx:id="negativeTimeMeasureEdit" alignment="TOP_CENTER" layoutX="814.0" layoutY="76.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="T-" />
+                                                                  <RadioButton fx:id="negativeFastHalfWaveRadioB" layoutX="583.0" layoutY="465.0" mnemonicParsing="false" onMouseExited="#render" text="Отрицательная" toggleGroup="$choiceLittleWave" />
+                                                                  <Label layoutX="446.0" layoutY="425.0" prefHeight="42.0" prefWidth="249.0" text="Выбор полярности начальной полуволны:" textAlignment="CENTER" wrapText="true" />
+                                                                  <TextField fx:id="negativeTimeMeasureEdit" alignment="TOP_CENTER" layoutX="814.0" layoutY="71.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="T-" />
                                                                   <TextField fx:id="positiveAmpMeasureEdit" alignment="TOP_CENTER" layoutX="708.0" layoutY="106.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="U+" />
                                                                   <Label layoutX="884.0" layoutY="80.0" text=" ,мс" />
                                                                   <Label layoutX="777.0" layoutY="110.0" text=" ,мВ" />
                                                                   <Label layoutX="778.0" layoutY="80.0" text=" ,мс" />
-                                                                  <TextField fx:id="positiveTimeMeasureEdit" alignment="TOP_CENTER" layoutX="708.0" layoutY="76.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="T+" />
+                                                                  <TextField fx:id="positiveTimeMeasureEdit" alignment="TOP_CENTER" layoutX="708.0" layoutY="71.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="T+" />
                                                                   <TextField fx:id="negativeAmpMeasureEdit" alignment="TOP_CENTER" layoutX="814.0" layoutY="106.0" onMouseExited="#render" prefHeight="25.0" prefWidth="70.0" promptText="U-" />
                                                                   <Label layoutX="883.0" layoutY="110.0" text=" ,мВ" />
                                                                   <Label layoutX="736.0" layoutY="147.0" text="T+" />
                                                                   <Label layoutX="869.0" layoutY="242.0" text="T-" />
                                                                   <Label layoutX="854.0" layoutY="172.0" text="U+" />
                                                                   <Label layoutX="770.0" layoutY="261.0" text="U-" />
-                                                                  <Label layoutX="724.0" layoutY="428.0" text="Выбор полярности начальной полуволны:" textAlignment="CENTER" wrapText="true" />
-                                                                  <RadioButton fx:id="positiveMeasureRadioB" layoutX="715.0" layoutY="450.0" mnemonicParsing="false" onMouseExited="#render" selected="true" text="Положительная, pf">
+                                                                  <Label layoutX="724.0" layoutY="425.0" prefHeight="43.0" prefWidth="273.0" text="Выбор полярности начальной полуволны:" textAlignment="CENTER" wrapText="true" />
+                                                                  <RadioButton fx:id="positiveMeasureRadioB" layoutX="715.0" layoutY="465.0" mnemonicParsing="false" onMouseExited="#render" selected="true" text="Положительная, pf">
                                                                       <toggleGroup>
                                                                           <ToggleGroup fx:id="choiceBigWave" />
                                                                       </toggleGroup>
                                                                   </RadioButton>
-                                                                  <RadioButton fx:id="negativeMeasureRadioB" layoutX="851.0" layoutY="450.0" mnemonicParsing="false" onMouseExited="#render" text="Отрицательная, mf" toggleGroup="$choiceBigWave" />
+                                                                  <RadioButton fx:id="negativeMeasureRadioB" layoutX="851.0" layoutY="465.0" mnemonicParsing="false" onMouseExited="#render" text="Отрицательная, mf" toggleGroup="$choiceBigWave" />
                                                                   <TextField fx:id="commonMeasureTimeEdit" alignment="TOP_CENTER" editable="false" layoutX="812.0" layoutY="367.0" prefHeight="25.0" prefWidth="85.0" promptText="Тизм" />
                                                                   <Label layoutX="697.0" layoutY="360.0" prefHeight="38.0" prefWidth="117.0" text="Tизм = ( Т+ ) + ( Т- )" textAlignment="CENTER" wrapText="true" />
                                                                   <Label layoutX="899.0" layoutY="371.0" text=" ,c" />
@@ -164,19 +163,23 @@
                                                                       </yAxis>
                                                                   </LineChart>
                                                                   <Label layoutX="646.0" layoutY="116.0" text=" ,мВ" />
-                                                                  <TextField fx:id="negativeAmpFastWavesEdit" alignment="TOP_CENTER" layoutX="574.0" layoutY="112.0" onMouseExited="#render" prefHeight="25.0" prefWidth="71.0" promptText="u-" />
+                                                                  <TextField fx:id="negativeAmpFastWavesEdit" alignment="TOP_CENTER" layoutX="572.0" layoutY="112.0" onMouseExited="#render" prefHeight="25.0" prefWidth="71.0" promptText="u-" />
                                                                   <Label layoutX="599.0" layoutY="278.0" text="u-" />
-                                                                  <Label fx:id="waitingErrorLabel" layoutX="201.0" layoutY="59.0" prefHeight="26.0" prefWidth="82.0" text="от 0 до 32000" textAlignment="CENTER" textFill="#ff0606" wrapText="true" />
-                                                                  <Label fx:id="pauseErrorLabel" layoutX="333.0" layoutY="59.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="positiveTimeFastErrorLabel" layoutX="458.0" layoutY="58.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="negativeTimeFastErrorLabel" layoutX="569.0" layoutY="58.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="positiveTimeMeasureErrorLabel" layoutX="706.0" layoutY="52.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="negativeTimeMeasureErrorLabel" layoutX="811.0" layoutY="52.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="positiveAmpFastErrorLabel" layoutX="455.0" layoutY="133.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="negativeAmpFastErrorLabel" layoutX="572.0" layoutY="133.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="positiveAmpMeasureErrorLabel" layoutX="705.0" layoutY="123.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="negativeAmpMeasureErrorLabel" layoutX="813.0" layoutY="123.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
-                                                      <Label fx:id="quantityErorLabel" layoutX="578.0" layoutY="338.0" prefHeight="28.0" prefWidth="76.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
+                                                                  <Label fx:id="waitingErrorLabel" layoutX="201.0" layoutY="59.0" prefHeight="26.0" prefWidth="101.0" text="от 0 до 32000" textAlignment="CENTER" textFill="#ff0606" wrapText="true" />
+                                                                  <Label fx:id="pauseErrorLabel" layoutX="326.0" layoutY="55.0" prefHeight="28.0" prefWidth="98.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="positiveTimeFastErrorLabel" layoutX="445.0" layoutY="52.0" prefHeight="28.0" prefWidth="96.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="negativeTimeFastErrorLabel" layoutX="561.0" layoutY="53.0" prefHeight="28.0" prefWidth="97.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="positiveTimeMeasureErrorLabel" layoutX="697.0" layoutY="45.0" prefHeight="28.0" prefWidth="98.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="negativeTimeMeasureErrorLabel" layoutX="806.0" layoutY="45.0" prefHeight="28.0" prefWidth="97.0" text="от 0 до 32000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="positiveAmpFastErrorLabel" layoutX="443.0" layoutY="133.0" prefHeight="28.0" prefWidth="88.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="negativeAmpFastErrorLabel" layoutX="560.0" layoutY="133.0" prefHeight="28.0" prefWidth="88.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="positiveAmpMeasureErrorLabel" layoutX="692.0" layoutY="129.0" prefHeight="28.0" prefWidth="88.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="negativeAmpMeasureErrorLabel" layoutX="806.0" layoutY="129.0" prefHeight="28.0" prefWidth="89.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
+                                                      <Label fx:id="quantityErorLabel" layoutX="571.0" layoutY="328.0" prefHeight="31.0" prefWidth="87.0" text="от 0 до 1000" textFill="#ff0606" wrapText="true" />
+                                                      <TextField fx:id="waitingTimeEdit" alignment="TOP_CENTER" layoutX="199.0" layoutY="81.0" onMouseExited="#render" prefHeight="31.0" prefWidth="88.0" promptText="Тпр" />
+                                                      <TextField fx:id="realLeakingTimeEdit" alignment="TOP_CENTER" editable="false" layoutX="200.0" layoutY="257.0" prefHeight="25.0" prefWidth="70.0" promptText="Tпр" />
+                                                      <Label layoutX="274.0" layoutY="261.0" text=" ,мс" />
+                                                      <Label layoutX="185.0" layoutY="282.0" prefHeight="54.0" prefWidth="116.0" text="Реальное время протекания" textAlignment="CENTER" wrapText="true" />
                                                               </children>
                                                           </AnchorPane>
                                                       </content>
@@ -212,7 +215,7 @@
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <JFXTabPane fx:id="polyTabPane" prefHeight="829.0" prefWidth="1012.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <JFXTabPane fx:id="polyTabPane" prefHeight="821.0" prefWidth="1002.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <tabs>
                                           <Tab fx:id="setupPolyTab" text="Настройка">
                                              <content>
@@ -240,7 +243,7 @@
                                                             <NumberAxis fx:id="yAmpVisualPoly" label="Амплитуда, мВ" onMouseMoved="#yAxisMouseMove" side="LEFT" />
                                                          </yAxis>
                                                       </LineChart>
-                                                      <Label layoutX="89.0" layoutY="270.0" prefHeight="55.0" prefWidth="93.0" text="Амплитуда начальной точки, мВ" textAlignment="CENTER" wrapText="true" />
+                                                      <Label layoutX="60.0" layoutY="270.0" prefHeight="55.0" prefWidth="146.0" text="Амплитуда начальной точки, мВ" textAlignment="CENTER" wrapText="true" />
                                                                 <AnchorPane layoutX="-469.0" layoutY="-374.0" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                                     <children>
                                                                         <Label layoutX="37.0" layoutY="45.0" text="Порт" />
@@ -258,23 +261,23 @@
                                                                         <ToggleButton fx:id="openPortButton" layoutX="107.0" layoutY="348.0" mnemonicParsing="false" onAction="#openPort" text="Старт соединения" />
                                                                     </children>
                                                                 </AnchorPane>
-                                                      <Label layoutX="120.0" layoutY="112.0" prefHeight="52.0" prefWidth="105.0" text="Амплитуда средней точки, мВ" textAlignment="CENTER" wrapText="true" />
-                                                      <Label layoutX="843.0" layoutY="307.0" prefHeight="56.0" prefWidth="93.0" text="Амплитуда конечной точки, мВ" textAlignment="CENTER" wrapText="true" />
-                                                      <Label layoutX="759.0" layoutY="170.0" prefHeight="41.0" prefWidth="93.0" text="Количество повторений" textAlignment="CENTER" wrapText="true" />
-                                                      <Label layoutX="234.0" layoutY="298.0" prefHeight="41.0" prefWidth="93.0" text="Время нарастания, мс" textAlignment="CENTER" wrapText="true" />
-                                                      <Label layoutX="531.0" layoutY="298.0" prefHeight="41.0" prefWidth="63.0" text="Время спада, мс" textAlignment="CENTER" wrapText="true" />
+                                                      <Label layoutX="108.0" layoutY="109.0" prefHeight="55.0" prefWidth="130.0" text="Амплитуда средней точки, мВ" textAlignment="CENTER" wrapText="true" />
+                                                      <Label layoutX="843.0" layoutY="298.0" prefHeight="65.0" prefWidth="93.0" text="Амплитуда конечной точки, мВ" textAlignment="CENTER" wrapText="true" />
+                                                      <Label layoutX="759.0" layoutY="170.0" prefHeight="47.0" prefWidth="93.0" text="Количество повторений" textAlignment="CENTER" wrapText="true" />
+                                                      <Label layoutX="234.0" layoutY="291.0" prefHeight="48.0" prefWidth="109.0" text="Время нарастания, мс" textAlignment="CENTER" wrapText="true" />
+                                                      <Label layoutX="517.0" layoutY="286.0" prefHeight="53.0" prefWidth="91.0" text="Время спада, мс" textAlignment="CENTER" wrapText="true" />
                                                       <TextField fx:id="mediumPointEdit" alignment="CENTER" layoutX="120.0" layoutY="158.0" onMouseExited="#renderPoly" prefHeight="25.0" prefWidth="100.0" promptText="300" />
                                                       <TextField fx:id="increaseTimeEdit" alignment="CENTER" layoutX="231.0" layoutY="340.0" onMouseExited="#renderPoly" prefHeight="25.0" prefWidth="100.0" promptText="5" />
                                                       <TextField fx:id="decreaseTimeEdit" alignment="CENTER" layoutX="513.0" layoutY="340.0" onMouseExited="#renderPoly" prefHeight="25.0" prefWidth="100.0" promptText="5" />
                                                       <TextField fx:id="lastPointEdit" alignment="CENTER" layoutX="843.0" layoutY="365.0" onMouseExited="#renderPoly" prefHeight="25.0" prefWidth="100.0" promptText="-300" />
                                                       <TextField fx:id="quantityReapetedEdit" alignment="CENTER" layoutX="852.0" layoutY="178.0" onMouseExited="#renderPoly" prefHeight="25.0" prefWidth="100.0" promptText="1" />
                                                       <TextField fx:id="beginPointEdit" alignment="CENTER" layoutX="86.0" layoutY="378.0" onMouseExited="#renderPoly" prefHeight="25.0" prefWidth="100.0" promptText="-300" />
-                                                      <Label fx:id="mediumPointError" layoutX="127.0" layoutY="182.0" text="от -1000 до 1000" textAlignment="CENTER" textFill="RED" />
+                                                      <Label fx:id="mediumPointError" layoutX="116.0" layoutY="183.0" text="от -1000 до 1000" textAlignment="CENTER" textFill="RED" />
                                                       <Label fx:id="beginPointError" layoutX="90.0" layoutY="403.0" text="от -1000 до 1000" textAlignment="CENTER" textFill="RED" />
                                                       <Label fx:id="lastPointError" layoutX="847.0" layoutY="395.0" text="от -1000 до 1000" textAlignment="CENTER" textFill="RED" />
                                                       <Label fx:id="quantityReapetedError" layoutX="866.0" layoutY="203.0" text="от 1 до 20" textAlignment="CENTER" textFill="RED" />
-                                                      <Label fx:id="increaseTimeError" layoutX="253.0" layoutY="363.0" text="от 0 до 300" textAlignment="CENTER" textFill="RED" />
-                                                      <Label fx:id="decreaseTimeError" layoutX="525.0" layoutY="363.0" text="от 0 до 300" textAlignment="CENTER" textFill="RED" />
+                                                      <Label fx:id="increaseTimeError" layoutX="253.0" layoutY="363.0" text="от 0 до 300 c" textAlignment="CENTER" textFill="RED" />
+                                                      <Label fx:id="decreaseTimeError" layoutX="525.0" layoutY="363.0" text="от 0 до 300 c" textAlignment="CENTER" textFill="RED" />
                                                    </children>
                                                 </AnchorPane>
                                              </content>

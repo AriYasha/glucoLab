@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.chart.*?>
 <?import com.jfoenix.validation.*?>
 <?import com.jfoenix.controls.*?>
@@ -26,9 +27,18 @@
                 <NumberAxis side="LEFT" />
               </yAxis>
             </LineChart>
-            <Button fx:id="back" layoutX="215.0" layoutY="203.0" mnemonicParsing="false" onAction="#removeFiles" prefHeight="25.0" prefWidth="35.0" text="&lt;" textFill="#006e00" />
-            <Button fx:id="ahead" layoutX="215.0" layoutY="244.0" mnemonicParsing="false" onAction="#moveFiles" prefHeight="25.0" prefWidth="35.0" text="&gt;" textFill="#006e00" />
-            <Button fx:id="deleteFile" layoutX="215.0" layoutY="464.0" mnemonicParsing="false" onAction="#deleteFiles" prefHeight="25.0" prefWidth="35.0" text="-" textFill="#ff0404" />
+            <Button fx:id="back" layoutX="215.0" layoutY="190.0" mnemonicParsing="false" onAction="#removeFiles" prefHeight="25.0" prefWidth="35.0" text="&lt;" textFill="#006e00">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button fx:id="ahead" layoutX="215.0" layoutY="244.0" mnemonicParsing="false" onAction="#moveFiles" prefHeight="25.0" prefWidth="35.0" text="&gt;" textFill="#006e00">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button fx:id="deleteFile" layoutX="215.0" layoutY="464.0" mnemonicParsing="false" onAction="#deleteFiles" prefHeight="25.0" prefWidth="35.0" text="-" textFill="#ff0404">
+               <font>
+                  <Font size="13.0" />
+               </font></Button>
             <Label layoutX="8.0" layoutY="63.0" text="Доступные записи" />
             <Label layoutX="258.0" layoutY="63.0" text="Открыть записи" />
             <Label layoutX="465.0" layoutY="63.0" text="Описание" />

@@ -105,6 +105,7 @@ public class Controller implements Initializable {
     public JFXTabPane polyTabPane;
     public Label comPortStatus;
     public CheckBox filterCheckBox;
+    public TextField realLeakingTimeEdit;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -199,7 +200,7 @@ public class Controller implements Initializable {
         });
     }
 
-    private void setConnection() {
+    public void setConnection() {
         boolean isConnected = false;
         List portList = new ArrayList();
         portList.addAll(portChoiceBox.getItems());
