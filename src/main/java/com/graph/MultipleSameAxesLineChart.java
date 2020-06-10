@@ -21,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -289,12 +290,25 @@ public class MultipleSameAxesLineChart {
             Number amplitudeRounded = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
             HBox popupRow;
             if(series.getName().contains(".gl")) {
-                popupRow = new HBox(new Label("амплитуда = " + amplitude + " мкА\nвремя = " + timeRounded + " мс"));
+                HBox box = new HBox();
+                box.getChildren().add(new Label("время = " + timeRounded + " мс"));
+                for (int i = 0; i < baseChart.getData().size(); i++){
+                    XYChart.Series thisSeries = (XYChart.Series) baseChart.getData().get(i);
+                    getChartData(box, thisSeries);
+                }
+                popupRow = box;
+//                popupRow = new HBox(new Label("амплитуда = " + amplitude + " мкА\nвремя = " + timeRounded + " мс"));
             } else {
                 popupRow = new HBox(new Label("ток = " + amplitude + " мкА\nнапряжение = " + timeRounded + " мВ"));
             }
 
             return popupRow;
+        }
+
+        private HBox getChartData(HBox box, XYChart.Series series){
+            MultipleSameAxesLineChart.this.getChartData(series);
+
+            return box;
         }
 
         private double normalizeYValue(LineChart lineChart, double value) {

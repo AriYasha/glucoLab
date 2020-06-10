@@ -46,16 +46,6 @@
             <Label layoutX="8.0" layoutY="63.0" text="Доступные записи" />
             <Label layoutX="258.0" layoutY="63.0" text="Открыть записи" />
             <Label layoutX="465.0" layoutY="63.0" text="Описание" />
-            <Button fx:id="fastBack" layoutX="209.0" layoutY="135.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="47.0" text="&lt;&lt;" textFill="#006e00">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
-            <Button fx:id="fastAhead" layoutX="209.0" layoutY="300.0" mnemonicParsing="false" onAction="#moveFiles" prefHeight="37.0" prefWidth="47.0" text="&gt;&gt;" textFill="#006e00">
-               <font>
-                  <Font size="16.0" />
-               </font>
-            </Button>
             <Button fx:id="editButton" layoutX="206.0" layoutY="397.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="53.0" textFill="#ff0404">
                <font>
                   <Font size="13.0" />

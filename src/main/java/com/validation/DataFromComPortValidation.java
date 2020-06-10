@@ -653,7 +653,7 @@ public class DataFromComPortValidation {
             alert.setTitle("Успех");
             alert.setHeaderText("Настройка принята");
             alert.setContentText("");
-            alert.showAndWait();
+            alert.show();
         });
     }
 
