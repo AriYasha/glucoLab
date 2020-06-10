@@ -22,8 +22,15 @@
  */
 
 .default-color0.chart-series-line { -fx-stroke: black; }
-.default-color1.chart-series-line { -fx-stroke: #2241aa; }
-.default-color2.chart-series-line { -fx-stroke: brown; }
+.default-color1.chart-series-line { -fx-stroke: #181ff8; }
+.default-color2.chart-series-line { -fx-stroke: #d02313; }
+.default-color3.chart-series-line { -fx-stroke: #31bd02; }
+.default-color4.chart-series-line { -fx-stroke: #ff0fd9; }
+.default-color5.chart-series-line { -fx-stroke: #d6d312; }
+.default-color6.chart-series-line { -fx-stroke: #aa898f; }
+.default-color7.chart-series-line { -fx-stroke: #791ca2; }
+.default-color8.chart-series-line { -fx-stroke: #50b1ff; }
+.default-color9.chart-series-line { -fx-stroke: #4cfa0f; }
 .chart-series-line {
     -fx-stroke: black;
     -fx-stroke-width: 2.0;

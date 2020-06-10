@@ -44,8 +44,6 @@ public class OpenWindowController implements Initializable {
     public Button ahead;
     public Button deleteFile;
     public ImageView trashImage;
-    public Button fastBack;
-    public Button fastAhead;
     public Button editButton;
     public ImageView editImage;
 
@@ -63,8 +61,6 @@ public class OpenWindowController implements Initializable {
         ahead.setBackground(null);
         deleteFile.setBackground(null);
         editButton.setBackground(null);
-        fastAhead.setBackground(null);
-        fastBack.setBackground(null);
         trashImage.setImage(new Image("images/trash.png"));
         editImage.setImage(new Image("images/edit.png"));
         chart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
@@ -72,6 +68,8 @@ public class OpenWindowController implements Initializable {
         chart.setAnimated(false);
         chart.setHorizontalGridLinesVisible(false);
         chart.setVerticalGridLinesVisible(false);
+//        chart.getXAxis().setTickLabelsVisible(false);
+//        chart.getYAxis().setTickLabelsVisible(false);
         File dir = new File(path);
         ArrayList<File> forWork = new ArrayList<>();
         List<File> directories = getDirectory(dir);
@@ -186,6 +184,8 @@ public class OpenWindowController implements Initializable {
             fileForDelete.delete();
         }
         getFiles();
+        textFromFile.setText("");
+        chart.getData().clear();
     }
 
     public void openFiles(ActionEvent actionEvent) {

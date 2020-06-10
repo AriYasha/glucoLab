@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +45,19 @@ public abstract class DrawMeasure {
 
     MultipleSameAxesLineChart multipleAxesLineChart;
     Map<XYChart.Series, MeasureMode> chartDataMap = new HashMap<>();
+
+    static final public Color[] colors = {
+            Color.color(0, 0, 0),
+            Color.color(0.094, 0.12, 0.97),
+            Color.color(0.81, 0.14, 0.07),
+            Color.color(0.19, 0.74, 0),
+            Color.color(1, 0.06, 0.85),
+            Color.color(0.84, 0.83, 0.07),
+            Color.color(0.67, 0.54, 0.56),
+            Color.color(0.47, 0.11, 0.63),
+            Color.color(0.31, 0.69, 0),
+            Color.color(0.30, 0.98, 0.06)
+    };
 
     public void addFirstSeries(String seriesName, MeasureMode mode) {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
@@ -136,22 +150,22 @@ public abstract class DrawMeasure {
     void drawGraphics(ObservableList<String> selectedItems, String rootPath) {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
         if (rootPath.equals(Write.fileMeasurePath)) {
-            for (String seriesName : selectedItems) {
+            for (int i = 0; i < selectedItems.size(); i++) {
+                String seriesName = selectedItems.get(i);
                 MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
                 MeasurementSetup measurementSetup = (MeasurementSetup) mode;
                 XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, measurementSetup.getData());
-                Color color = Color.color(Math.random(), 0, Math.random());
-                multipleAxesLineChart.addSeries(series, color, seriesName, measurementSetup);
+                multipleAxesLineChart.addSeries(series, colors[i], seriesName, measurementSetup);
                 chartDataMap.put(series, measurementSetup);
                 showDetails();
             }
         } else if (rootPath.equals(Write.filePolyPath)) {
-            for (String seriesName : selectedItems) {
+            for (int i = 0; i < selectedItems.size(); i++) {
+                String seriesName = selectedItems.get(i);
                 MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
                 PolySetup polySetup = (PolySetup) mode;
                 XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, polySetup.getData());
-                Color color = Color.color(Math.random(), 0, Math.random());
-                multipleAxesLineChart.addSeries(series, color, seriesName, polySetup);
+                multipleAxesLineChart.addSeries(series, colors[i], seriesName, polySetup);
                 chartDataMap.put(series, polySetup);
                 showDetails();
             }

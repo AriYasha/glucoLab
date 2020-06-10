@@ -667,7 +667,7 @@ public class DataFromComPortValidation {
                     Image stripType = new Image("images/strip0.jpg", true);
                     controller.stripTypeImage.setImage(stripType);
                     controller.stripTypeLabel.setVisible(true);
-                    controller.stripTypeLabel.setText("Полоска № 0");
+                    controller.stripTypeLabel.setText("Полоска № 5");
                 });
                 break;
         }

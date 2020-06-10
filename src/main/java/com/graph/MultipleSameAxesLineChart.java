@@ -161,7 +161,6 @@ public class MultipleSameAxesLineChart {
 
     public void addSeries(XYChart.Series series, Color lineColor, String seriesName, MeasureMode mode) {
         baseChart.getData().add(series);
-
         styleBackgroundChart(series, lineColor);
         //setFixedAxisWidth(baseChart);
         chartDataMap.put(series, mode);
