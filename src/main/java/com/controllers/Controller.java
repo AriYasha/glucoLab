@@ -106,6 +106,7 @@ public class Controller implements Initializable {
     public Label comPortStatus;
     public CheckBox filterCheckBox;
     public TextField realLeakingTimeEdit;
+    public Label realLeakingTimeLabel;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -157,6 +158,7 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         filterCheckBox.setVisible(false);
+        realLeakingTimeLabel.setVisible(false);
         uiValidation = new UIValidation(this);
         uiValidation.hideErrorLabels();
         uiValidation.setImages();
@@ -710,6 +712,7 @@ public class Controller implements Initializable {
             stage.setTitle("Открытие ...");
             scene.getStylesheets().add("/styles/labStyle.css");
             stage.setScene(scene);
+            stage.resizableProperty().setValue(Boolean.FALSE);
             stage.show();
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override
@@ -834,6 +837,7 @@ public class Controller implements Initializable {
     public void sendPolySetupRequest(Event event) {
         filterCheckBox.setVisible(true);
         if (polyTab.isSelected()) {
+            realLeakingTimeLabel.setVisible(false);
             if (comPortConnection != null && comPortConnection.isBusy()) {
                 control.sendPolySetupRequest();
             }

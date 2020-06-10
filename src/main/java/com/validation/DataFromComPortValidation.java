@@ -128,8 +128,15 @@ public class DataFromComPortValidation {
             } else {
                 addToPolySeries(cur, voltageReal);
             }
-
-
+        } else if(isTime(command)){
+            logger.info("Real leaking time detected");
+            byte[] bytes = {command.get(2), command.get(1)};
+            final int realTime = control.getIntFromArray(bytes);
+            Platform.runLater(() -> {
+                controller.realLeakingTimeEdit.setText(String.valueOf(realTime));
+                controller.realLeakingTimeLabel.setText("Время протекания составило : " + String.valueOf(realTime) + " мс");
+                controller.realLeakingTimeLabel.setVisible(true);
+            });
         }
 
     }
@@ -196,7 +203,8 @@ public class DataFromComPortValidation {
                 logger.info("STRIP_INSERTED_STAT");
                 Platform.runLater(() -> {
                     controller.deviceStatus.setText("Полоска вставлена");
-                    controller.glucoChart.getData().clear();
+                    controller.realLeakingTimeLabel.setVisible(false);
+//                    controller.glucoChart.getData().clear();
                     controller.polyChart.getData().clear();
                 });
                 break;
@@ -209,28 +217,46 @@ public class DataFromComPortValidation {
                 break;
             case Control.DROP_DETECTED_STAT:
                 logger.info("DROP_DETECTED_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Капля обнаружена"));
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Капля обнаружена");
+                    controller.measureStatLabel.setText("Капля обнаружена");
+                });
                 break;
             case Control.LEAK_WAITING_STAT:
                 logger.info("LEAK_WAITING_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Ожидание протекания"));
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Ожидание протекания");
+                    controller.measureStatLabel.setText("Ожидание протекания");
+                });
                 break;
             case Control.LEAKING_STAT:
                 logger.info("LEAKING_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Есть протекание"));
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Есть протекание");
+                    controller.measureStatLabel.setText("Есть протекание");
+                });
                 break;
             case Control.FAST_POLARITY_BEGIN_STAT:
                 logger.info("FAST_POLARITY_BEGIN_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Быстрая ПП начата"));
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Быстрая ПП начата");
+                    controller.measureStatLabel.setText("Быстрая ПП начата");
+                });
                 break;
             case Control.FAST_POLARITY_END_STAT:
                 logger.info("FAST_POLARITY_END_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Быстрая ПП окончена"));
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Быстрая ПП окончена");
+                    controller.measureStatLabel.setText("Быстрая ПП окончена");
+                });
                 break;
             case Control.START_MEASURE_STAT:
                 isMeasure = true;
                 logger.info("START_MEASURE_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Начато измерение"));
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Начато измерение");
+                    controller.measureStatLabel.setText("Начато измерение");
+                });
                 startMeasure();
                 break;
             case Control.POLARITY_CHANGED_STAT:
@@ -660,6 +686,12 @@ public class DataFromComPortValidation {
     private boolean isCommand(List<Byte> command) {
         return command.get(0).equals(Control.START_CMD) &&
                 command.get(4).equals(Control.END_CMD) &&
+                (byte) (command.get(1) + command.get(2)) == command.get(3);
+    }
+
+    private boolean isTime(List<Byte> command) {
+        return command.get(0).equals(Control.TIME_CMD) &&
+                command.get(4).equals(Control.TIME_CMD) &&
                 (byte) (command.get(1) + command.get(2)) == command.get(3);
     }
 

@@ -211,7 +211,7 @@ public class Control extends Thread implements SerialPortDataListener {
             byte[] cmdData = new byte[4];
             byte[] firstByte = new byte[1];
             userPort.readBytes(firstByte, 1);
-            if (firstByte[0] == START_CMD) {
+            if (firstByte[0] == START_CMD || firstByte[0] == TIME_CMD) {
                 bytesReceived.add(firstByte[0]);
                 numRead = userPort.readBytes(cmdData, 4);
                 System.out.println("Read " + numRead + " bytes.");
@@ -266,6 +266,7 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte DEVICE_MODE_CMD = 0x4D;     // 0x4D
     static final public byte ERR_CMD = 69;              // 0x45
     static final public byte CMD = 0x64;                 // 0x64
+    static final public byte TIME_CMD = (byte) 0xEE;                 // 0xEE
     static final public byte O_CMD = 79;                // 0x4F
     static final public byte k_CMD = 104;               // 0x68
     static final public byte NOT_FOUND_CMD = 0x20;               // 0x20
