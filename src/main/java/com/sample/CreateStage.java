@@ -73,7 +73,7 @@ public class CreateStage {
 
         result.ifPresent(usernamePassword -> {
             isPressed = true;
-            System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
+//            System.out.println("Username=" + usernamePassword.getKey() + ", Password=" + usernamePassword.getValue());
         });
 
     }

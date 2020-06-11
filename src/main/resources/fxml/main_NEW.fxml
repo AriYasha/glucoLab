@@ -329,6 +329,7 @@
                         </Label>
                   <CheckBox fx:id="filterCheckBox" layoutX="25.0" layoutY="819.0" mnemonicParsing="false" onAction="#addFiltration" text="Включить фильтрацию" />
                   <Label fx:id="realLeakingTimeLabel" layoutX="22.0" layoutY="848.0" prefHeight="48.0" prefWidth="144.0" text="Время протекания составило:" wrapText="true" />
+                  <Button fx:id="chartClearButton" layoutX="45.0" layoutY="775.0" mnemonicParsing="false" onAction="#chartClear" text="Очистить графики" />
                     </children>
                 </AnchorPane>
             </right></BorderPane>

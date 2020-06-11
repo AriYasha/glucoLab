@@ -2,7 +2,7 @@ package com.sample;
 
 import com.comPort.Control;
 import com.controllers.Controller;
-import com.sun.javafx.application.LauncherImpl;
+import com.buffer.WorkBuffer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
@@ -22,9 +22,17 @@ public class Main extends Application {
         String css = "/styles/labStyle.css";
         String icons = "/images/";
 
-        byte[] bytes = {0x64, 0x00, 0x01};
-        Control control = new Control();
-        System.out.println(control.getIntFromArray(bytes));
+
+        for (int i = 0; i < 7; i++) {
+            WorkBuffer.add(String.valueOf(i));
+        }
+        System.out.println(WorkBuffer.getWorkBufferMap().toString());
+        WorkBuffer.remove(5);
+        System.out.println(WorkBuffer.getWorkBufferMap().toString());
+        for (int i = 0; i < 10; i++) {
+            WorkBuffer.add(String.valueOf(i));
+        }
+        System.out.println(WorkBuffer.getWorkBufferMap().toString());
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(fxmlFile));

@@ -1,11 +1,11 @@
-package com.file;
+package com.buffer;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class WorkBuffer {
+public abstract class WorkBuffer {
 
-    private static final int WORK_BUFFER_SIZE = 10;
+    public static final int WORK_BUFFER_SIZE = 10;
     private static int currentPosition = 0;
 
     private static final Map<Integer, String> workBufferMap = new HashMap<>(WORK_BUFFER_SIZE);
@@ -24,11 +24,14 @@ public class WorkBuffer {
 
     public static void remove(Integer position){
         workBufferMap.remove(position);
-//        currentPosition--;
     }
 
     public static void clear(){
         workBufferMap.clear();
         currentPosition = 0;
+    }
+
+    public static String get(Integer position){
+        return workBufferMap.get(position);
     }
 }

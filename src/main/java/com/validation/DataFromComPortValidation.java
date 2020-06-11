@@ -11,6 +11,8 @@ import com.graph.MultipleSameAxesLineChart;
 import com.sample.CreateStage;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
@@ -35,6 +37,7 @@ public class DataFromComPortValidation {
     private PolySetup polySetup;
     private XYChart.Series<Number, Number> series;
     private XYChart.Series<Number, Number> currentSeries;
+    private List<Number> voltageYMeasurement;
     private boolean isPolarityChanged = false;
     private Data currentData;
 
@@ -42,6 +45,7 @@ public class DataFromComPortValidation {
         this.controller = controller;
         this.control = control;
         currentData = new Data();
+        voltageYMeasurement = new ArrayList<>();
     }
 
     public void checkCmd(List<Byte> command, MeasurementSetup setup, PolySetup polySetup) throws IOException {
@@ -84,14 +88,18 @@ public class DataFromComPortValidation {
             if (setup.isFirstPolarityMeasure()) {
                 if (isPolarityChanged) {
                     addToSeries(-data, -voltage, time);
+                    voltageYMeasurement.add(-voltage);
                 } else {
                     addToSeries(data, voltage, time);
+                    voltageYMeasurement.add(voltage);
                 }
             } else {
                 if (!isPolarityChanged) {
                     addToSeries(-data, -voltage, time);
+                    voltageYMeasurement.add(-voltage);
                 } else {
                     addToSeries(data, voltage, time);
+                    voltageYMeasurement.add(voltage);
                 }
             }
         } else if (isSetup(command)) {
@@ -172,6 +180,9 @@ public class DataFromComPortValidation {
             case Control.NOT_CONNECTED_STAT:
                 logger.info("NOT CONNECTED");
                 Platform.runLater(() -> {
+                    controller.glucoChart.getData().remove(controller.glucoChart.getData().size()-1);
+                    Scene scene = controller.measureStatLabel.getScene();
+                    scene.setCursor(Cursor.DEFAULT);
                     control.closeConnection();
                     controller.deviceStatus.setText("Произошёл сброс устройства");
                     Image picture = new Image("images/red Ball.png", true);
@@ -256,6 +267,8 @@ public class DataFromComPortValidation {
                 Platform.runLater(() -> {
                     controller.deviceStatus.setText("Начато измерение");
                     controller.measureStatLabel.setText("Начато измерение");
+                    Scene scene = controller.measureStatLabel.getScene();
+                    scene.setCursor(Cursor.WAIT);
                 });
                 startMeasure();
                 break;
@@ -272,7 +285,12 @@ public class DataFromComPortValidation {
                 break;
             case Control.START_POLY_STAT:
                 logger.info("START_POLY_STAT");
-                Platform.runLater(() -> controller.deviceStatus.setText("Построение полярограммы . . ."));
+                Platform.runLater(() -> {
+                    controller.deviceStatus.setText("Построение полярограммы . . .");
+                    controller.measureStatLabel.setText("Построение полярограммы");
+                    Scene scene = controller.measureStatLabel.getScene();
+                    scene.setCursor(Cursor.WAIT);
+                });
                 startPolyMeasure();
                 break;
             case Control.END_POLY_STAT:
@@ -290,6 +308,8 @@ public class DataFromComPortValidation {
             //currentData.setMeasurementSetup(setup);
             Platform.runLater(() -> {
                 controller.measureStatLabel.setText("Измерение завершено");
+                Scene scene = controller.measureStatLabel.getScene();
+                scene.setCursor(Cursor.DEFAULT);
 //            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
 //            ObservableList<XYChart.Data> dataFromPlot = series.getData();
 //            currentData.setCurrentMeasurement(dataFromPlot);
@@ -299,7 +319,7 @@ public class DataFromComPortValidation {
 //                logger.debug("y = " + newData.getYValue());
 //            }
             });
-            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(0);
+            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(controller.glucoChart.getData().size()-1);
             ObservableList<XYChart.Data> dataFromPlot = series.getData();
             ArrayList<Number> xValues = new ArrayList<>();
             ArrayList<Number> yValues = new ArrayList<>();
@@ -313,6 +333,7 @@ public class DataFromComPortValidation {
             logger.debug(dataFromPlot);
             currentData.setCurrentXMeasurement(xValues);
             currentData.setCurrentYMeasurement(yValues);
+            currentData.setVoltageYMeasurement(voltageYMeasurement);
             setup.setData(currentData);
             Platform.runLater(() -> {
                 String fileName = Write.generateFileName(setup);
@@ -328,6 +349,9 @@ public class DataFromComPortValidation {
                 }
                 if (dialog.isPressed()) {
                     Write.writing(setup, fileName);
+                } else {
+                    // delete series from chart
+                    controller.glucoChart.getData().remove(controller.glucoChart.getData().size()-1);
                 }
             });
         } catch (Exception e) {
@@ -375,6 +399,8 @@ public class DataFromComPortValidation {
     private void endPolyMeasure() {
         Platform.runLater(() -> {
             controller.measureStatLabel.setText("Полярограмма завершена");
+            Scene scene = controller.measureStatLabel.getScene();
+            scene.setCursor(Cursor.DEFAULT);
         });
         try {
             XYChart.Series series = (XYChart.Series) controller.polyChart.getData().get(0);

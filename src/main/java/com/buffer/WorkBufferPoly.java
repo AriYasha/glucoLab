@@ -1,4 +1,4 @@
 package com.buffer;
 
-public class WorkBufferPoly {
+public class WorkBufferPoly extends WorkBuffer {
 }

@@ -13,6 +13,7 @@ public class Data implements Serializable {
     private int idLow = 0;
     private int stripType;
     private List<Number> currentXMeasurement;
+    private List<Number> voltageYMeasurement;
     private List<Number> currentYMeasurement;
     private String comment = "Комментарии отсутствуют";
 
@@ -21,6 +22,7 @@ public class Data implements Serializable {
     public Data() {
         currentXMeasurement = new ArrayList<>();
         currentYMeasurement = new ArrayList<>();
+        voltageYMeasurement = new ArrayList<>();
     }
 
     public String getUserName() {
@@ -79,6 +81,14 @@ public class Data implements Serializable {
         this.currentYMeasurement = currentYMeasurement;
     }
 
+    public List<Number> getVoltageYMeasurement() {
+        return voltageYMeasurement;
+    }
+
+    public void setVoltageYMeasurement(List<Number> voltageYMeasurement) {
+        this.voltageYMeasurement = voltageYMeasurement;
+    }
+
     @Override
     public String toString() {
         return "Data{" +
@@ -87,6 +97,7 @@ public class Data implements Serializable {
                 ", idLow=" + idLow +
                 ", stripType=" + stripType +
                 ", currentXMeasurement=" + currentXMeasurement +
+                ", voltageYMeasurement=" + voltageYMeasurement +
                 ", currentYMeasurement=" + currentYMeasurement +
                 ", comment='" + comment + '\'' +
                 '}';

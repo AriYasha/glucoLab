@@ -295,8 +295,8 @@ public class MultipleSameAxesLineChart {
                     XYChart.Series thisSeries = (XYChart.Series) baseChart.getData().get(i);
                     getChartData(box, thisSeries);
                 }
-                popupRow = box;
-//                popupRow = new HBox(new Label("амплитуда = " + amplitude + " мкА\nвремя = " + timeRounded + " мс"));
+//                popupRow = box;
+                popupRow = new HBox(new Label("амплитуда = " + amplitude + " мкА\nвремя = " + timeRounded + " мс"));
             } else {
                 popupRow = new HBox(new Label("ток = " + amplitude + " мкА\nнапряжение = " + timeRounded + " мВ"));
             }

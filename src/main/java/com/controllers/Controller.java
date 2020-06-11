@@ -107,6 +107,7 @@ public class Controller implements Initializable {
     public CheckBox filterCheckBox;
     public TextField realLeakingTimeEdit;
     public Label realLeakingTimeLabel;
+    public Button chartClearButton;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -860,5 +861,10 @@ public class Controller implements Initializable {
     }
 
     public void addFiltration(ActionEvent actionEvent) {
+    }
+
+    public void chartClear(ActionEvent actionEvent) {
+        glucoChart.getData().clear();
+        polyChart.getData().clear();
     }
 }

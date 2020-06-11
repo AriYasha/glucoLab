@@ -5,6 +5,8 @@ import com.entity.Data;
 import com.entity.MeasureMode;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -63,7 +65,15 @@ public class Read {
         } catch (Exception ex) {
             logger.error(ex.getMessage());
             ex.printStackTrace();
-
+            Platform.runLater(()->{
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Огорчение!");
+                alert.setHeaderText("Данные повреждены или содержат старый формат.");
+                alert.setContentText("Файл будет удалён.");
+                alert.showAndWait();
+            });
+            File fileForDelete = new File(filePath);
+            fileForDelete.delete();
         }
         return null;
     }
