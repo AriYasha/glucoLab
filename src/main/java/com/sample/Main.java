@@ -23,17 +23,6 @@ public class Main extends Application {
         String icons = "/images/";
 
 
-        for (int i = 0; i < 7; i++) {
-            WorkBuffer.add(String.valueOf(i));
-        }
-        System.out.println(WorkBuffer.getWorkBufferMap().toString());
-        WorkBuffer.remove(5);
-        System.out.println(WorkBuffer.getWorkBufferMap().toString());
-        for (int i = 0; i < 10; i++) {
-            WorkBuffer.add(String.valueOf(i));
-        }
-        System.out.println(WorkBuffer.getWorkBufferMap().toString());
-
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(fxmlFile));
         Parent root = (Parent) loader.load();

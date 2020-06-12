@@ -9,16 +9,20 @@ import com.file.Read;
 import com.file.Write;
 import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -27,34 +31,27 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class GraphController extends DrawMeasure implements Initializable {
 
     final static Logger logger = Logger.getLogger(GraphController.class);
-    //private final Map<XYChart.Series, MeasurementSetup> chartDataMap = new HashMap<>();
-
-   // public LineChart glucoChart;
-   // public StackPane stackPane;
-//    public AnchorPane legendPane;
-//    public MenuBar menuBar;
-//    public NumberAxis xAxis;
-//    public NumberAxis yAxis;
-//    public Label legendLabel;
-//    public ChoiceBox graphChoice;
-//    public ColorPicker colorChoice;
-//    public Label descriptionLabel;
-//    public LineChart visualPlot;
-//    public NumberAxis xTimeVisual;
-//    public NumberAxis yAmpVisual;
-//    public Button deleteSeriesButton;
-
-    private String fileName;
-
-    //MultipleSameAxesLineChart multipleAxesLineChart;
+    public GridPane gridPane;
+    public TextField firstDotEdit;
+    public TextField secondDotEdit;
+    public TextField ThirdDotEdit;
+    public Label graphOneLabel;
+    public Label graphTwoLabel;
+    public Label graphThreeLabel;
+    public Label graphSixLabel;
+    public Label graphFiveLabel;
+    public Label graphFourLabel;
+    public Label graphNineLabel;
+    public Label graphEightLabel;
+    public Label graphSevenLabel;
+    public Label graphTenLabel;
+    private String setValueString = "Установите значения";
+    private ObservableList<String> descriptionValues = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -62,66 +59,9 @@ public class GraphController extends DrawMeasure implements Initializable {
         graphChoice.setOnAction((event) -> seriesChooser());
         deleteSeriesButton.setBackground(null);
         glucoChart.setAnimated(false);
-//        createMultiAxesLineChart();
-//        multipleAxesLineChart.addSeries(prepareSeries(fileName, firstData), Color.color(Math.random(), 0, Math.random()), fileName);
+        descriptionValues.add(setValueString);
 
     }
-
-//    public void addFirstSeries(String seriesName, MeasurementSetup measurementSetup){
-//        multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
-//        glucoChart.setAnimated(false);
-//        //graphController.glucoChart.getData().add(currentSeries);
-//        XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, measurementSetup.getData());
-//        multipleAxesLineChart.addSeries(series, Color.RED, seriesName, measurementSetup.getData());
-//        chartDataMap.put(series, measurementSetup);
-////        legendLabel.setText(data.getMeasurementSetup().toString());
-//        //graphController.legendPane.getChildren().add(currentSeries.getLegend());
-//        showDetails();
-//    }
-
-//    private void showDetails(){
-//        graphChoice.getItems().clear();
-//        for (int i = 0; i < glucoChart.getData().size(); i++) {
-//            graphChoice.getItems().add(glucoChart.getData().get(i));
-//        }
-//        graphChoice.getSelectionModel().select(0);
-//        XYChart.Series series = (XYChart.Series) graphChoice.getValue();
-//        Color color = multipleAxesLineChart.getSeriesColor(series);
-//        colorChoice.setValue(color);
-//    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-//    private void menuBarSetup() {
-//        menuBar.getMenus().clear();
-//
-//        SeparatorMenuItem separator = new SeparatorMenuItem();
-//
-//        Menu file = new Menu("Файл");
-//
-//        MenuItem open = new MenuItem("Добавить");
-//        MenuItem close = new MenuItem("Выход");
-//        open.setAccelerator(KeyCombination.keyCombination("Ctrl+O"));
-//        close.setAccelerator(KeyCombination.keyCombination("Ctrl+X"));
-//        open.setOnAction((event) -> {
-//            try {
-//                openPlotWindow();
-//            } catch (IOException e) {
-//                logger.error(e.getMessage());
-//                e.printStackTrace();
-//            }
-//        });
-//        close.setOnAction((event) -> {
-//            Stage stage = (Stage) menuBar.getScene().getWindow();
-//            stage.close();
-//        });
-//
-//        file.getItems().addAll(open, separator, close);
-//
-//        menuBar.getMenus().addAll(file);
-//    }
 
     private void openPlotWindow() throws IOException {
         String fileName = ChooseFile.chooseFile(Write.fileMeasurePath);
@@ -212,5 +152,15 @@ public class GraphController extends DrawMeasure implements Initializable {
 //            }
 //        }
 //        graphChoice.getSelectionModel().select(0);
+    }
+
+    public void setFirstDotOnChart(ActionEvent actionEvent) {
+        int firstDot = Integer.parseInt(firstDotEdit.getText());
+    }
+
+    public void setSecondDotOnChart(ActionEvent actionEvent) {
+    }
+
+    public void setThirdDotOnChart(ActionEvent actionEvent) {
     }
 }
