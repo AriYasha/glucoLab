@@ -1,9 +1,7 @@
 package com.controllers;
 
-import com.entity.Data;
 import com.entity.MeasureMode;
 import com.entity.MeasurementSetup;
-import com.entity.PolySetup;
 import com.file.ChooseFile;
 import com.file.Read;
 import com.file.Write;
@@ -13,20 +11,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
+import javafx.scene.Node;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -39,7 +28,7 @@ public class GraphController extends DrawMeasure implements Initializable {
     public GridPane gridPane;
     public TextField firstDotEdit;
     public TextField secondDotEdit;
-    public TextField ThirdDotEdit;
+    public TextField thirdDotEdit;
     public Label graphOneLabel;
     public Label graphTwoLabel;
     public Label graphThreeLabel;
@@ -69,7 +58,7 @@ public class GraphController extends DrawMeasure implements Initializable {
         XYChart.Series series = VisualisationPlot.prepareSeries(fileName, measurementSetup.getData());
         multipleAxesLineChart.addSeries(
                 series,
-                Color.color(Math.random(),0, Math.random()),
+                Color.color(Math.random(), 0, Math.random()),
                 fileName,
                 measurementSetup
         );
@@ -87,7 +76,7 @@ public class GraphController extends DrawMeasure implements Initializable {
         colorChoice.setValue(color);
         setDescriptionLabel(multipleAxesLineChart.getChartData(series));
         VisualisationPlot visualisationPlot = new VisualisationPlot(visualPlot);
-        if((MeasurementSetup)chartDataMap.get(series) != null) {
+        if ((MeasurementSetup) chartDataMap.get(series) != null) {
             visualisationPlot.drawMeasureGraphic(visualPlot, (MeasurementSetup) chartDataMap.get(series));
         } else {
             visualPlot.getData().clear();
@@ -100,15 +89,15 @@ public class GraphController extends DrawMeasure implements Initializable {
         multipleAxesLineChart.setColor(series, color);
         for (int i = 0; i < glucoChart.getData().size(); i++) {
             XYChart.Series currentSeries = (XYChart.Series) glucoChart.getData().get(i);
-            if(currentSeries.equals(series)){
+            if (currentSeries.equals(series)) {
                 multipleAxesLineChart.styleChartLine(currentSeries, color);
             }
         }
 
     }
 
-    private void setDescriptionLabel(MeasureMode mode){
-        if(mode != null) {
+    private void setDescriptionLabel(MeasureMode mode) {
+        if (mode != null) {
 //        descriptionLabel.setText("Описание выбранного графика :\n" +
 //                "\nТип полоски :\n\t" + data.getStripType() +
 //                "\nВремя протекания :\n\t" + data.getMeasurementSetup().getLeakingTime() + ", мс" +
@@ -131,9 +120,10 @@ public class GraphController extends DrawMeasure implements Initializable {
     }
 
     public void deleteSeries(ActionEvent actionEvent) {
-        String choosedSeriesName = (String) graphChoice.getValue();
-        graphChoice.getItems().remove(graphChoice.getValue());
-        deleteSerie(choosedSeriesName);
+//        String choosedSeriesName = (String) graphChoice.getValue();
+//        graphChoice.getItems().remove(graphChoice.getValue());
+//        deleteSerie(choosedSeriesName);
+
 //        String choosedSeriesName = ((XYChart.Series) graphChoice.getValue()).getName();
 //        graphChoice.getItems().remove(graphChoice.getValue());
 //        for (int i = 0; i < glucoChart.getData().size(); i++) {
@@ -156,11 +146,114 @@ public class GraphController extends DrawMeasure implements Initializable {
 
     public void setFirstDotOnChart(ActionEvent actionEvent) {
         int firstDot = Integer.parseInt(firstDotEdit.getText());
+        setDotOnChart("one", 1, firstDot);
+        createAdditionalLines("additionalOne", firstDot);
     }
 
     public void setSecondDotOnChart(ActionEvent actionEvent) {
+        int secondDot = Integer.parseInt(secondDotEdit.getText());
+        setDotOnChart("two", 2, secondDot);
+        createAdditionalLines("additionalTwo", secondDot);
     }
 
     public void setThirdDotOnChart(ActionEvent actionEvent) {
+        int thirdDot = Integer.parseInt(thirdDotEdit.getText());
+        setDotOnChart("tree", 3, thirdDot);
+        createAdditionalLines("additionalThree", thirdDot);
+    }
+
+    private void createAdditionalLines(String lineName, int dot) {
+        for (int i = 0; i < glucoChart.getData().size(); i++) {
+            XYChart.Series series = (XYChart.Series) glucoChart.getData().get(i);
+            if (series.getName().contains(lineName)) {
+                glucoChart.getData().remove(series);
+            }
+        }
+        XYChart.Series series = new XYChart.Series();
+        Double minValue = yAxis.lowerBoundProperty().getValue();
+        Double maxValue = yAxis.upperBoundProperty().getValue();
+        series.getData().add(new XYChart.Data<>(dot, minValue + 2));
+        series.getData().add(new XYChart.Data<>(dot, maxValue - 2));
+        series.setName(lineName);
+        glucoChart.getData().add(series);
+        Node line = series.getNode().lookup(".chart-series-line");
+        line.setStyle("-fx-stroke-width: 1; -fx-stroke: #003b3d; -fx-stroke-dash-array: 5 10 10 5;");
+    }
+
+    private void setDotOnChart(String columnName, int columnIndex, int dot) {
+        setLabels(columnName, columnIndex);
+        for (int i = 0; i < glucoChart.getData().size(); i++) {
+            XYChart.Series series = (XYChart.Series) glucoChart.getData().get(i);
+            if (!series.getName().contains("additional")) {
+                ObservableList<XYChart.Data> dataFromPlot = series.getData();
+                ArrayList<Number> xValues = new ArrayList<>();
+                ArrayList<Number> yValues = new ArrayList<>();
+                for (XYChart.Data newData : dataFromPlot) {
+                    xValues.add((Number) newData.getXValue());
+                    yValues.add((Number) newData.getYValue());
+                }
+                int workIndex = getCloseIndex(xValues, dot);
+                logger.debug(xValues.size());
+                logger.debug(yValues.size());
+                logger.debug(workIndex);
+                for (Node node : gridPane.getChildren()) {
+                    if (node.getClass().equals(Label.class)) {
+                        Label label = (Label) node;
+                        if (label.getId() != null && label.getId().contains(columnName)) {
+                            setLabel(label, columnIndex, i + 2, yValues, workIndex);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private int getCloseIndex(ArrayList<Number> list, int a) {
+        int right = list.size();
+        int left = 0;
+        int indexFinally = 0;
+
+        while (right - left > 1) {
+            int mid = (left + right) / 2;
+            if ((Integer) list.get(mid) > a) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+        }
+        if (a <= (int) list.get(list.size() - 1)) {
+            if ((Integer) list.get(right) == a) {
+                indexFinally = right;
+            }
+            if ((Integer) list.get(left) == a) {
+                indexFinally = left;
+            } else if (Math.abs((Integer) list.get(right) - a) > Math.abs((Integer) list.get(left) - a) ||
+                    Math.abs((Integer) list.get(right) - a) == Math.abs((Integer) list.get(left) - a)) {
+                indexFinally = right;
+            } else {
+                indexFinally = left;
+            }
+        } else {
+            indexFinally = list.size() - 1;
+        }
+
+        return indexFinally;
+    }
+
+    private void setLabels(String columnName, int columnIndex) {
+        for (int i = 2; i <= 11; i++) {
+            Label label = new Label();
+            label.setText("");
+            label.setId(columnName + columnIndex + "-" + i);
+            gridPane.add(label, columnIndex, i);
+        }
+    }
+
+    private void setLabel(Label label, int columnIndex, int iteration, ArrayList<Number> yValues, int workIndex) {
+        if (label.getId().contains(columnIndex + "-" + iteration)) {
+            label.setText("");
+            logger.debug(yValues.get(workIndex));
+            label.setText(String.valueOf(yValues.get(workIndex)));
+        }
     }
 }
