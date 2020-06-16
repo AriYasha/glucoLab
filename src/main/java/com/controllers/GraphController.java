@@ -39,6 +39,9 @@ public class GraphController extends DrawMeasure implements Initializable {
     public Label graphEightLabel;
     public Label graphSevenLabel;
     public Label graphTenLabel;
+    public Label deviationOneLabel;
+    public Label deviationTwoLabel;
+    public Label deviationThreeLabel;
     private String setValueString = "Установите значения";
     private ObservableList<String> descriptionValues = FXCollections.observableArrayList();
 
@@ -182,6 +185,7 @@ public class GraphController extends DrawMeasure implements Initializable {
 
     private void setDotOnChart(String columnName, int columnIndex, int dot) {
         setLabels(columnName, columnIndex);
+        List<Float> deviationList = new ArrayList<>();
         for (int i = 0; i < glucoChart.getData().size(); i++) {
             XYChart.Series series = (XYChart.Series) glucoChart.getData().get(i);
             if (!series.getName().contains("additional")) {
@@ -200,12 +204,31 @@ public class GraphController extends DrawMeasure implements Initializable {
                     if (node.getClass().equals(Label.class)) {
                         Label label = (Label) node;
                         if (label.getId() != null && label.getId().contains(columnName)) {
-                            setLabel(label, columnIndex, i + 2, yValues, workIndex);
+                            deviationList = setLabel(label, columnIndex, i + 2, deviationList, yValues.get(workIndex));
                         }
                     }
                 }
             }
         }
+        logger.debug(deviationList.toString());
+        logger.debug(standardDeviation(deviationList));
+        setDeviationLabel(columnIndex, standardDeviation(deviationList));
+    }
+
+    private float standardDeviation(List<Float> deviationList) {
+        float mean = 0;
+        for (float digit : deviationList) {
+            mean += digit;
+        }
+        mean /= deviationList.size();
+        logger.debug(mean);
+        float sum = 0;
+        for (Float aDeviationList : deviationList) {
+            sum += Math.pow(aDeviationList - mean, 2);
+        }
+        logger.debug(sum);
+        float standardDeviation = (float) Math.sqrt(sum / (deviationList.size()));
+        return standardDeviation;
     }
 
     private int getCloseIndex(ArrayList<Number> list, int a) {
@@ -241,7 +264,7 @@ public class GraphController extends DrawMeasure implements Initializable {
     }
 
     private void setLabels(String columnName, int columnIndex) {
-        for (int i = 2; i <= 11; i++) {
+        for (int i = 2; i <= 12; i++) {
             Label label = new Label();
             label.setText("");
             label.setId(columnName + columnIndex + "-" + i);
@@ -249,11 +272,33 @@ public class GraphController extends DrawMeasure implements Initializable {
         }
     }
 
-    private void setLabel(Label label, int columnIndex, int iteration, ArrayList<Number> yValues, int workIndex) {
+    private List<Float> setLabel(Label label, int columnIndex, int iteration, List<Float> deviationList, Number value) {
         if (label.getId().contains(columnIndex + "-" + iteration)) {
             label.setText("");
-            logger.debug(yValues.get(workIndex));
-            label.setText(String.valueOf(yValues.get(workIndex)));
+            logger.debug(value);
+            label.setText(String.valueOf(value));
+            deviationList.add((Float) value);
+        }
+        return deviationList;
+    }
+
+    private void setDeviationLabel(int columnIndex, Number value) {
+        switch (columnIndex) {
+            case 1:
+                deviationOneLabel.setText("");
+                logger.debug(value);
+                deviationOneLabel.setText(String.valueOf(value));
+                break;
+            case 2:
+                deviationTwoLabel.setText("");
+                logger.debug(value);
+                deviationTwoLabel.setText(String.valueOf(value));
+                break;
+            case 3:
+                deviationThreeLabel.setText("");
+                logger.debug(value);
+                deviationThreeLabel.setText(String.valueOf(value));
+                break;
         }
     }
 }
