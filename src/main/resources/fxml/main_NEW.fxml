@@ -179,7 +179,12 @@
                                                       <TextField fx:id="waitingTimeEdit" alignment="TOP_CENTER" layoutX="199.0" layoutY="81.0" onMouseExited="#render" prefHeight="31.0" prefWidth="88.0" promptText="Тпр" />
                                                       <TextField fx:id="realLeakingTimeEdit" alignment="TOP_CENTER" editable="false" layoutX="200.0" layoutY="257.0" prefHeight="25.0" prefWidth="70.0" promptText="Tпр" />
                                                       <Label layoutX="274.0" layoutY="261.0" text=" ,мс" />
-                                                      <Label layoutX="185.0" layoutY="282.0" prefHeight="54.0" prefWidth="116.0" text="Реальное время протекания" textAlignment="CENTER" wrapText="true" />
+                                                      <Label layoutX="83.0" layoutY="249.0" prefHeight="40.0" prefWidth="116.0" text="Реальное время протекания" textAlignment="CENTER" wrapText="true" />
+                                                      <TextField fx:id="realLeakingQuantityEdit" alignment="TOP_CENTER" editable="false" layoutX="200.0" layoutY="303.0" prefHeight="25.0" prefWidth="70.0" promptText="N" />
+                                                      <Label layoutX="83.0" layoutY="295.0" prefHeight="40.0" prefWidth="116.0" text="Количество импульсов тока" textAlignment="CENTER" wrapText="true" />
+                                                      <TextField fx:id="realLeakingCurrentEdit" alignment="TOP_CENTER" editable="false" layoutX="200.0" layoutY="347.0" prefHeight="25.0" prefWidth="70.0" promptText="Iпр" />
+                                                      <Label layoutX="274.0" layoutY="351.0" text=" ,мкА" />
+                                                      <Label layoutX="83.0" layoutY="339.0" prefHeight="40.0" prefWidth="116.0" text="Ток протекания" textAlignment="CENTER" wrapText="true" />
                                                               </children>
                                                           </AnchorPane>
                                                       </content>

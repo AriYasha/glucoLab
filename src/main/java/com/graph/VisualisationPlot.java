@@ -24,7 +24,7 @@ public class VisualisationPlot {
         series.getData().add(new XYChart.Data<>(time, 0));
         series.getData().add(new XYChart.Data<>(time += setup.getLeakingTime(), 0));
         series.getData().add(new XYChart.Data<>(time += setup.getPauseTime(), 0));
-        if (setup.isFirstPolarityReversal()) {
+        if (!setup.isFirstPolarityReversal()) {
             for (int count = 0; count < setup.getQuantityFastPolarityPulses(); count++) {
                 series.getData().add(new XYChart.Data<>(time, setup.getPositiveAmplitudeFastPolarityPulses()));
                 series.getData().add(new XYChart.Data<>(time += setup.getPositiveFastPolarityReversalTime(), setup.getPositiveAmplitudeFastPolarityPulses()));
@@ -39,7 +39,7 @@ public class VisualisationPlot {
                 series.getData().add(new XYChart.Data<>(time += setup.getPositiveFastPolarityReversalTime(), setup.getPositiveAmplitudeFastPolarityPulses()));
             }
         }
-        if (setup.isFirstPolarityMeasure()) {
+        if (!setup.isFirstPolarityMeasure()) {
             series.getData().add(new XYChart.Data<>(time, setup.getPositiveAmplitudeMeasurePulses()));
             series.getData().add(new XYChart.Data<>(time += setup.getPositiveMeasureTime(), setup.getPositiveAmplitudeMeasurePulses()));
             series.getData().add(new XYChart.Data<>(time, 0 - setup.getNegativeAmplitudeMeasurePulses()));

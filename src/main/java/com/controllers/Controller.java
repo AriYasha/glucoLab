@@ -108,6 +108,8 @@ public class Controller implements Initializable {
     public TextField realLeakingTimeEdit;
     public Label realLeakingTimeLabel;
     public Button chartClearButton;
+    public TextField realLeakingQuantityEdit;
+    public TextField realLeakingCurrentEdit;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -221,6 +223,7 @@ public class Controller implements Initializable {
                         if (timeOut > 165535) break;
                     }
                     readBytes = control.readBytes();
+                    logger.debug(Arrays.toString(readBytes));
                     if (Arrays.equals(readBytes, Control.CONTROL_ARRAY)) {
                         control.addListener();
                         control.serialEvent(new SerialPortEvent(control.getUserPort(), SerialPort.LISTENING_EVENT_DATA_AVAILABLE));
@@ -537,8 +540,8 @@ public class Controller implements Initializable {
         String positiveTimeMeasure = positiveTimeMeasureEdit.getText();
         String negativeAmpMeasure = negativeAmpMeasureEdit.getText();
         String positiveAmpMeasure = positiveAmpMeasureEdit.getText();
-        boolean firstPolarityReversal = !negativeFastHalfWaveRadioB.isSelected();
-        boolean firstPolarityMeasure = !negativeMeasureRadioB.isSelected();
+        boolean firstPolarityReversal = negativeFastHalfWaveRadioB.isSelected();
+        boolean firstPolarityMeasure = negativeMeasureRadioB.isSelected();
         if (negativeTimeFastWaves.equals("")) {
             negativeTimeFastWaves = "100";
         }
