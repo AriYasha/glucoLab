@@ -6,6 +6,7 @@ import com.entity.PolySetup;
 import com.file.Read;
 import com.file.Write;
 import com.graph.VisualisationPlot;
+import com.sample.CreateStage;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -160,6 +161,8 @@ public class OpenWindowController implements Initializable {
                     }
                 }
                      if (count == selectedChoiceItems.size()) {
+                    if(selectedChoiceItems.size()>=10)
+                     choiceFile.getItems().remove(0);
                     choiceFile.getItems().add(selectedItems.get(i));
                 }
 
@@ -211,22 +214,36 @@ public class OpenWindowController implements Initializable {
         String newPath = path + "\\" + files.getValue()+"\\"+ underFiles.getValue();
         File newFile = new File(newPath);
         viewFile.getItems().clear();
+        Map<Long,String> data = new HashMap<Long, String>();
         if (files.getValue() != null & underFiles.getValue()!=null) {
             ArrayList<File> path = new ArrayList<File>(Arrays.asList(newFile.listFiles()));
             for (File file : path) {
-                viewFile.getItems().add(file.getName());
+                System.out.println(file.lastModified());
+
+                data.put(file.lastModified(),file.getName());
+                }
+        }
+        TreeMap<Long, String> sorted = new TreeMap<>(data);
 
 
-            }
+//        List<Long> sortData = new ArrayList<>(data.keySet());
+//        Collections.sort(sortData);
+//        for (Long l:sortData) {
+//            System.out.println(l);
+//            }
+//
+
+
+        for (Map.Entry<Long, String> pair : sorted.entrySet()) {
+            viewFile.getItems().add(pair.getValue());
+        }
+//        ObservableList<String> allItems = viewFile.getItems();
+//        for (String str: allItems) {
+
+            
+
         }
 
-        ObservableList<String> allItems = viewFile.getItems();
-        for (String str: allItems) {
-            
-            
-
-        }
-    }
 
     public void deleteFiles(ActionEvent actionEvent) {
         String newPath = path + "\\" + files.getValue();
@@ -291,6 +308,10 @@ public class OpenWindowController implements Initializable {
 
 
 
+    }
+
+    public void editFileName(ActionEvent actionEvent) {
+        CreateStage dialog = new CreateStage("hello");
     }
 //    private void getFileFromDirectory(){
 //        File fromDirectory = new File(path + "\\" + files.getSelectionModel().getSelectedItem());
