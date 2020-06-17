@@ -149,24 +149,22 @@ public class OpenWindowController implements Initializable {
     public void moveFiles(ActionEvent actionEvent) {
         ObservableList<String> selectedChoiceItems = choiceFile.getItems();
         ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
-        int size = selectedChoiceItems.size();
         int count = 0;
-        for (int i = 0; i <= selectedItems.size(); i++) {
-            for (int j = 0; j <= selectedChoiceItems.size(); j++) {
-                if (!selectedItems.get(i).equals(selectedChoiceItems.get(j))) {
-                   count++;
-                } else if(count == size) {
+        if(selectedChoiceItems.isEmpty()){
+            choiceFile.getItems().addAll(viewFile.getSelectionModel().getSelectedItems());
+        } else {
+            for (int i = 0; i < selectedItems.size(); i++) {
+                for (int j = 0; j < selectedChoiceItems.size(); j++) {
+                    if (!selectedItems.get(i).equals(selectedChoiceItems.get(j))) {
+                        count++;
+                    }
+                }
+                     if (count == selectedChoiceItems.size()) {
                     choiceFile.getItems().add(selectedItems.get(i));
                 }
-            }
-//            for (String str : selectedItems) {
-//                if (!str.equals(viewFile.getSelectionModel().getSelectedItems())) {
-//                    choiceFile.getItems().add(str);
-//                } else {
-//                }
-//            }
-//            choiceFile.getItems().addAll(viewFile.getSelectionModel().getSelectedItems());
 
+                     count = 0;
+            }
         }
     }
 
@@ -224,6 +222,7 @@ public class OpenWindowController implements Initializable {
 
         ObservableList<String> allItems = viewFile.getItems();
         for (String str: allItems) {
+            
             
 
         }
