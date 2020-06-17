@@ -72,8 +72,8 @@ public class Read {
                 alert.setContentText("Файл будет удалён.");
                 alert.showAndWait();
             });
-            File fileForDelete = new File(filePath);
-            fileForDelete.delete();
+            //File fileForDelete = new File(filePath);
+            //fileForDelete.delete();
         }
         return null;
     }

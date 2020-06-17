@@ -46,6 +46,7 @@ public class OpenWindowController implements Initializable {
     public ImageView trashImage;
     public Button editButton;
     public ImageView editImage;
+    public ComboBox underFiles;
 
     private boolean isNewWindow = true;
 
@@ -70,8 +71,16 @@ public class OpenWindowController implements Initializable {
         chart.setVerticalGridLinesVisible(false);
 //        chart.getXAxis().setTickLabelsVisible(false);
 //        chart.getYAxis().setTickLabelsVisible(false);
+
+        //getFileFromDirectory();
+        getMainDirectories();
+        getDirectoryFromMainDirectory();
+        getFiles();
+
+    }
+
+    private void getMainDirectories(){
         File dir = new File(path);
-        ArrayList<File> forWork = new ArrayList<>();
         List<File> directories = getDirectory(dir);
         for (File file : directories) {
             if (file.isDirectory()) {
@@ -79,7 +88,22 @@ public class OpenWindowController implements Initializable {
                 files.getItems().add(file.getName());
             }
         }
-        getFiles();
+
+    }
+
+
+    private void getDirectoryFromMainDirectory(){
+        File fromDirectory = new File(path+"\\"+files.getSelectionModel().getSelectedItem());
+        List<File> underDirectory = getDirectory(fromDirectory);
+        underFiles.getItems().clear();
+        for (File f: underDirectory) {
+            if (f.isDirectory()) {
+                underFiles.getSelectionModel().selectFirst();
+                underFiles.getItems().add(f.getName());
+                System.out.println(f.getName());
+
+            }
+        }
     }
 
     public void setNewWindow(boolean newWindow) {
@@ -118,12 +142,32 @@ public class OpenWindowController implements Initializable {
 
     public void addFiles(ActionEvent actionEvent) {
 
+        getDirectoryFromMainDirectory();
         getFiles();
     }
 
     public void moveFiles(ActionEvent actionEvent) {
-        choiceFile.getItems().addAll(viewFile.getSelectionModel().getSelectedItems());
+        ObservableList<String> selectedChoiceItems = choiceFile.getItems();
+        ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
+        int size = selectedChoiceItems.size();
+        int count = 0;
+        for (int i = 0; i <= selectedItems.size(); i++) {
+            for (int j = 0; j <= selectedChoiceItems.size(); j++) {
+                if (!selectedItems.get(i).equals(selectedChoiceItems.get(j))) {
+                   count++;
+                } else if(count == size) {
+                    choiceFile.getItems().add(selectedItems.get(i));
+                }
+            }
+//            for (String str : selectedItems) {
+//                if (!str.equals(viewFile.getSelectionModel().getSelectedItems())) {
+//                    choiceFile.getItems().add(str);
+//                } else {
+//                }
+//            }
+//            choiceFile.getItems().addAll(viewFile.getSelectionModel().getSelectedItems());
 
+        }
     }
 
     public void choiceFiles(MouseEvent mouseEvent) {
@@ -165,14 +209,22 @@ public class OpenWindowController implements Initializable {
     }
 
     private void getFiles() {
-        String newPath = path + "\\" + files.getValue();
+        String newPath = path + "\\" + files.getValue()+"\\"+ underFiles.getValue();
         File newFile = new File(newPath);
         viewFile.getItems().clear();
-        if (files.getValue() != null) {
+        if (files.getValue() != null & underFiles.getValue()!=null) {
             ArrayList<File> path = new ArrayList<File>(Arrays.asList(newFile.listFiles()));
             for (File file : path) {
                 viewFile.getItems().add(file.getName());
+
+
             }
+        }
+
+        ObservableList<String> allItems = viewFile.getItems();
+        for (String str: allItems) {
+            
+
         }
     }
 
@@ -232,4 +284,24 @@ public class OpenWindowController implements Initializable {
         }
         return fxmlLoader;
     }
+
+    public void getFilesFromDirectory(ActionEvent actionEvent) {
+        getFiles();
+
+
+
+
+    }
+//    private void getFileFromDirectory(){
+//        File fromDirectory = new File(path + "\\" + files.getSelectionModel().getSelectedItem());
+//        System.out.println(fromDirectory.getName());
+//        List<File> underDirectory = getDirectory(fromDirectory);
+//        for (File f : underDirectory) {
+//            if (f.isDirectory()) {
+//                underFiles.getSelectionModel().selectFirst();
+//                underFiles.getItems().add(f.getName());
+//            }
+//        }
+//
+//    }
 }
