@@ -187,6 +187,7 @@ public class OpenWindowController implements Initializable {
             MeasurementSetup setup = (MeasurementSetup) Read.reading(
                     path + "\\" +
                             files.getSelectionModel().getSelectedItem() + "\\" +
+                            underFiles.getSelectionModel().getSelectedItem() + "\\" +
                             fileName);
             textFromFile.setText(setup.toString());
             chart.getData().clear();
