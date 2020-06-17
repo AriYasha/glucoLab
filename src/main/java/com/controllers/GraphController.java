@@ -286,4 +286,7 @@ public class GraphController extends DrawMeasure implements Initializable {
                 break;
         }
     }
+
+    public void onlyMeasurement(ActionEvent actionEvent) {
+    }
 }

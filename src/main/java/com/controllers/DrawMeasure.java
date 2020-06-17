@@ -42,6 +42,7 @@ public abstract class DrawMeasure {
     public NumberAxis xTimeVisual;
     public NumberAxis yAmpVisual;
     public Button deleteSeriesButton;
+    public CheckBox onlyMeasurementCheckBox;
 
     MultipleSameAxesLineChart multipleAxesLineChart;
     Map<XYChart.Series, MeasureMode> chartDataMap = new HashMap<>();
