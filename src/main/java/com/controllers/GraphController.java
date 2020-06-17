@@ -101,21 +101,6 @@ public class GraphController extends DrawMeasure implements Initializable {
 
     private void setDescriptionLabel(MeasureMode mode) {
         if (mode != null) {
-//        descriptionLabel.setText("Описание выбранного графика :\n" +
-//                "\nТип полоски :\n\t" + data.getStripType() +
-//                "\nВремя протекания :\n\t" + data.getMeasurementSetup().getLeakingTime() + ", мс" +
-//                "\nВремя паузы :\n\t" + data.getMeasurementSetup().getPauseTime() + ", мс" +
-//                "\nКоличество импульсов ПП :\n\t" + data.getMeasurementSetup().getQuantityFastPolarityPulses() +
-//                "\nАмплитуда положительных импульсов ПП :\n\t" + data.getMeasurementSetup().getPositiveAmplitudeFastPolarityPulses() + ", мВ" +
-//                "\nАмплитуда отрицательных импульсов ПП :\n\t" + data.getMeasurementSetup().getNegativeAmplitudeFastPolarityPulses() +
-//                "\nВремя отрицательных импульсов ПП :\n\t" + data.getMeasurementSetup().getNegativeFastPolarityReversalTime() + ", мс" +
-//                "\nВремя положительных импульсов ПП :\n\t" + data.getMeasurementSetup().getPositiveFastPolarityReversalTime() + ", мс" +
-//                "\nАмплитуда положительного импульса измерения :\n\t" + data.getMeasurementSetup().getNegativeAmplitudeMeasurePulses() + ", мВ" +
-//                "\nАмплитуда отрицательного импульса измерения :\n\t" + data.getMeasurementSetup().getPositiveAmplitudeMeasurePulses() + ", мВ" +
-//                "\nВремя отрицательного импульса измерения :\n\t" + data.getMeasurementSetup().getNegativeMeasureTime() + ", мс" +
-//                "\nВремя положительного импульса измерения :\n\t" + data.getMeasurementSetup().getPositiveMeasureTime() + ", мс" +
-//                ""
-//        );
             descriptionLabel.setText(((MeasurementSetup) mode).toString());
         } else {
             descriptionLabel.setText("Описание выбранного графика :\n");

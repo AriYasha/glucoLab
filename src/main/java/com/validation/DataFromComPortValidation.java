@@ -82,6 +82,9 @@ public class DataFromComPortValidation {
             //logger.info("Data detected");
             byte[] bytes = {command.get(3), command.get(2), command.get(1)};
             int time = control.getIntFromArray(bytes);
+            if(!isMeasure){
+                time = 0 - time;
+            }
             byte[] bytesDue = {command.get(6), command.get(5)};
             int voltage = control.getIntFromArray(bytesDue);
             if (command.get(4) == 1) {
@@ -308,7 +311,7 @@ public class DataFromComPortValidation {
                     Scene scene = controller.measureStatLabel.getScene();
                     scene.setCursor(Cursor.WAIT);
                 });
-                startMeasure();
+//                startMeasure();
                 break;
             case Control.POLARITY_CHANGED_STAT:
                 logger.info("POLARITY_CHANGED_STAT");
@@ -338,13 +341,13 @@ public class DataFromComPortValidation {
                 break;
             case Control.PAUSE_BEGIN_STAT:
                 logger.info("PAUSE_BEGIN_STAT");
+                startMeasure();
                 Platform.runLater(() -> controller.deviceStatus.setText("Пауза начата"));
-                endPolyMeasure();
+
                 break;
             case Control.PAUSE_END_STAT:
-                logger.info("PAUSE_BEGIN_STAT");
+                logger.info("PAUSE_END_STAT");
                 Platform.runLater(() -> controller.deviceStatus.setText("Пауза окончена"));
-                endPolyMeasure();
                 break;
 
         }

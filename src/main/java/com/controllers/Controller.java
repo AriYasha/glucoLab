@@ -598,8 +598,8 @@ public class Controller implements Initializable {
         }
         setup.setLeakingTime(Integer.parseInt(waitingTime));
         setup.setPauseTime(Integer.parseInt(pauseTime));
-        setup.setFirstPolarityMeasure(firstPolarityMeasure);
-        setup.setFirstPolarityReversal(firstPolarityReversal);
+        setup.setFirstPolarityMeasure(!firstPolarityMeasure);
+        setup.setFirstPolarityReversal(!firstPolarityReversal);
         setup.setNegativeAmplitudeMeasurePulses(Integer.parseInt(negativeAmpMeasure));
         setup.setPositiveAmplitudeMeasurePulses(Integer.parseInt(positiveAmpMeasure));
         setup.setNegativeAmplitudeFastPolarityPulses(Integer.parseInt(negativeAmpFast));
