@@ -1,11 +1,11 @@
 package com.comPort;
 
+import com.controllers.Controller;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
-import com.controllers.Controller;
 import com.validation.DataFromComPortValidation;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
@@ -24,7 +24,7 @@ public class Control extends Thread implements SerialPortDataListener {
     private boolean dataReady;
     private byte[] bytesFromFile;
     private int counterBytes;
-    private byte[] command = {START_CMD, 0, 0, 0, END_CMD};
+    private byte[] command = {START_CMD, 0, 0, 0, 0, 0, 0, 0, END_CMD};
 
     private ComPortConnection comPortConnection;
     private SerialPort userPort;
@@ -76,21 +76,21 @@ public class Control extends Thread implements SerialPortDataListener {
     public void sendTest() {
         command[1] = O_CMD;
         command[2] = k_CMD;
-        command[3] = (byte) (O_CMD + k_CMD);
+        command[7] = (byte) (O_CMD + k_CMD);
         userPort.writeBytes(command, command.length);
     }
 
     public void sendSetupRequest() {
         command[1] = CMD;
         command[2] = 0x00;
-        command[3] = (byte) (command[1] + command[2]);
+        command[7] = (byte) (command[1] + command[2]);
         userPort.writeBytes(command, command.length);
     }
 
     public void sendPolySetupRequest() {
         command[1] = CMD;
         command[2] = 0x01;
-        command[3] = (byte) (command[1] + command[2]);
+        command[7] = (byte) (command[1] + command[2]);
         userPort.writeBytes(command, command.length);
     }
 
@@ -117,7 +117,7 @@ public class Control extends Thread implements SerialPortDataListener {
     }
 
     public byte[] readBytes() {
-        byte[] bytes = new byte[5];
+        byte[] bytes = new byte[9];
         userPort.readBytes(bytes, bytes.length);
         return bytes;
     }
@@ -207,22 +207,21 @@ public class Control extends Thread implements SerialPortDataListener {
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
             return;
         int numRead = userPort.bytesAvailable();
-        while (numRead >= 5) {
-            byte[] cmdData = new byte[4];
+        while (numRead >= 9) {
+            byte[] cmdData = new byte[8];
             byte[] firstByte = new byte[1];
             userPort.readBytes(firstByte, 1);
-            if (firstByte[0] == START_CMD || firstByte[0] == TIME_CMD) {
+            if (firstByte[0] == START_CMD) {
                 bytesReceived.add(firstByte[0]);
-                numRead = userPort.readBytes(cmdData, 4);
+                numRead = userPort.readBytes(cmdData, 8);
                 System.out.println("Read " + numRead + " bytes.");
                 System.out.println("available " + numRead);
-//            System.out.println(Hex.encodeHexString(newData));
                 for (byte aNewData : cmdData) {
                     bytesReceived.add(aNewData);
                 }
                 logger.debug(bytesReceived);
                 numRead = userPort.bytesAvailable();
-                if (userPort.bytesAvailable() >= 4) {
+                if (userPort.bytesAvailable() >= 8) {
                     //logger.debug("available " + numRead);
                 }
 
@@ -232,7 +231,7 @@ public class Control extends Thread implements SerialPortDataListener {
                 //logger.debug("available " + numRead);
             } else if (firstByte[0] == END_CMD){
                 bytesReceived.add(firstByte[0]);
-                numRead = addByteToList(8);
+                numRead = addByteToList(11);
             } else if(firstByte[0] == POLY_SETUP_CMD){
                 bytesReceived.add(firstByte[0]);
                 numRead = addByteToList(25);
@@ -266,7 +265,7 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte DEVICE_MODE_CMD = 0x4D;     // 0x4D
     static final public byte ERR_CMD = 69;              // 0x45
     static final public byte CMD = 0x64;                 // 0x64
-    static final public byte TIME_CMD = (byte) 0xEE;                 // 0xEE
+    static final public byte MEASURE_CMD = (byte) 0x30;   // 0x30
     static final public byte O_CMD = 79;                // 0x4F
     static final public byte k_CMD = 104;               // 0x68
     static final public byte NOT_FOUND_CMD = 0x20;               // 0x20
@@ -275,6 +274,10 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte[] CONTROL_ARRAY = {Control.START_CMD,
             Control.O_CMD,
             Control.k_CMD,
+            0,
+            0,
+            0,
+            0,
             (byte) (Control.O_CMD + Control.k_CMD),
             Control.END_CMD};
 
@@ -294,6 +297,8 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte END_MEASURE_STAT = 12;
     static final public byte START_POLY_STAT = 13;
     static final public byte END_POLY_STAT = 14;
+    static final public byte PAUSE_BEGIN_STAT = 15;
+    static final public byte PAUSE_END_STAT = 16;
 
     //    STRIP TYPES
     static final public byte FIRST_STRIP_TYPE = 1;

@@ -64,7 +64,7 @@ public class DataFromComPortValidation {
                     stripChecker(command.get(2));
                     break;
                 case Control.O_CMD:
-                    testChecker();
+                    testChecker(command.get(2));
                     break;
                 case Control.NOT_FOUND_CMD:
                     logger.debug("NOT_FOUND_CMD");
@@ -73,35 +73,47 @@ public class DataFromComPortValidation {
                     logger.debug("DEVICE_MODE_CMD");
                     deviceMode(command.get(2));
                     break;
+                case Control.MEASURE_CMD:
+                    logger.debug("MEASURE_CMD");
+                    singleMeasure(command);
+                    break;
             }
         } else if (isData(command)) {
             //logger.info("Data detected");
-            byte[] bytes = {command.get(2), command.get(1)};
+            byte[] bytes = {command.get(3), command.get(2), command.get(1)};
             int time = control.getIntFromArray(bytes);
-            bytes[0] = command.get(6);
-            bytes[1] = command.get(5);
-            int dataInt = control.getIntFromArray(bytes);
-            bytes[0] = command.get(4);
-            bytes[1] = command.get(3);
-            int voltage = control.getIntFromArray(bytes);
-            float data = ((float) dataInt) / 100;
-            if (setup.isFirstPolarityMeasure()) {
-                if (isPolarityChanged) {
-                    addToSeries(-data, -voltage, time);
-                    voltageYMeasurement.add(-voltage);
-                } else {
-                    addToSeries(data, voltage, time);
-                    voltageYMeasurement.add(voltage);
-                }
-            } else {
-                if (!isPolarityChanged) {
-                    addToSeries(-data, -voltage, time);
-                    voltageYMeasurement.add(-voltage);
-                } else {
-                    addToSeries(data, voltage, time);
-                    voltageYMeasurement.add(voltage);
-                }
+            byte[] bytesDue = {command.get(6), command.get(5)};
+            int voltage = control.getIntFromArray(bytesDue);
+            if (command.get(4) == 1) {
+                voltage = 0 - voltage;
             }
+            bytesDue[0] = command.get(9);
+            bytesDue[1] = command.get(8);
+            int dataInt = control.getIntFromArray(bytesDue);
+            if (command.get(4) == 1) {
+                dataInt = 0 - dataInt;
+            }
+            float current = ((float) dataInt) / 100;
+            addToSeries(current, voltage, time);
+            voltageYMeasurement.add(voltage);
+
+//            if (setup.isFirstPolarityMeasure()) {
+//                if (isPolarityChanged) {
+//                    addToSeries(-data, -voltage, time);
+//                    voltageYMeasurement.add(-voltage);
+//                } else {
+//                    addToSeries(data, voltage, time);
+//                    voltageYMeasurement.add(voltage);
+//                }
+//            } else {
+//                if (!isPolarityChanged) {
+//                    addToSeries(-data, -voltage, time);
+//                    voltageYMeasurement.add(-voltage);
+//                } else {
+//                    addToSeries(data, voltage, time);
+//                    voltageYMeasurement.add(voltage);
+//                }
+//            }
         } else if (isSetup(command)) {
             logger.info("Setup detected");
             Platform.runLater(() -> controller.comPortStatus.setText("Настройка устройства принята"));
@@ -136,17 +148,39 @@ public class DataFromComPortValidation {
             } else {
                 addToPolySeries(cur, voltageReal);
             }
-        } else if(isTime(command)){
+        }
+//        else if (isTime(command)) {
+//            logger.info("Real leaking time detected");
+//            byte[] bytes = {command.get(2), command.get(1)};
+//            final int realTime = control.getIntFromArray(bytes);
+//            Platform.runLater(() -> {
+//                controller.realLeakingTimeEdit.setText(String.valueOf(realTime));
+//                controller.realLeakingTimeLabel.setText("Время протекания составило : " + String.valueOf(realTime) + " мс");
+//                controller.realLeakingTimeLabel.setVisible(true);
+//            });
+//        }
+
+    }
+
+    private void singleMeasure(List<Byte> command) {
+        if(command.get(2) == 1){
+            byte[] bytes = {command.get(6), command.get(5), command.get(4)};
+            int current = control.getIntFromArray(bytes);
+            final float cur = ((float) current) / 100;
+            Platform.runLater(() -> {
+                controller.realLeakingCurrentEdit.setText(String.valueOf(cur));
+            });
+        } else if(command.get(2) == 2){
+            byte[] bytes = {command.get(6), command.get(5), command.get(4)};
             logger.info("Real leaking time detected");
-            byte[] bytes = {command.get(2), command.get(1)};
             final int realTime = control.getIntFromArray(bytes);
             Platform.runLater(() -> {
                 controller.realLeakingTimeEdit.setText(String.valueOf(realTime));
+                controller.realLeakingQuantityEdit.setText(String.valueOf(realTime/100));
                 controller.realLeakingTimeLabel.setText("Время протекания составило : " + String.valueOf(realTime) + " мс");
                 controller.realLeakingTimeLabel.setVisible(true);
             });
         }
-
     }
 
     private void deviceMode(byte command) {
@@ -168,10 +202,14 @@ public class DataFromComPortValidation {
         }
     }
 
-    private void testChecker() {
-        isTest = true;
-        Platform.runLater(() -> controller.comPortStatus.setText("Тестовая команда принята"));
-        logger.debug("TEST_CMD");
+    private void testChecker(byte command) {
+        if(command == Control.k_CMD) {
+            isTest = true;
+            Platform.runLater(() -> controller.comPortStatus.setText("Тестовая команда принята"));
+            logger.debug("TEST_CMD");
+        } else {
+            logger.debug("ALMOST_TEST");
+        }
     }
 
 
@@ -180,7 +218,7 @@ public class DataFromComPortValidation {
             case Control.NOT_CONNECTED_STAT:
                 logger.info("NOT CONNECTED");
                 Platform.runLater(() -> {
-                    controller.glucoChart.getData().remove(controller.glucoChart.getData().size()-1);
+                    controller.glucoChart.getData().remove(controller.glucoChart.getData().size() - 1);
                     Scene scene = controller.measureStatLabel.getScene();
                     scene.setCursor(Cursor.DEFAULT);
                     control.closeConnection();
@@ -298,6 +336,16 @@ public class DataFromComPortValidation {
                 Platform.runLater(() -> controller.deviceStatus.setText("Построение полярограммы окончено"));
                 endPolyMeasure();
                 break;
+            case Control.PAUSE_BEGIN_STAT:
+                logger.info("PAUSE_BEGIN_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Пауза начата"));
+                endPolyMeasure();
+                break;
+            case Control.PAUSE_END_STAT:
+                logger.info("PAUSE_BEGIN_STAT");
+                Platform.runLater(() -> controller.deviceStatus.setText("Пауза окончена"));
+                endPolyMeasure();
+                break;
 
         }
 
@@ -319,7 +367,7 @@ public class DataFromComPortValidation {
 //                logger.debug("y = " + newData.getYValue());
 //            }
             });
-            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(controller.glucoChart.getData().size()-1);
+            XYChart.Series series = (XYChart.Series) controller.glucoChart.getData().get(controller.glucoChart.getData().size() - 1);
             ObservableList<XYChart.Data> dataFromPlot = series.getData();
             ArrayList<Number> xValues = new ArrayList<>();
             ArrayList<Number> yValues = new ArrayList<>();
@@ -351,7 +399,7 @@ public class DataFromComPortValidation {
                     Write.writing(setup, fileName);
                 } else {
                     // delete series from chart
-                    controller.glucoChart.getData().remove(controller.glucoChart.getData().size()-1);
+                    controller.glucoChart.getData().remove(controller.glucoChart.getData().size() - 1);
                 }
             });
         } catch (Exception e) {
@@ -479,8 +527,8 @@ public class DataFromComPortValidation {
         bytes[1] = command.get(9);
         setup.setNegativeFastPolarityReversalTime(control.getIntFromArray(bytes));
         controller.negativeTimeFastWavesEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
-        setup.setFirstPolarityReversal(command.get(11) != 0);
-        if (command.get(11) != 0) {
+        setup.setFirstPolarityReversal(command.get(11) == 0);
+        if (command.get(11) == 0) {
             controller.positiveFastHalfWaveRadioB.setSelected(true);
         } else {
             controller.negativeFastHalfWaveRadioB.setSelected(true);
@@ -505,8 +553,8 @@ public class DataFromComPortValidation {
         bytes[1] = command.get(21);
         setup.setNegativeMeasureTime(control.getIntFromArray(bytes));
         controller.negativeTimeMeasureEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
-        setup.setFirstPolarityMeasure(command.get(23) != 0);
-        if (command.get(23) != 0) {
+        setup.setFirstPolarityMeasure(command.get(23) == 0);
+        if (command.get(23) == 0) {
             controller.positiveMeasureRadioB.setSelected(true);
         } else {
             controller.negativeMeasureRadioB.setSelected(true);
@@ -699,7 +747,7 @@ public class DataFromComPortValidation {
         }
     }
 
-    private void successfulReceive(){
+    private void successfulReceive() {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Успех");
@@ -711,19 +759,24 @@ public class DataFromComPortValidation {
 
     private boolean isCommand(List<Byte> command) {
         return command.get(0).equals(Control.START_CMD) &&
-                command.get(4).equals(Control.END_CMD) &&
-                (byte) (command.get(1) + command.get(2)) == command.get(3);
+                command.get(8).equals(Control.END_CMD) &&
+                (byte) (command.get(1) +
+                        command.get(2) +
+                        command.get(3) +
+                        command.get(4) +
+                        command.get(5) +
+                        command.get(6)) == command.get(7);
     }
 
     private boolean isTime(List<Byte> command) {
-        return command.get(0).equals(Control.TIME_CMD) &&
-                command.get(4).equals(Control.TIME_CMD) &&
+        return command.get(0).equals(Control.MEASURE_CMD) &&
+                command.get(4).equals(Control.MEASURE_CMD) &&
                 (byte) (command.get(1) + command.get(2)) == command.get(3);
     }
 
     private boolean isData(List<Byte> command) {
         return command.get(0).equals(Control.END_CMD) &&
-                command.get(8).equals(Control.END_CMD) /*&&
+                command.get(11).equals(Control.END_CMD) /*&&
                 (byte) (command.get(1) + command.get(2)) == command.get(3)*/;
     }
 

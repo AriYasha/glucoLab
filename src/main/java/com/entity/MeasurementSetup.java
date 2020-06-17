@@ -167,7 +167,7 @@ public class MeasurementSetup implements Serializable, MeasureMode {
         transmitBytes[7] = (byte) (positiveFastPolarityReversalTime >> 8);
         transmitBytes[10] = (byte) negativeFastPolarityReversalTime;
         transmitBytes[9] = (byte) (negativeFastPolarityReversalTime >> 8);
-        transmitBytes[11] = (byte) (firstPolarityReversal ? 1 : 0);
+        transmitBytes[11] = (byte) (firstPolarityReversal ? 0 : 1);
         transmitBytes[13] = (byte) positiveAmplitudeFastPolarityPulses;
         transmitBytes[12] = (byte) (positiveAmplitudeFastPolarityPulses >> 8);
         transmitBytes[15] = (byte) negativeAmplitudeFastPolarityPulses;
@@ -179,7 +179,7 @@ public class MeasurementSetup implements Serializable, MeasureMode {
         transmitBytes[19] = (byte) (positiveMeasureTime >> 8);
         transmitBytes[22] = (byte) negativeMeasureTime;
         transmitBytes[21] = (byte) (negativeMeasureTime >> 8);
-        transmitBytes[23] = (byte) (firstPolarityMeasure ? 1 : 0);
+        transmitBytes[23] = (byte) (firstPolarityMeasure ? 0 : 1);
         transmitBytes[25] = (byte) positiveAmplitudeMeasurePulses;
         transmitBytes[24] = (byte) (positiveAmplitudeMeasurePulses >> 8);
         transmitBytes[27] = (byte) negativeAmplitudeMeasurePulses;

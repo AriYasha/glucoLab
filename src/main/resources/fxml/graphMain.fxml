@@ -128,7 +128,7 @@
                         <Label contentDisplay="TOP" layoutX="160.0" layoutY="17.0" text="3-ая точка" wrapText="true" GridPane.columnIndex="3" />
                         <TextField fx:id="firstDotEdit" onAction="#setFirstDotOnChart" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="secondDotEdit" onAction="#setSecondDotOnChart" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <TextField fx:id="ThirdDotEdit" onAction="#setThirdDotOnChart" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <TextField fx:id="thirdDotEdit" onAction="#setThirdDotOnChart" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                         <Label layoutX="85.0" layoutY="17.0" text="Значения" wrapText="true" GridPane.rowIndex="1" />
                         <Label fx:id="graphTwoLabel" layoutX="10.0" layoutY="47.0" text="График 2" textFill="#181ff8" wrapText="true" GridPane.rowIndex="3" />
                         <Label fx:id="graphOneLabel" layoutX="10.0" layoutY="47.0" text="График 1" wrapText="true" GridPane.rowIndex="2" />
@@ -141,6 +141,9 @@
                         <Label fx:id="graphEightLabel" layoutX="10.0" layoutY="227.0" text="График 8" textFill="#791ca2" wrapText="true" GridPane.rowIndex="9" />
                         <Label fx:id="graphSevenLabel" layoutX="10.0" layoutY="227.0" text="График 7" textFill="#aa898f" wrapText="true" GridPane.rowIndex="8" />
                         <Label fx:id="graphTenLabel" layoutX="10.0" layoutY="317.0" text="График 10" textFill="#4cfa0f" wrapText="true" GridPane.rowIndex="11" />
+                        <Label fx:id="deviationOneLabel" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+                        <Label fx:id="deviationTwoLabel" GridPane.columnIndex="2" GridPane.rowIndex="12" />
+                        <Label fx:id="deviationThreeLabel" GridPane.columnIndex="3" GridPane.rowIndex="12" />
                      </children>
                      <padding>
                         <Insets left="10.0" />
