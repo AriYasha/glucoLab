@@ -264,7 +264,8 @@ public class OpenWindowController implements Initializable {
             if (files.getValue().equals("Измерения")) {
                 FXMLLoader fxmlLoader = openWindow("/fxml/graphMain.fxml", "Измерения глюкозы");
                 GraphController graphController = fxmlLoader.getController();
-                graphController.drawGraphics(selectedItems, Write.fileMeasurePath);
+                graphController.drawGraphics(selectedItems, Write.fileMeasurePath + "\\" +
+                        underFiles.getSelectionModel().getSelectedItem());
 
             } else if (files.getValue().equals("Полярограмма")) {
                 FXMLLoader fxmlLoader = openWindow("/fxml/polyGraph.fxml", "Полярограмма");

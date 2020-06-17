@@ -42,6 +42,7 @@ public abstract class DrawMeasure {
     public NumberAxis xTimeVisual;
     public NumberAxis yAmpVisual;
     public Button deleteSeriesButton;
+    public CheckBox onlyMeasurementCheckBox;
 
     MultipleSameAxesLineChart multipleAxesLineChart;
     Map<XYChart.Series, MeasureMode> chartDataMap = new HashMap<>();
@@ -149,9 +150,10 @@ public abstract class DrawMeasure {
 
     void drawGraphics(ObservableList<String> selectedItems, String rootPath) {
         multipleAxesLineChart = new MultipleSameAxesLineChart(glucoChart, stackPane);
-        if (rootPath.equals(Write.fileMeasurePath)) {
+        if (rootPath.contains(Write.fileMeasurePath)) {
             for (int i = 0; i < selectedItems.size(); i++) {
                 String seriesName = selectedItems.get(i);
+                logger.debug(rootPath + "\\" + seriesName);
                 MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
                 MeasurementSetup measurementSetup = (MeasurementSetup) mode;
                 XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, measurementSetup.getData());
@@ -159,7 +161,7 @@ public abstract class DrawMeasure {
                 chartDataMap.put(series, measurementSetup);
                 showDetails();
             }
-        } else if (rootPath.equals(Write.filePolyPath)) {
+        } else if (rootPath.contains(Write.filePolyPath)) {
             for (int i = 0; i < selectedItems.size(); i++) {
                 String seriesName = selectedItems.get(i);
                 MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
