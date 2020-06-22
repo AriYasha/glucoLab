@@ -151,7 +151,7 @@ public class OpenWindowController implements Initializable {
         ObservableList<String> selectedChoiceItems = choiceFile.getItems();
         ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
         int count = 0;
-        if(selectedChoiceItems.isEmpty()){
+        if(selectedChoiceItems.isEmpty() & selectedItems.size()<=10){
             choiceFile.getItems().addAll(viewFile.getSelectionModel().getSelectedItems());
         } else {
             for (int i = 0; i < selectedItems.size(); i++) {
@@ -246,7 +246,7 @@ public class OpenWindowController implements Initializable {
 
 
     public void deleteFiles(ActionEvent actionEvent) {
-        String newPath = path + "\\" + files.getValue();
+        String newPath = path + "\\" + files.getValue()+"\\"+underFiles.getValue();
         ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
         for (String name : selectedItems) {
             File fileForDelete = new File(newPath + "\\" + name);
@@ -312,8 +312,30 @@ public class OpenWindowController implements Initializable {
     }
 
     public void editFileName(ActionEvent actionEvent) {
-        CreateStage dialog = new CreateStage("hello");
-    }
+        File newNameFile;
+        String newPath = path + "\\" + files.getValue()+"\\"+underFiles.getValue();
+        ObservableList<String> fileName = viewFile.getSelectionModel().getSelectedItems();
+        File fileForRename = new File(newPath + "\\" + fileName.get(0));
+        CreateStage dialog = new CreateStage(fileName.get(0));
+        if (dialog.isPressed()) {
+            if(files.getValue().equals("Измерения") & !dialog.getFileName().contains(".gl")){
+                newNameFile = new File(newPath + "\\"+dialog.getFileName()+".gl");
+                fileForRename.renameTo(newNameFile);
+            }  else if (files.getValue().equals("Полярограмма") & !dialog.getFileName().contains(".pl"))
+             {
+                 newNameFile = new File(newPath + "\\"+dialog.getFileName()+".pl");
+                 fileForRename.renameTo(newNameFile);
+            }
+            else {
+                newNameFile = new File(newPath + "\\"+dialog.getFileName());
+                fileForRename.renameTo(newNameFile);
+            }
+        }
+            getFiles();
+            textFromFile.setText("");
+            chart.getData().clear();
+
+}
 //    private void getFileFromDirectory(){
 //        File fromDirectory = new File(path + "\\" + files.getSelectionModel().getSelectedItem());
 //        System.out.println(fromDirectory.getName());
