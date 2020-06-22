@@ -86,7 +86,7 @@
          <right>
             <AnchorPane BorderPane.alignment="CENTER">
                <children>
-                  <VBox layoutY="26.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="387.0" prefWidth="190.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <VBox layoutY="26.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="387.0" prefWidth="190.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <HBox prefHeight="25.0" prefWidth="190.0">
                            <children>
@@ -142,7 +142,7 @@
                         <TextField fx:id="firstDotEdit" onAction="#setFirstDotOnChart" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="secondDotEdit" onAction="#setSecondDotOnChart" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                         <TextField fx:id="thirdDotEdit" onAction="#setThirdDotOnChart" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                        <Label layoutX="85.0" layoutY="17.0" text="Значения" wrapText="true" GridPane.rowIndex="1" />
+                        <Label layoutX="85.0" layoutY="17.0" text="Время, мс" wrapText="true" GridPane.rowIndex="1" />
                         <Label fx:id="graphTwoLabel" layoutX="10.0" layoutY="47.0" text="График 2" textFill="#181ff8" wrapText="true" GridPane.rowIndex="3" />
                         <Label fx:id="graphOneLabel" layoutX="10.0" layoutY="47.0" text="График 1" wrapText="true" GridPane.rowIndex="2" />
                         <Label fx:id="graphThreeLabel" layoutX="10.0" layoutY="107.0" text="График 3" textFill="#d02313" wrapText="true" GridPane.rowIndex="4" />
