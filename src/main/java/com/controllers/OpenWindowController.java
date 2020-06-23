@@ -1,6 +1,8 @@
 package com.controllers;
 
-import com.entity.MeasureMode;
+import com.buffer.WorkBuffer;
+import com.buffer.WorkBufferMeasurement;
+import com.buffer.WorkBufferPoly;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import com.file.Read;
@@ -9,7 +11,6 @@ import com.graph.VisualisationPlot;
 import com.sample.CreateStage;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -21,8 +22,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -77,10 +76,11 @@ public class OpenWindowController implements Initializable {
         getMainDirectories();
         getDirectoryFromMainDirectory();
         getFiles();
+        changeWorkBuffer();
 
     }
 
-    private void getMainDirectories(){
+    private void getMainDirectories() {
         File dir = new File(path);
         List<File> directories = getDirectory(dir);
         for (File file : directories) {
@@ -93,11 +93,11 @@ public class OpenWindowController implements Initializable {
     }
 
 
-    private void getDirectoryFromMainDirectory(){
-        File fromDirectory = new File(path+"\\"+files.getSelectionModel().getSelectedItem());
+    private void getDirectoryFromMainDirectory() {
+        File fromDirectory = new File(path + "\\" + files.getSelectionModel().getSelectedItem());
         List<File> underDirectory = getDirectory(fromDirectory);
         underFiles.getItems().clear();
-        for (File f: underDirectory) {
+        for (File f : underDirectory) {
             if (f.isDirectory()) {
                 underFiles.getSelectionModel().selectFirst();
                 underFiles.getItems().add(f.getName());
@@ -141,18 +141,84 @@ public class OpenWindowController implements Initializable {
         return directory;
     }
 
-    public void addFiles(ActionEvent actionEvent) {
+    private void changeWorkBuffer() {
+        if (files.getSelectionModel().getSelectedItem().equals("Измерения")) {
+            choiceFile.getItems().clear();
+            logger.debug(WorkBufferMeasurement.size());
+            for (Map.Entry<Integer, String> item : WorkBufferMeasurement.getWorkBufferMap().entrySet()) {
+                choiceFile.getItems().add(item.getValue().substring(item.getValue().lastIndexOf("\\") - 10));
+            }
+        } else {
+            choiceFile.getItems().clear();
+            for (Map.Entry<Integer, String> item : WorkBufferPoly.getWorkBufferMap().entrySet()) {
+                choiceFile.getItems().add(item.getValue().substring(item.getValue().lastIndexOf("\\") - 10));
+            }
+        }
+    }
 
+    private void addToWorkBuffer() {
+        if (files.getSelectionModel().getSelectedItem().equals("Измерения")) {
+            ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
+            for (String selectedItem : selectedItems) {
+                logger.debug(selectedItem);
+                WorkBufferMeasurement.add(path + "\\" +
+                        files.getSelectionModel().getSelectedItem() + "\\" +
+                        underFiles.getSelectionModel().getSelectedItem() + "\\" +
+                        selectedItem);
+            }
+        } else {
+            ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
+            for (String selectedItem : selectedItems) {
+                WorkBufferPoly.add(path + "\\" +
+                        files.getSelectionModel().getSelectedItem() + "\\" +
+                        underFiles.getSelectionModel().getSelectedItem() + "\\" +
+                        selectedItem);
+            }
+        }
+    }
+
+    private void removeFromWorkBuffer() {
+        System.out.println(WorkBufferMeasurement.size());
+        for (Map.Entry<Integer, String> item : WorkBufferMeasurement.getWorkBufferMap().entrySet()) {
+            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
+        }
+        if (files.getSelectionModel().getSelectedItem().equals("Измерения")) {
+            ObservableList<String> selectedItems = choiceFile.getSelectionModel().getSelectedItems();
+            for (String selectedItem : selectedItems) {
+                logger.debug(selectedItem);
+                WorkBufferMeasurement.remove(path + "\\" +
+                        files.getSelectionModel().getSelectedItem() + "\\" +
+                        selectedItem);
+            }
+        } else {
+            ObservableList<String> selectedItems = choiceFile.getSelectionModel().getSelectedItems();
+            for (String selectedItem : selectedItems) {
+                WorkBufferPoly.remove(path + "\\" +
+                        files.getSelectionModel().getSelectedItem() + "\\" +
+                        selectedItem);
+            }
+        }
+        System.out.println(WorkBufferMeasurement.size());
+        for (Map.Entry<Integer, String> item : WorkBufferMeasurement.getWorkBufferMap().entrySet()) {
+            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
+        }
+    }
+
+    public void addFiles(ActionEvent actionEvent) {
+        changeWorkBuffer();
         getDirectoryFromMainDirectory();
         getFiles();
     }
 
     public void moveFiles(ActionEvent actionEvent) {
+        addToWorkBuffer();
         ObservableList<String> selectedChoiceItems = choiceFile.getItems();
         ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
         int count = 0;
-        if(selectedChoiceItems.isEmpty() & selectedItems.size()<=10){
-            choiceFile.getItems().addAll(viewFile.getSelectionModel().getSelectedItems());
+        if (selectedChoiceItems.isEmpty() & selectedItems.size() <= 10) {
+            for (String selectedItem : selectedItems) {
+                choiceFile.getItems().add(underFiles.getSelectionModel().getSelectedItem() + "\\" + selectedItem);
+            }
         } else {
             for (int i = 0; i < selectedItems.size(); i++) {
                 for (int j = 0; j < selectedChoiceItems.size(); j++) {
@@ -160,26 +226,26 @@ public class OpenWindowController implements Initializable {
                         count++;
                     }
                 }
-                     if (count == selectedChoiceItems.size()) {
-                    if(selectedChoiceItems.size()>=10)
-                     choiceFile.getItems().remove(0);
-                    choiceFile.getItems().add(selectedItems.get(i));
+                if (count == selectedChoiceItems.size()) {
+                    if (selectedChoiceItems.size() >= 10) {
+                        choiceFile.getItems().remove(0);
+                    }
+                    choiceFile.getItems().add(underFiles.getSelectionModel().getSelectedItem() + "\\" + selectedItems.get(i));
                 }
-
-                     count = 0;
+                count = 0;
             }
         }
     }
 
     public void choiceFiles(MouseEvent mouseEvent) {
         ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
-        showDescription(selectedItems.get(0));
-
-
+        logger.debug(selectedItems.get(0));
+        showDescription(underFiles.getSelectionModel().getSelectedItem() + "\\" + selectedItems.get(0));
     }
 
     public void filesDescription(MouseEvent mouseEvent) {
         ObservableList<String> selectedItems = choiceFile.getSelectionModel().getSelectedItems();
+        logger.debug(selectedItems.get(0));
         showDescription(selectedItems.get(0));
     }
 
@@ -188,7 +254,7 @@ public class OpenWindowController implements Initializable {
             MeasurementSetup setup = (MeasurementSetup) Read.reading(
                     path + "\\" +
                             files.getSelectionModel().getSelectedItem() + "\\" +
-                            underFiles.getSelectionModel().getSelectedItem() + "\\" +
+//                            underFiles.getSelectionModel().getSelectedItem() + "\\" +
                             fileName);
             textFromFile.setText(setup.toString());
             chart.getData().clear();
@@ -205,23 +271,23 @@ public class OpenWindowController implements Initializable {
     }
 
     public void removeFiles(ActionEvent actionEvent) {
+        removeFromWorkBuffer();
         ObservableList<String> selectedItems = choiceFile.getSelectionModel().getSelectedItems();
         choiceFile.getItems().removeAll(selectedItems);
 
     }
 
     private void getFiles() {
-        String newPath = path + "\\" + files.getValue()+"\\"+ underFiles.getValue();
+        String newPath = path + "\\" + files.getValue() + "\\" + underFiles.getValue();
         File newFile = new File(newPath);
         viewFile.getItems().clear();
-        Map<Long,String> data = new HashMap<Long, String>();
-        if (files.getValue() != null & underFiles.getValue()!=null) {
-            ArrayList<File> path = new ArrayList<File>(Arrays.asList(newFile.listFiles()));
+        Map<Long, String> data = new HashMap<>();
+        if (files.getValue() != null & underFiles.getValue() != null) {
+            ArrayList<File> path = new ArrayList<>(Arrays.asList(newFile.listFiles()));
             for (File file : path) {
                 System.out.println(file.lastModified());
-
-                data.put(file.lastModified(),file.getName());
-                }
+                data.put(file.lastModified(), file.getName());
+            }
         }
         TreeMap<Long, String> sorted = new TreeMap<>(data);
 
@@ -240,13 +306,12 @@ public class OpenWindowController implements Initializable {
 //        ObservableList<String> allItems = viewFile.getItems();
 //        for (String str: allItems) {
 
-            
 
-        }
+    }
 
 
     public void deleteFiles(ActionEvent actionEvent) {
-        String newPath = path + "\\" + files.getValue()+"\\"+underFiles.getValue();
+        String newPath = path + "\\" + files.getValue() + "\\" + underFiles.getValue();
         ObservableList<String> selectedItems = viewFile.getSelectionModel().getSelectedItems();
         for (String name : selectedItems) {
             File fileForDelete = new File(newPath + "\\" + name);
@@ -264,8 +329,7 @@ public class OpenWindowController implements Initializable {
             if (files.getValue().equals("Измерения")) {
                 FXMLLoader fxmlLoader = openWindow("/fxml/graphMain.fxml", "Измерения глюкозы");
                 GraphController graphController = fxmlLoader.getController();
-                graphController.drawGraphics(selectedItems, Write.fileMeasurePath + "\\" +
-                        underFiles.getSelectionModel().getSelectedItem());
+                graphController.drawGraphics(selectedItems, Write.fileMeasurePath);
 
             } else if (files.getValue().equals("Полярограмма")) {
                 FXMLLoader fxmlLoader = openWindow("/fxml/polyGraph.fxml", "Полярограмма");
@@ -307,35 +371,31 @@ public class OpenWindowController implements Initializable {
         getFiles();
 
 
-
-
     }
 
     public void editFileName(ActionEvent actionEvent) {
         File newNameFile;
-        String newPath = path + "\\" + files.getValue()+"\\"+underFiles.getValue();
+        String newPath = path + "\\" + files.getValue() + "\\" + underFiles.getValue();
         ObservableList<String> fileName = viewFile.getSelectionModel().getSelectedItems();
         File fileForRename = new File(newPath + "\\" + fileName.get(0));
         CreateStage dialog = new CreateStage(fileName.get(0));
         if (dialog.isPressed()) {
-            if(files.getValue().equals("Измерения") & !dialog.getFileName().contains(".gl")){
-                newNameFile = new File(newPath + "\\"+dialog.getFileName()+".gl");
+            if (files.getValue().equals("Измерения") & !dialog.getFileName().contains(".gl")) {
+                newNameFile = new File(newPath + "\\" + dialog.getFileName() + ".gl");
                 fileForRename.renameTo(newNameFile);
-            }  else if (files.getValue().equals("Полярограмма") & !dialog.getFileName().contains(".pl"))
-             {
-                 newNameFile = new File(newPath + "\\"+dialog.getFileName()+".pl");
-                 fileForRename.renameTo(newNameFile);
-            }
-            else {
-                newNameFile = new File(newPath + "\\"+dialog.getFileName());
+            } else if (files.getValue().equals("Полярограмма") & !dialog.getFileName().contains(".pl")) {
+                newNameFile = new File(newPath + "\\" + dialog.getFileName() + ".pl");
+                fileForRename.renameTo(newNameFile);
+            } else {
+                newNameFile = new File(newPath + "\\" + dialog.getFileName());
                 fileForRename.renameTo(newNameFile);
             }
         }
-            getFiles();
-            textFromFile.setText("");
-            chart.getData().clear();
+        getFiles();
+        textFromFile.setText("");
+        chart.getData().clear();
 
-}
+    }
 //    private void getFileFromDirectory(){
 //        File fromDirectory = new File(path + "\\" + files.getSelectionModel().getSelectedItem());
 //        System.out.println(fromDirectory.getName());

@@ -1,5 +1,7 @@
 package com.validation;
 
+import com.buffer.WorkBufferMeasurement;
+import com.buffer.WorkBufferPoly;
 import com.comPort.Control;
 import com.entity.Data;
 import com.entity.MeasurementSetup;

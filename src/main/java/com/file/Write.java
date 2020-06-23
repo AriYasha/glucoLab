@@ -2,6 +2,8 @@ package com.file;
 
 
 import com.buffer.WorkBuffer;
+import com.buffer.WorkBufferMeasurement;
+import com.buffer.WorkBufferPoly;
 import com.entity.MeasureMode;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
@@ -40,11 +42,12 @@ public class Write {
             createPackage(fileMeasurePath);
             createPackage(fileMeasurePath + "\\" + generatePackageName());
             writeObject(mode, fileMeasurePath + "\\" + generatePackageName() + "\\" + fileName);
-            WorkBuffer.add(fileMeasurePath + "\\" + generatePackageName() + "\\" + fileName);
+            WorkBufferMeasurement.add(fileMeasurePath + "\\" + generatePackageName() + "\\" + fileName);
         } else if (mode.getClass().getName().equals(PolySetup.class.getName())) {
             createPackage(filePolyPath);
             createPackage(filePolyPath + "\\" + generatePackageName());
             writeObject(mode, filePolyPath + "\\" + generatePackageName() + "\\" + fileName);
+            WorkBufferPoly.add(filePolyPath + "\\" + generatePackageName() + "\\" + fileName);
         }
     }
 
