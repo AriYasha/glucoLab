@@ -1,14 +1,14 @@
 package com.controllers;
 
-import com.buffer.WorkBuffer;
 import com.buffer.WorkBufferMeasurement;
 import com.buffer.WorkBufferPoly;
+import com.dialog.EditFileName;
 import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import com.file.Read;
 import com.file.Write;
 import com.graph.VisualisationPlot;
-import com.sample.CreateStage;
+import com.dialog.CreateStage;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -101,7 +101,7 @@ public class OpenWindowController implements Initializable {
             if (f.isDirectory()) {
                 underFiles.getSelectionModel().selectFirst();
                 underFiles.getItems().add(f.getName());
-                System.out.println(f.getName());
+//                System.out.println(f.getName());
 
             }
         }
@@ -178,10 +178,10 @@ public class OpenWindowController implements Initializable {
     }
 
     private void removeFromWorkBuffer() {
-        System.out.println(WorkBufferMeasurement.size());
-        for (Map.Entry<Integer, String> item : WorkBufferMeasurement.getWorkBufferMap().entrySet()) {
-            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
-        }
+//        System.out.println(WorkBufferMeasurement.size());
+//        for (Map.Entry<Integer, String> item : WorkBufferMeasurement.getWorkBufferMap().entrySet()) {
+//            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
+//        }
         if (files.getSelectionModel().getSelectedItem().equals("Измерения")) {
             ObservableList<String> selectedItems = choiceFile.getSelectionModel().getSelectedItems();
             for (String selectedItem : selectedItems) {
@@ -198,10 +198,10 @@ public class OpenWindowController implements Initializable {
                         selectedItem);
             }
         }
-        System.out.println(WorkBufferMeasurement.size());
-        for (Map.Entry<Integer, String> item : WorkBufferMeasurement.getWorkBufferMap().entrySet()) {
-            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
-        }
+//        System.out.println(WorkBufferMeasurement.size());
+//        for (Map.Entry<Integer, String> item : WorkBufferMeasurement.getWorkBufferMap().entrySet()) {
+//            System.out.printf("Key: %s  Value: %s \n", item.getKey(), item.getValue());
+//        }
     }
 
     public void addFiles(ActionEvent actionEvent) {
@@ -285,7 +285,7 @@ public class OpenWindowController implements Initializable {
         if (files.getValue() != null & underFiles.getValue() != null) {
             ArrayList<File> path = new ArrayList<>(Arrays.asList(newFile.listFiles()));
             for (File file : path) {
-                System.out.println(file.lastModified());
+//                System.out.println(file.lastModified());
                 data.put(file.lastModified(), file.getName());
             }
         }
@@ -369,8 +369,6 @@ public class OpenWindowController implements Initializable {
 
     public void getFilesFromDirectory(ActionEvent actionEvent) {
         getFiles();
-
-
     }
 
     public void editFileName(ActionEvent actionEvent) {
@@ -378,7 +376,7 @@ public class OpenWindowController implements Initializable {
         String newPath = path + "\\" + files.getValue() + "\\" + underFiles.getValue();
         ObservableList<String> fileName = viewFile.getSelectionModel().getSelectedItems();
         File fileForRename = new File(newPath + "\\" + fileName.get(0));
-        CreateStage dialog = new CreateStage(fileName.get(0));
+        EditFileName dialog = new EditFileName(fileName.get(0));
         if (dialog.isPressed()) {
             if (files.getValue().equals("Измерения") & !dialog.getFileName().contains(".gl")) {
                 newNameFile = new File(newPath + "\\" + dialog.getFileName() + ".gl");

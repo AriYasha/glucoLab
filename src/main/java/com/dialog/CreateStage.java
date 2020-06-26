@@ -1,4 +1,4 @@
-package com.sample;
+package com.dialog;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -20,7 +20,7 @@ public class CreateStage {
         // Create the custom dialog.
         Dialog<Pair<String, String>> dialog = new Dialog<>();
         dialog.setTitle("Сохранение...");
-        dialog.setHeaderText("Можно добавить комментарий и изменить название");
+        dialog.setHeaderText("Можно добавить комментарий и изменить имя");
 
 // Set the icon (must be included in the project).
 //        dialog.setGraphic(new ImageView(this.getClass().getResource("login.png").toString()));
@@ -37,12 +37,12 @@ public class CreateStage {
         grid.setPadding(new Insets(20, 10, 10, 10));
 
         fileName = new TextField();
-        fileName.setPromptText("Имя файла");
+        fileName.setPromptText("Имя записи");
         fileName.setText(fName);
         comment = new TextField();
         comment.setPromptText("Комментарий");
 
-        grid.add(new Label("Имя файла:"), 0, 0);
+        grid.add(new Label("Имя записи:"), 0, 0);
         grid.add(fileName, 1, 0);
         grid.add(new Label("Комментарий:"), 0, 1);
         grid.add(comment, 1, 1);
