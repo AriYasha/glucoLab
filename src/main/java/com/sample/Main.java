@@ -1,5 +1,6 @@
 package com.sample;
 
+import com.calculations.Integral;
 import com.comPort.Control;
 import com.controllers.Controller;
 import com.buffer.WorkBuffer;
@@ -22,6 +23,7 @@ public class Main extends Application {
         String css = "/styles/labStyle.css";
         String icons = "/images/";
 
+//        Integral.getPositiveIntegral();
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource(fxmlFile));

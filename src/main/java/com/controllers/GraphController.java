@@ -1,5 +1,6 @@
 package com.controllers;
 
+import com.calculations.Integral;
 import com.entity.MeasureMode;
 import com.entity.MeasurementSetup;
 import com.file.ChooseFile;
@@ -11,13 +12,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import org.apache.log4j.Logger;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -42,6 +47,9 @@ public class GraphController extends DrawMeasure implements Initializable {
     public Label deviationOneLabel;
     public Label deviationTwoLabel;
     public Label deviationThreeLabel;
+    public Label negativeLabel;
+    public Label positiveLabel;
+    public Label customLabel;
     private String setValueString = "Установите значения";
     private ObservableList<String> descriptionValues = FXCollections.observableArrayList();
 
@@ -52,6 +60,9 @@ public class GraphController extends DrawMeasure implements Initializable {
         deleteSeriesButton.setBackground(null);
         glucoChart.setAnimated(false);
         descriptionValues.add(setValueString);
+        positiveLabel.setAlignment(Pos.CENTER);
+        negativeLabel.setAlignment(Pos.CENTER);
+        customLabel.setAlignment(Pos.CENTER);
 
     }
 
@@ -83,6 +94,49 @@ public class GraphController extends DrawMeasure implements Initializable {
             visualisationPlot.drawMeasureGraphic(visualPlot, (MeasurementSetup) chartDataMap.get(series));
         } else {
             visualPlot.getData().clear();
+        }
+
+
+        ObservableList<XYChart.Data> dataFromPlot = series.getData();
+        ArrayList<Integer> xValues = new ArrayList<>();
+        ArrayList<Number> xValuesForClosest = new ArrayList<>();
+        ArrayList<Float> yValues = new ArrayList<>();
+        for (XYChart.Data newData : dataFromPlot) {
+            xValues.add((Integer) newData.getXValue());
+            xValuesForClosest.add((Number) newData.getXValue());
+            yValues.add((Float) newData.getYValue());
+        }
+        getCustomIntegral();
+        positiveLabel.setText(String.valueOf(Integral.getPositiveIntegral(xValues, yValues)));
+        negativeLabel.setText(String.valueOf(Integral.getNegativeIntegral(xValues, yValues)));
+
+    }
+
+    private void getCustomIntegral(){
+        XYChart.Series series = getSeriesByName((String) graphChoice.getValue());
+        ObservableList<XYChart.Data> dataFromPlot = series.getData();
+        ArrayList<Integer> xValues = new ArrayList<>();
+        ArrayList<Number> xValuesForClosest = new ArrayList<>();
+        ArrayList<Float> yValues = new ArrayList<>();
+        for (XYChart.Data newData : dataFromPlot) {
+            xValues.add((Integer) newData.getXValue());
+            xValuesForClosest.add((Number) newData.getXValue());
+            yValues.add((Float) newData.getYValue());
+        }
+        if(!firstDotEdit.getText().isEmpty() && !secondDotEdit.getText().isEmpty()){
+            int firstDot = Integer.parseInt(firstDotEdit.getText());
+            int secondDot = Integer.parseInt(secondDotEdit.getText());
+            int beginIndex = getCloseIndex(xValuesForClosest, firstDot);
+            int endIndex = getCloseIndex(xValuesForClosest, secondDot);
+            try {
+                customLabel.setText(String.valueOf(Integral.getCustomIntegral(xValues, yValues, beginIndex, endIndex)));
+            } catch (RuntimeException e){
+                logger.debug(e);
+                customLabel.setText("");
+            }
+
+        } else {
+            customLabel.setText("");
         }
     }
 
@@ -136,18 +190,49 @@ public class GraphController extends DrawMeasure implements Initializable {
         int firstDot = Integer.parseInt(firstDotEdit.getText());
         setDotOnChart("one", 1, firstDot);
         createAdditionalLines("additionalOne", firstDot);
+        getCustomIntegral();
     }
 
     public void setSecondDotOnChart(ActionEvent actionEvent) {
         int secondDot = Integer.parseInt(secondDotEdit.getText());
         setDotOnChart("two", 2, secondDot);
         createAdditionalLines("additionalTwo", secondDot);
+        getCustomIntegral();
     }
 
     public void setThirdDotOnChart(ActionEvent actionEvent) {
         int thirdDot = Integer.parseInt(thirdDotEdit.getText());
         setDotOnChart("tree", 3, thirdDot);
         createAdditionalLines("additionalThree", thirdDot);
+    }
+
+    public void setFirstDotOnChartM(MouseEvent mouseEvent) {
+        String first = firstDotEdit.getText();
+        if(!first.isEmpty()) {
+            int firstDot = Integer.parseInt(firstDotEdit.getText());
+            setDotOnChart("one", 1, firstDot);
+            createAdditionalLines("additionalOne", firstDot);
+            getCustomIntegral();
+        }
+    }
+
+    public void setSecondDotOnChartM(MouseEvent mouseEvent) {
+        String second = firstDotEdit.getText();
+        if(!second.isEmpty()) {
+            int secondDot = Integer.parseInt(secondDotEdit.getText());
+            setDotOnChart("two", 2, secondDot);
+            createAdditionalLines("additionalTwo", secondDot);
+            getCustomIntegral();
+        }
+    }
+
+    public void setThirdDotOnChartM(MouseEvent mouseEvent) {
+        String third = firstDotEdit.getText();
+        if(!third.isEmpty()) {
+            int thirdDot = Integer.parseInt(thirdDotEdit.getText());
+            setDotOnChart("tree", 3, thirdDot);
+            createAdditionalLines("additionalThree", thirdDot);
+        }
     }
 
     private void createAdditionalLines(String lineName, int dot) {
@@ -252,6 +337,7 @@ public class GraphController extends DrawMeasure implements Initializable {
         for (int i = 2; i <= 12; i++) {
             Label label = new Label();
             label.setText("");
+            label.setAlignment(Pos.CENTER);
             label.setId(columnName + columnIndex + "-" + i);
             gridPane.add(label, columnIndex, i);
         }
@@ -259,6 +345,7 @@ public class GraphController extends DrawMeasure implements Initializable {
 
     private List<Float> setLabel(Label label, int columnIndex, int iteration, List<Float> deviationList, Number value) {
         if (label.getId().contains(columnIndex + "-" + iteration)) {
+            label.setAlignment(Pos.CENTER);
             label.setText("");
             logger.debug(value);
             label.setText(String.valueOf(value));
@@ -288,5 +375,11 @@ public class GraphController extends DrawMeasure implements Initializable {
     }
 
     public void onlyMeasurement(ActionEvent actionEvent) {
+        if (onlyMeasurementCheckBox.isSelected()) {
+            xAxis.setAutoRanging(false);
+            xAxis.setLowerBound(0);
+        } else {
+            xAxis.setAutoRanging(true);
+        }
     }
 }

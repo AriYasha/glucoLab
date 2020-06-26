@@ -265,40 +265,42 @@ public class MultipleSameAxesLineChart {
 
         private HBox buildPopupRow(MouseEvent event, Long xValueLong, LineChart lineChart) {
             Label seriesName = new Label(lineChart.getYAxis().getLabel());
-            XYChart.Series series = (XYChart.Series) lineChart.getData().get(0);
-            seriesName.setText(series.getName());
-            seriesName.setTextFill(chartColorMap.get(lineChart));
+            HBox popupRow = null;
+            if(!lineChart.getData().isEmpty()) {
+                XYChart.Series series = (XYChart.Series) lineChart.getData().get(0);
+                seriesName.setText(series.getName());
+                seriesName.setTextFill(chartColorMap.get(lineChart));
 
-            Number yValueForChart = getYValueForX(lineChart, xValueLong.intValue());
-            if (yValueForChart == null) {
-                //return null;
-            }
-            Number yValueLower = Math.round(normalizeYValue(lineChart, event.getY() - 10));
-            Number yValueUpper = Math.round(normalizeYValue(lineChart, event.getY() + 10));
-            Number yValueUnderMouse = Math.round((double) lineChart.getYAxis().getValueForDisplay(event.getY()));
+                Number yValueForChart = getYValueForX(lineChart, xValueLong.intValue());
+                if (yValueForChart == null) {
+                    //return null;
+                }
+                Number yValueLower = Math.round(normalizeYValue(lineChart, event.getY() - 10));
+                Number yValueUpper = Math.round(normalizeYValue(lineChart, event.getY() + 10));
+                Number yValueUnderMouse = Math.round((double) lineChart.getYAxis().getValueForDisplay(event.getY()));
 
-            // make series name bold when mouse is near given chart's line
+                // make series name bold when mouse is near given chart's line
 //            if (isMouseNearLine(yValueForChart, yValueUnderMouse, Math.abs(yValueLower.doubleValue()-yValueUpper.doubleValue()))) {
 //                seriesName.setStyle("-fx-font-weight: bold");
 //            }
 
-            Number timeRounded = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
-            Number time = (Double) lineChart.getXAxis().getValueForDisplay(event.getX());
-            Number amplitudeN = (Double) lineChart.getYAxis().getValueForDisplay(event.getY());
-            String amplitude = String.format("%.2f", amplitudeN);
-            Number amplitudeRounded = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
-            HBox popupRow;
-            if(series.getName().contains(".gl")) {
-                HBox box = new HBox();
-                box.getChildren().add(new Label("время = " + timeRounded + " мс"));
-                for (int i = 0; i < baseChart.getData().size(); i++){
-                    XYChart.Series thisSeries = (XYChart.Series) baseChart.getData().get(i);
-                    getChartData(box, thisSeries);
-                }
+                Number timeRounded = Math.round((Double) lineChart.getXAxis().getValueForDisplay(event.getX()));
+                Number time = (Double) lineChart.getXAxis().getValueForDisplay(event.getX());
+                Number amplitudeN = (Double) lineChart.getYAxis().getValueForDisplay(event.getY());
+                String amplitude = String.format("%.2f", amplitudeN);
+                Number amplitudeRounded = Math.round((Double) lineChart.getYAxis().getValueForDisplay(event.getY()));
+                if (series.getName().contains(".gl")) {
+                    HBox box = new HBox();
+                    box.getChildren().add(new Label("время = " + timeRounded + " мс"));
+                    for (int i = 0; i < baseChart.getData().size(); i++) {
+                        XYChart.Series thisSeries = (XYChart.Series) baseChart.getData().get(i);
+                        getChartData(box, thisSeries);
+                    }
 //                popupRow = box;
-                popupRow = new HBox(new Label("амплитуда = " + amplitude + " мкА\nвремя = " + timeRounded + " мс"));
-            } else {
-                popupRow = new HBox(new Label("ток = " + amplitude + " мкА\nнапряжение = " + timeRounded + " мВ"));
+                    popupRow = new HBox(new Label("амплитуда = " + amplitude + " мкА\nвремя = " + timeRounded + " мс"));
+                } else {
+                    popupRow = new HBox(new Label("ток = " + amplitude + " мкА\nнапряжение = " + timeRounded + " мВ"));
+                }
             }
 
             return popupRow;

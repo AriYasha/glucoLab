@@ -1,7 +1,5 @@
 package com.validation;
 
-import com.buffer.WorkBufferMeasurement;
-import com.buffer.WorkBufferPoly;
 import com.comPort.Control;
 import com.entity.Data;
 import com.entity.MeasurementSetup;
@@ -9,8 +7,7 @@ import com.entity.PolySetup;
 import com.file.Write;
 import com.graph.MultipleAxesLineChart;
 import com.controllers.Controller;
-import com.graph.MultipleSameAxesLineChart;
-import com.sample.CreateStage;
+import com.dialog.CreateStage;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
@@ -21,7 +18,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.apache.log4j.Logger;
-import org.eclipse.fx.ui.controls.dialog.MessageDialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
