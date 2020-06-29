@@ -87,6 +87,13 @@ public class Control extends Thread implements SerialPortDataListener {
         userPort.writeBytes(command, command.length);
     }
 
+    public void sendSmoothRequest() {
+        command[1] = CMD;
+        command[2] = 0x02;
+        command[7] = (byte) (command[1] + command[2]);
+        userPort.writeBytes(command, command.length);
+    }
+
     public void sendPolySetupRequest() {
         command[1] = CMD;
         command[2] = 0x01;
@@ -118,6 +125,12 @@ public class Control extends Thread implements SerialPortDataListener {
 
     public byte[] readBytes() {
         byte[] bytes = new byte[9];
+        userPort.readBytes(bytes, bytes.length);
+        return bytes;
+    }
+
+    public byte[] readSmoothBytes() {
+        byte[] bytes = new byte[23];
         userPort.readBytes(bytes, bytes.length);
         return bytes;
     }
@@ -204,6 +217,7 @@ public class Control extends Thread implements SerialPortDataListener {
 
     @Override
     public void serialEvent(SerialPortEvent event) {
+        boolean isGood = true;
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
             return;
         int numRead = userPort.bytesAvailable();
@@ -245,11 +259,15 @@ public class Control extends Thread implements SerialPortDataListener {
                 logger.warn("notRecognize : ");
                 logger.warn(firstByte[0]);
                 logger.warn(Arrays.toString(notRecognize));
+                isGood = false;
+                numRead = userPort.bytesAvailable();
             }
-            try {
-                validation.checkCmd(bytesReceived, setup, polySetup);
-            } catch (IOException e) {
-                logger.error(e.getMessage());
+            if(isGood) {
+                try {
+                    validation.checkCmd(bytesReceived, setup, polySetup);
+                } catch (IOException e) {
+                    logger.error(e.getMessage());
+                }
             }
             //logger.debug("byte received :" + bytesReceived);
 
@@ -268,6 +286,7 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte MEASURE_CMD = (byte) 0x30;   // 0x30
     static final public byte O_CMD = 79;                // 0x4F
     static final public byte k_CMD = 104;               // 0x68
+    static final public byte SMOOTH_CMD = (byte) 0xEE;               // 0xEE
     static final public byte NOT_FOUND_CMD = 0x20;               // 0x20
     static final public byte POLY_SETUP_CMD = (byte)0xDD;               // 0xDD
     static final public byte POLY_DATA_CMD = (byte)0xBB;               // 0xBB

@@ -337,6 +337,8 @@ public class OpenWindowController implements Initializable {
                 polyGraphController.drawGraphics(selectedItems, Write.filePolyPath);
             }
             Stage stage = (Stage) openFile.getScene().getWindow();
+            stage.setMaximized(true);
+            //stage.setFullScreen(true);
             stage.close();
         } else {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -358,6 +360,8 @@ public class OpenWindowController implements Initializable {
             stage.setTitle(title);
             scene.getStylesheets().add("/styles/labStyle.css");
             stage.setScene(scene);
+            stage.setMaximized(true);
+//            stage.setFullScreen(true);
             stage.show();
             stage.setOnCloseRequest((event) -> stage.close());
         } catch (IOException e) {

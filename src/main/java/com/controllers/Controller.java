@@ -34,6 +34,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.apache.log4j.Logger;
@@ -672,6 +673,13 @@ public class Controller implements Initializable {
             openWindowController.setNewWindow(true);
         });
         setup.setOnAction((event) -> {
+            FXMLLoader loader = openSetupWindow();
+            SetupController setupController = loader.getController();
+            setupController.setPositiveEnd(this.setup.getPositiveAmplitudeMeasurePulses());
+            setupController.setNegativeEnd(this.setup.getNegativeAmplitudeMeasurePulses() * (-1));
+            setupController.setMaxNegTime(this.setup.getNegativeMeasureTime());
+            setupController.setMaxPosTime(this.setup.getPositiveMeasureTime());
+            setupController.setControl(control);
         });
         close.setOnAction((event) -> {
             if (control != null) {
@@ -716,6 +724,32 @@ public class Controller implements Initializable {
             scene.getStylesheets().add("/styles/labStyle.css");
             stage.setScene(scene);
             stage.resizableProperty().setValue(Boolean.FALSE);
+            stage.show();
+            stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent t) {
+                    stage.close();
+                }
+            });
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return fxmlLoader;
+    }
+
+    private FXMLLoader openSetupWindow() {
+        FXMLLoader fxmlLoader = null;
+        try {
+            fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/setup.fxml"));
+            Parent parent = fxmlLoader.load();
+            Scene scene = new Scene(parent);
+            Stage stage = new Stage();
+            stage.setTitle("Плавный набор напряжения");
+            scene.getStylesheets().add("/styles/labStyle.css");
+            stage.setScene(scene);
+            stage.resizableProperty().setValue(Boolean.FALSE);
+            stage.initModality(Modality.APPLICATION_MODAL);
             stage.show();
             stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override
