@@ -6,6 +6,7 @@ import com.entity.MeasurementSetup;
 import com.file.ChooseFile;
 import com.file.Read;
 import com.file.Write;
+import com.graph.MultipleAxesLineChart;
 import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
 import javafx.collections.FXCollections;
@@ -96,7 +97,6 @@ public class GraphController extends DrawMeasure implements Initializable {
             visualPlot.getData().clear();
         }
 
-
         ObservableList<XYChart.Data> dataFromPlot = series.getData();
         ArrayList<Integer> xValues = new ArrayList<>();
         ArrayList<Number> xValuesForClosest = new ArrayList<>();
@@ -109,6 +109,16 @@ public class GraphController extends DrawMeasure implements Initializable {
         getCustomIntegral();
         positiveLabel.setText(String.valueOf(Integral.getPositiveIntegral(xValues, yValues)));
         negativeLabel.setText(String.valueOf(Integral.getNegativeIntegral(xValues, yValues)));
+
+        String seriesName = (String) graphChoice.getValue();
+        String rootPath = Write.fileMeasurePath;
+        MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
+        MeasurementSetup measurementSetup = (MeasurementSetup) mode;
+        XYChart.Series voltageSeries = VisualisationPlot.prepareVoltageSeries(seriesName, measurementSetup.getData());
+        voltageSeries.setName("Напряжение");
+        MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, stackPane);
+        voltageChart.addSeries(voltageSeries, Color.RED);
+        legendPane.getChildren().add(voltageChart.getLegend());
 
     }
 

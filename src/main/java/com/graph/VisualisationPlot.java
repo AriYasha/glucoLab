@@ -91,4 +91,15 @@ public class VisualisationPlot {
         }
         return series;
     }
+
+    public static XYChart.Series<Number, Number> prepareVoltageSeries(String name, Data data) {
+        ArrayList<Number> xValues = (ArrayList<Number>) data.getCurrentXMeasurement();
+        ArrayList<Number> yValues = (ArrayList<Number>) data.getVoltageYMeasurement();
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName(name);
+        for (int i = 0; i < xValues.size(); i++) {
+            series.getData().add(new XYChart.Data<>(xValues.get(i), yValues.get(i)));
+        }
+        return series;
+    }
 }

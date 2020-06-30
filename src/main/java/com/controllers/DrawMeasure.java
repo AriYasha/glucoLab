@@ -5,6 +5,7 @@ import com.entity.MeasurementSetup;
 import com.entity.PolySetup;
 import com.file.Read;
 import com.file.Write;
+import com.graph.MultipleAxesLineChart;
 import com.graph.MultipleSameAxesLineChart;
 import com.graph.VisualisationPlot;
 import javafx.collections.ObservableList;
@@ -161,6 +162,14 @@ public abstract class DrawMeasure {
                 chartDataMap.put(series, measurementSetup);
                 showDetails();
             }
+            String seriesName = ((XYChart.Series) glucoChart.getData().get(0)).getName();
+            MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
+            MeasurementSetup measurementSetup = (MeasurementSetup) mode;
+            XYChart.Series series = VisualisationPlot.prepareVoltageSeries(seriesName, measurementSetup.getData());
+            series.setName("Напряжение");
+            MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, stackPane);
+            voltageChart.addSeries(series, Color.RED);
+            legendPane.getChildren().add(voltageChart.getLegend());
         } else if (rootPath.contains(Write.filePolyPath)) {
             for (int i = 0; i < selectedItems.size(); i++) {
                 String seriesName = selectedItems.get(i);

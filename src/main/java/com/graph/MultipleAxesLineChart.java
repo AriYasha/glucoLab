@@ -290,7 +290,7 @@ public class MultipleAxesLineChart/* extends StackPane*/ {
         baseChartCheckBox.setDisable(true);
         baseChartCheckBox.getStyleClass().add("readonly-checkbox");
         baseChartCheckBox.setOnAction(event -> baseChartCheckBox.setSelected(true));
-        hBox.getChildren().add(baseChartCheckBox);
+       // hBox.getChildren().add(baseChartCheckBox);
 
         for (final LineChart lineChart : backgroundCharts) {
             CheckBox checkBox = new CheckBox(lineChart.getYAxis().getLabel());
