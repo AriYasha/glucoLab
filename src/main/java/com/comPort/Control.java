@@ -329,6 +329,7 @@ public class Control extends Thread implements SerialPortDataListener {
     //    DEVICE MODE
     static final public byte MEASURE_MODE = 1;
     static final public byte POLY_MODE = 2;
+    static final public byte SMOOTH_MODE = 3;
 
     //    ERROR TYPES
     static final public byte STRIP_TYPE_ERROR = 1;

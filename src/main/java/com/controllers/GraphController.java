@@ -387,9 +387,11 @@ public class GraphController extends DrawMeasure implements Initializable {
     public void onlyMeasurement(ActionEvent actionEvent) {
         if (onlyMeasurementCheckBox.isSelected()) {
             xAxis.setAutoRanging(false);
+            yAxis.setAutoRanging(false);
             xAxis.setLowerBound(0);
         } else {
             xAxis.setAutoRanging(true);
+            yAxis.setAutoRanging(true);
         }
     }
 }

@@ -193,6 +193,13 @@ public class DataFromComPortValidation {
                     controller.tabPane.getSelectionModel().select(0);
                 });
                 break;
+            case Control.SMOOTH_MODE:
+                logger.debug("SMOOTH_MODE");
+                Platform.runLater(() -> {
+                    controller.mainTabPane.getSelectionModel().select(0);
+                    controller.tabPane.getSelectionModel().select(0);
+                });
+                break;
             case Control.POLY_MODE:
                 logger.debug("POLY_MODE");
                 Platform.runLater(() -> {
@@ -257,6 +264,7 @@ public class DataFromComPortValidation {
 //                    controller.glucoChart.getData().clear();
                     controller.polyChart.getData().clear();
                 });
+                voltageYMeasurement.clear();
                 break;
             case Control.DROP_WAITING_STAT:
                 logger.info("DROP_WAITING_STAT");

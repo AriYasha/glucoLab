@@ -10,6 +10,7 @@ import com.file.Write;
 import com.graph.VisualisationPlot;
 import com.dialog.CreateStage;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -28,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class OpenWindowController implements Initializable {
 

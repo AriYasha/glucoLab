@@ -106,7 +106,7 @@ public class SetupController implements Initializable {
         voltage = control.getIntFromArray(bytes);
         voltage = array[12] == 1 ? voltage * (-1) : voltage;
         smoothVoltage.setPositiveEnd(voltage);
-        //positiveEndEdit.setText(String.valueOf(smoothVoltage.getPositiveEnd()));
+        positiveEndEdit.setText(String.valueOf(smoothVoltage.getPositiveEnd()));
         bytes[0] = array[17];
         bytes[1] = array[16];
         voltage = control.getIntFromArray(bytes);
@@ -118,7 +118,7 @@ public class SetupController implements Initializable {
         voltage = control.getIntFromArray(bytes);
         voltage = array[18] == 1 ? voltage * (-1) : voltage;
         smoothVoltage.setNegativeEnd(voltage);
-        //negativeEndEdit.setText(String.valueOf(smoothVoltage.getNegativeEnd()));
+        negativeEndEdit.setText(String.valueOf(smoothVoltage.getNegativeEnd()));
         logger.debug(smoothVoltage.toString());
     }
 
@@ -163,11 +163,15 @@ public class SetupController implements Initializable {
     public void enabling(ActionEvent actionEvent) {
         if (enableCheckBox.isSelected()) {
             positiveBeginEdit.setDisable(false);
+            positiveEndEdit.setDisable(false);
+            negativeEndEdit.setDisable(false);
             negativeBeginEdit.setDisable(false);
             positiveTimeEdit.setDisable(false);
             negativeTimeEdit.setDisable(false);
         } else {
             positiveBeginEdit.setDisable(true);
+            positiveEndEdit.setDisable(true);
+            negativeEndEdit.setDisable(true);
             negativeBeginEdit.setDisable(true);
             positiveTimeEdit.setDisable(true);
             negativeTimeEdit.setDisable(true);
