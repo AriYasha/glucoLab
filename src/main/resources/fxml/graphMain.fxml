@@ -105,6 +105,7 @@
                            </font>
                         </Label>
                         <CheckBox fx:id="onlyMeasurementCheckBox" mnemonicParsing="false" onAction="#onlyMeasurement" text="Только измерения" />
+                        <CheckBox fx:id="showVoltageCheckBox" mnemonicParsing="false" onAction="#showVoltage" text="Показать напряжение" />
                      </children>
                   </VBox>
                </children>

@@ -154,7 +154,7 @@ public abstract class DrawMeasure {
         if (rootPath.contains(Write.fileMeasurePath)) {
             for (int i = 0; i < selectedItems.size(); i++) {
                 String seriesName = selectedItems.get(i);
-                logger.debug(rootPath + "\\" + seriesName);
+//                logger.debug(rootPath + "\\" + seriesName);
                 MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
                 MeasurementSetup measurementSetup = (MeasurementSetup) mode;
                 XYChart.Series series = VisualisationPlot.prepareSeries(seriesName, measurementSetup.getData());
@@ -162,14 +162,14 @@ public abstract class DrawMeasure {
                 chartDataMap.put(series, measurementSetup);
                 showDetails();
             }
-            String seriesName = ((XYChart.Series) glucoChart.getData().get(0)).getName();
-            MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
-            MeasurementSetup measurementSetup = (MeasurementSetup) mode;
-            XYChart.Series series = VisualisationPlot.prepareVoltageSeries(seriesName, measurementSetup.getData());
-            series.setName("Напряжение");
-            MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, stackPane);
-            voltageChart.addSeries(series, Color.RED);
-            legendPane.getChildren().add(voltageChart.getLegend());
+//            String seriesName = ((XYChart.Series) glucoChart.getData().get(0)).getName();
+//            MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
+//            MeasurementSetup measurementSetup = (MeasurementSetup) mode;
+//            XYChart.Series series = VisualisationPlot.prepareVoltageSeries(seriesName, measurementSetup.getData());
+//            series.setName("Напряжение");
+//            MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, stackPane);
+//            voltageChart.addSeries(series, Color.RED);
+//            legendPane.getChildren().add(voltageChart.getLegend());
         } else if (rootPath.contains(Write.filePolyPath)) {
             for (int i = 0; i < selectedItems.size(); i++) {
                 String seriesName = selectedItems.get(i);
@@ -181,7 +181,8 @@ public abstract class DrawMeasure {
                 showDetails();
             }
         }
-
+        Stage stage = (Stage) stackPane.getScene().getWindow();
+        stage.show();
     }
 
 }

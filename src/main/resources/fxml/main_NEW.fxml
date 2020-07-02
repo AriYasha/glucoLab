@@ -92,7 +92,7 @@
                                                                           <Image url="/images/plot_0.png" />
                                                                       </image>
                                                                   </ImageView>
-                                                                  <Button fx:id="sendDataButton" alignment="CENTER_RIGHT" layoutX="107.0" layoutY="418.0" mnemonicParsing="false" onAction="#sendData" prefHeight="40.0" prefWidth="187.0" text="Записать пареметры в пульт" textAlignment="CENTER" wrapText="true">
+                                                                  <Button fx:id="sendDataButton" alignment="CENTER_RIGHT" layoutX="107.0" layoutY="418.0" mnemonicParsing="false" onAction="#sendData" prefHeight="40.0" prefWidth="187.0" text="Записать параметры в пульт" textAlignment="CENTER" wrapText="true">
                                                                       <graphic>
                                                                           <ImageView fx:id="sendImage" fitHeight="57.0" fitWidth="56.0" pickOnBounds="true" preserveRatio="true" />
                                                                       </graphic>

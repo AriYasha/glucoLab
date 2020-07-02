@@ -20,6 +20,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.apache.log4j.Logger;
 
@@ -51,6 +52,7 @@ public class GraphController extends DrawMeasure implements Initializable {
     public Label negativeLabel;
     public Label positiveLabel;
     public Label customLabel;
+    public CheckBox showVoltageCheckBox;
     private String setValueString = "Установите значения";
     private ObservableList<String> descriptionValues = FXCollections.observableArrayList();
 
@@ -110,19 +112,11 @@ public class GraphController extends DrawMeasure implements Initializable {
         positiveLabel.setText(String.valueOf(Integral.getPositiveIntegral(xValues, yValues)));
         negativeLabel.setText(String.valueOf(Integral.getNegativeIntegral(xValues, yValues)));
 
-        String seriesName = (String) graphChoice.getValue();
-        String rootPath = Write.fileMeasurePath;
-        MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
-        MeasurementSetup measurementSetup = (MeasurementSetup) mode;
-        XYChart.Series voltageSeries = VisualisationPlot.prepareVoltageSeries(seriesName, measurementSetup.getData());
-        voltageSeries.setName("Напряжение");
-        MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, stackPane);
-        voltageChart.addSeries(voltageSeries, Color.RED);
-        legendPane.getChildren().add(voltageChart.getLegend());
+        showVoltage(new ActionEvent());
 
     }
 
-    private void getCustomIntegral(){
+    private void getCustomIntegral() {
         XYChart.Series series = getSeriesByName((String) graphChoice.getValue());
         ObservableList<XYChart.Data> dataFromPlot = series.getData();
         ArrayList<Integer> xValues = new ArrayList<>();
@@ -133,14 +127,14 @@ public class GraphController extends DrawMeasure implements Initializable {
             xValuesForClosest.add((Number) newData.getXValue());
             yValues.add((Float) newData.getYValue());
         }
-        if(!firstDotEdit.getText().isEmpty() && !secondDotEdit.getText().isEmpty()){
+        if (!firstDotEdit.getText().isEmpty() && !secondDotEdit.getText().isEmpty()) {
             int firstDot = Integer.parseInt(firstDotEdit.getText());
             int secondDot = Integer.parseInt(secondDotEdit.getText());
             int beginIndex = getCloseIndex(xValuesForClosest, firstDot);
             int endIndex = getCloseIndex(xValuesForClosest, secondDot);
             try {
                 customLabel.setText(String.valueOf(Integral.getCustomIntegral(xValues, yValues, beginIndex, endIndex)));
-            } catch (RuntimeException e){
+            } catch (RuntimeException e) {
                 logger.debug(e);
                 customLabel.setText("");
             }
@@ -218,7 +212,7 @@ public class GraphController extends DrawMeasure implements Initializable {
 
     public void setFirstDotOnChartM(MouseEvent mouseEvent) {
         String first = firstDotEdit.getText();
-        if(!first.isEmpty()) {
+        if (!first.isEmpty()) {
             int firstDot = Integer.parseInt(firstDotEdit.getText());
             setDotOnChart("one", 1, firstDot);
             createAdditionalLines("additionalOne", firstDot);
@@ -228,7 +222,7 @@ public class GraphController extends DrawMeasure implements Initializable {
 
     public void setSecondDotOnChartM(MouseEvent mouseEvent) {
         String second = firstDotEdit.getText();
-        if(!second.isEmpty()) {
+        if (!second.isEmpty()) {
             int secondDot = Integer.parseInt(secondDotEdit.getText());
             setDotOnChart("two", 2, secondDot);
             createAdditionalLines("additionalTwo", secondDot);
@@ -238,7 +232,7 @@ public class GraphController extends DrawMeasure implements Initializable {
 
     public void setThirdDotOnChartM(MouseEvent mouseEvent) {
         String third = firstDotEdit.getText();
-        if(!third.isEmpty()) {
+        if (!third.isEmpty()) {
             int thirdDot = Integer.parseInt(thirdDotEdit.getText());
             setDotOnChart("tree", 3, thirdDot);
             createAdditionalLines("additionalThree", thirdDot);
@@ -392,6 +386,31 @@ public class GraphController extends DrawMeasure implements Initializable {
         } else {
             xAxis.setAutoRanging(true);
             yAxis.setAutoRanging(true);
+        }
+    }
+
+    public void showVoltage(ActionEvent actionEvent) {
+        if (showVoltageCheckBox.isSelected()) {
+            String seriesName = (String) graphChoice.getValue();
+            String rootPath = Write.fileMeasurePath;
+            MeasureMode mode = Read.reading(rootPath + "\\" + seriesName);
+            MeasurementSetup measurementSetup = (MeasurementSetup) mode;
+            if (measurementSetup != null) {
+                XYChart.Series voltageSeries = VisualisationPlot.prepareVoltageSeries(seriesName, measurementSetup.getData());
+                voltageSeries.setName("Напряжение");
+                MultipleAxesLineChart voltageChart = new MultipleAxesLineChart(glucoChart, stackPane);
+                voltageChart.addSeries(voltageSeries, Color.RED);
+                legendPane.getChildren().add(voltageChart.getLegend());
+            }
+        } else {
+            logger.debug(stackPane.getChildren().size());
+            ObservableList list = stackPane.getChildren();
+            for (int i = 0; i < stackPane.getChildren().size(); i++) {
+                if(stackPane.getChildren().get(i).getClass().equals(HBox.class)){
+                    stackPane.getChildren().remove(i);
+                }
+            }
+            logger.debug(stackPane.getChildren().toString());
         }
     }
 }

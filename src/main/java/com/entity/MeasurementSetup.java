@@ -198,13 +198,13 @@ public class MeasurementSetup implements Serializable, MeasureMode {
                 "\nВремя паузы :\n\t" + getPauseTime() + ", мс" +
                 "\nКоличество импульсов ПП :\n\t" + getQuantityFastPolarityPulses() +
                 "\nАмплитуда положительных импульсов ПП :\n\t" + getPositiveAmplitudeFastPolarityPulses() + ", мВ" +
-                "\nАмплитуда отрицательных импульсов ПП :\n\t" + getNegativeAmplitudeFastPolarityPulses() +
+                "\nАмплитуда отрицательных импульсов ПП :\n\t" + getNegativeAmplitudeFastPolarityPulses() + ", мВ" +
                 "\nВремя отрицательных импульсов ПП :\n\t" + getNegativeFastPolarityReversalTime() + ", мс" +
                 "\nВремя положительных импульсов ПП :\n\t" + getPositiveFastPolarityReversalTime() + ", мс" +
-                "\nАмплитуда положительного импульса измерения :\n\t" + getNegativeAmplitudeMeasurePulses() + ", мВ" +
-                "\nАмплитуда отрицательного импульса измерения :\n\t" + getPositiveAmplitudeMeasurePulses() + ", мВ" +
-                "\nВремя отрицательного импульса измерения :\n\t" + getNegativeMeasureTime() + ", мс" +
-                "\nВремя положительного импульса измерения :\n\t" + getPositiveMeasureTime() + ", мс" +
+                "\nАмплитуда положительного импульса измерения :\n\t" + getPositiveAmplitudeMeasurePulses() + ", мВ" +
+                "\nАмплитуда отрицательного импульса измерения :\n\t" + getNegativeAmplitudeMeasurePulses() + ", мВ" +
+                "\nВремя второго импульса измерения :\n\t" + getNegativeMeasureTime() + ", мс" +
+                "\nВремя первого импульса измерения :\n\t" + getPositiveMeasureTime() + ", мс" +
                 "";
     }
 }

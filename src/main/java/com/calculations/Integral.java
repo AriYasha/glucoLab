@@ -24,7 +24,7 @@ public class Integral {
                 sumPositive += ((Float) y[i] + (Float) y[i + 1]) * 0.5 * ((Integer) x[i + 1] - (Integer) x[i]);
             }
         }
-        logger.debug(sumPositive);
+//        logger.debug(sumPositive);
         return sumPositive;
 
     }
@@ -46,7 +46,7 @@ public class Integral {
 
             }
         }
-        logger.debug(sumNegative);
+//        logger.debug(sumNegative);
         return sumNegative;
     }
 
@@ -73,7 +73,7 @@ public class Integral {
             throw new RuntimeException("Dots not valid");
         }
 
-        logger.debug(sumCustom);
+//        logger.debug(sumCustom);
         return sumCustom;
     }
 }

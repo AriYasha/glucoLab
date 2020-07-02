@@ -224,7 +224,7 @@ public class OpenWindowController implements Initializable {
         } else {
             for (int i = 0; i < selectedItems.size(); i++) {
                 for (int j = 0; j < selectedChoiceItems.size(); j++) {
-                    if (!selectedItems.get(i).equals(selectedChoiceItems.get(j))) {
+                    if (!(underFiles.getSelectionModel().getSelectedItem() + "\\" + selectedItems.get(i)).equals(selectedChoiceItems.get(j))) {
                         count++;
                     }
                 }
@@ -364,7 +364,7 @@ public class OpenWindowController implements Initializable {
             stage.setScene(scene);
             stage.setMaximized(true);
 //            stage.setFullScreen(true);
-            stage.show();
+            //stage.show();
             stage.setOnCloseRequest((event) -> stage.close());
         } catch (IOException e) {
             logger.error(e.getMessage());
