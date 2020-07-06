@@ -99,14 +99,25 @@ public class OpenWindowController implements Initializable {
         File fromDirectory = new File(path + "\\" + files.getSelectionModel().getSelectedItem());
         List<File> underDirectory = getDirectory(fromDirectory);
         underFiles.getItems().clear();
+        Map<Long, String> data = new TreeMap<Long, String>(
+                new Comparator<Long>() {
+
+                    @Override
+                    public int compare(Long o1, Long o2) {
+                        return o2.compareTo(o1);
+                    }
+
+                });
         for (File f : underDirectory) {
             if (f.isDirectory()) {
-                underFiles.getSelectionModel().selectFirst();
-                underFiles.getItems().add(f.getName());
-//                System.out.println(f.getName());
-
+                data.put(f.lastModified(),f.getName());
             }
         }
+        for (Map.Entry<Long, String> pair : data.entrySet()) {
+            underFiles.getItems().add(pair.getValue());
+            underFiles.getSelectionModel().selectFirst();
+        }
+
     }
 
     public void setNewWindow(boolean newWindow) {
