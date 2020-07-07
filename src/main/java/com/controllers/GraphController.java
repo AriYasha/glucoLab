@@ -404,7 +404,6 @@ public class GraphController extends DrawMeasure implements Initializable {
             }
         } else {
             logger.debug(stackPane.getChildren().size());
-            ObservableList list = stackPane.getChildren();
             for (int i = 0; i < stackPane.getChildren().size(); i++) {
                 if(stackPane.getChildren().get(i).getClass().equals(HBox.class)){
                     stackPane.getChildren().remove(i);

@@ -16,6 +16,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.apache.log4j.Logger;
 
@@ -419,6 +420,11 @@ public class DataFromComPortValidation {
 
     private void startMeasure() {
         Platform.runLater(() -> {
+            for (int i = 0; i < controller.graphStackPane.getChildren().size(); i++) {
+                if(controller.graphStackPane.getChildren().get(i).getClass().equals(HBox.class)){
+                    controller.graphStackPane.getChildren().remove(i);
+                }
+            }
             controller.mainTabPane.getSelectionModel().select(0);
             controller.tabPane.getSelectionModel().select(1);
         });

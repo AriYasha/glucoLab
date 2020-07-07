@@ -33,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -901,6 +902,11 @@ public class Controller implements Initializable {
 
     public void chartClear(ActionEvent actionEvent) {
         glucoChart.getData().clear();
+        for (int i = 0; i < graphStackPane.getChildren().size(); i++) {
+            if(graphStackPane.getChildren().get(i).getClass().equals(HBox.class)){
+                graphStackPane.getChildren().remove(i);
+            }
+        }
         polyChart.getData().clear();
     }
 }
