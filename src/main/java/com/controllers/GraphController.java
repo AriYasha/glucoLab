@@ -53,6 +53,9 @@ public class GraphController extends DrawMeasure implements Initializable {
     public Label positiveLabel;
     public Label customLabel;
     public CheckBox showVoltageCheckBox;
+    public Label variationOne;
+    public Label variationTwo;
+    public Label variationThree;
     private String setValueString = "Установите значения";
     private ObservableList<String> descriptionValues = FXCollections.observableArrayList();
 
@@ -287,6 +290,17 @@ public class GraphController extends DrawMeasure implements Initializable {
         logger.debug(deviationList.toString());
         logger.debug(standardDeviation(deviationList));
         setDeviationLabel(columnIndex, standardDeviation(deviationList));
+        setVariationLabel(columnIndex, variation(deviationList));
+        System.out.println("variation = " + variation(deviationList));
+    }
+
+    private float variation(List<Float> deviationList) {
+        float mean = 0;
+        for (float digit : deviationList) {
+            mean += digit;
+        }
+        mean /= deviationList.size();
+        return (standardDeviation(deviationList) / mean) * 100;
     }
 
     private float standardDeviation(List<Float> deviationList) {
@@ -374,6 +388,26 @@ public class GraphController extends DrawMeasure implements Initializable {
                 deviationThreeLabel.setText("");
                 logger.debug(value);
                 deviationThreeLabel.setText(String.valueOf(value));
+                break;
+        }
+    }
+
+    private void setVariationLabel(int columnIndex, Number value) {
+        switch (columnIndex) {
+            case 1:
+                variationOne.setText("");
+                logger.debug(value);
+                variationOne.setText(String.valueOf(value));
+                break;
+            case 2:
+                variationTwo.setText("");
+                logger.debug(value);
+                variationTwo.setText(String.valueOf(value));
+                break;
+            case 3:
+                variationThree.setText("");
+                logger.debug(value);
+                variationThree.setText(String.valueOf(value));
                 break;
         }
     }
