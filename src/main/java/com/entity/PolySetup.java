@@ -100,29 +100,29 @@ public class PolySetup implements Serializable, MeasureMode {
         byte[] transmitBytes = new byte[26];
         transmitBytes[0] = Control.POLY_SETUP_CMD;
         if(beginPoint >= 0){
-            transmitBytes[1] = (byte) 0;
+            transmitBytes[1] = (byte) 1;
             transmitBytes[3] = (byte) beginPoint;
             transmitBytes[2] = (byte) (beginPoint >> 8);
         } else {
-            transmitBytes[1] = (byte) 1;
+            transmitBytes[1] = (byte) 0;
             transmitBytes[3] = (byte) Math.abs(beginPoint);
             transmitBytes[2] = (byte) (Math.abs(beginPoint) >> 8);
         }
         if(mediumPoint >= 0){
-            transmitBytes[4] = (byte) 0;
+            transmitBytes[4] = (byte) 1;
             transmitBytes[6] = (byte) mediumPoint;
             transmitBytes[5] = (byte) (mediumPoint >> 8);
         } else {
-            transmitBytes[4] = (byte) 1;
+            transmitBytes[4] = (byte) 0;
             transmitBytes[6] = (byte) Math.abs(mediumPoint);
             transmitBytes[5] = (byte) (Math.abs(mediumPoint) >> 8);
         }
         if(lastPoint >= 0){
-            transmitBytes[7] = (byte) 0;
+            transmitBytes[7] = (byte) 1;
             transmitBytes[9] = (byte) lastPoint;
             transmitBytes[8] = (byte) (lastPoint >> 8);
         } else {
-            transmitBytes[7] = (byte) 1;
+            transmitBytes[7] = (byte) 0;
             transmitBytes[9] = (byte) Math.abs(lastPoint);
             transmitBytes[8] = (byte) (Math.abs(lastPoint) >> 8);
         }

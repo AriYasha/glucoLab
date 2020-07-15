@@ -111,6 +111,7 @@ public class Controller implements Initializable {
     public Button chartClearButton;
     public TextField realLeakingQuantityEdit;
     public TextField realLeakingCurrentEdit;
+    public Label lastValuesLabel;
     private ComPortConnection comPortConnection;
     private Control control;
     private UIValidation uiValidation;
@@ -281,8 +282,6 @@ public class Controller implements Initializable {
                             }
                         }
                     }
-
-
                 } else {
                     setConnection();
                 }
@@ -530,6 +529,7 @@ public class Controller implements Initializable {
     }
 
     private void renderVisualisation() {
+        comPortStatus.setText("");
         String waitingTime = waitingTimeEdit.getText();
         String pauseTime = pauseTimeEdit.getText();
         String negativeTimeFastWaves = negativeTimeFastWavesEdit.getText();
@@ -541,8 +541,8 @@ public class Controller implements Initializable {
         String positiveTimeMeasure = positiveTimeMeasureEdit.getText();
         String negativeAmpMeasure = negativeAmpMeasureEdit.getText();
         String positiveAmpMeasure = positiveAmpMeasureEdit.getText();
-        boolean firstPolarityReversal = negativeFastHalfWaveRadioB.isSelected();
-        boolean firstPolarityMeasure = negativeMeasureRadioB.isSelected();
+        boolean firstPolarityReversal = !negativeFastHalfWaveRadioB.isSelected();
+        boolean firstPolarityMeasure = !negativeMeasureRadioB.isSelected();
         if (negativeTimeFastWaves.equals("")) {
             negativeTimeFastWaves = "100";
         }

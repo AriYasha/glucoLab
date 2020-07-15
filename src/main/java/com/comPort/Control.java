@@ -256,9 +256,9 @@ public class Control extends Thread implements SerialPortDataListener {
                 Platform.runLater(() -> controller.comPortStatus.setText(String.valueOf(userPort.bytesAvailable())));
                 byte[] notRecognize = new byte[userPort.bytesAvailable()];
                 userPort.readBytes(notRecognize, userPort.bytesAvailable());
-                logger.warn("notRecognize : ");
-                logger.warn(firstByte[0]);
-                logger.warn(Arrays.toString(notRecognize));
+                logger.debug("notRecognize : ");
+                logger.debug(firstByte[0]);
+                logger.debug(Arrays.toString(notRecognize));
                 isGood = false;
                 numRead = userPort.bytesAvailable();
             }

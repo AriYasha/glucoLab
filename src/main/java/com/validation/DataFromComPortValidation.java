@@ -86,13 +86,13 @@ public class DataFromComPortValidation {
             }
             byte[] bytesDue = {command.get(6), command.get(5)};
             int voltage = control.getIntFromArray(bytesDue);
-            if (command.get(4) == 1) {
+            if (command.get(4) != 1) {
                 voltage = 0 - voltage;
             }
             bytesDue[0] = command.get(9);
             bytesDue[1] = command.get(8);
             int dataInt = control.getIntFromArray(bytesDue);
-            if (command.get(4) == 1) {
+            if (command.get(4) != 1) {
                 dataInt = 0 - dataInt;
             }
             float current = ((float) dataInt) / 100;
@@ -128,20 +128,20 @@ public class DataFromComPortValidation {
 //            logger.info("Data poly detected");
             byte[] bytes = {command.get(3), command.get(2)};
             int voltage = control.getIntFromArray(bytes);
-            if (command.get(1) == 1) {
+            if (command.get(1) != 1) {
                 voltage = 0 - voltage;
             }
             bytes[0] = command.get(6);
             bytes[1] = command.get(5);
             int voltageReal = control.getIntFromArray(bytes);
-            if (command.get(4) == 1) {
+            if (command.get(4) != 1) {
                 voltageReal = 0 - voltageReal;
             }
 
             bytes[0] = command.get(9);
             bytes[1] = command.get(8);
             int current = control.getIntFromArray(bytes);
-            if (command.get(7) == 1) {
+            if (command.get(7) != 1) {
                 current = 0 - current;
             }
             float cur = ((float) current) / 100;
@@ -227,7 +227,7 @@ public class DataFromComPortValidation {
             case Control.NOT_CONNECTED_STAT:
                 logger.info("NOT CONNECTED");
                 Platform.runLater(() -> {
-                    controller.glucoChart.getData().remove(controller.glucoChart.getData().size() - 1);
+
                     Scene scene = controller.measureStatLabel.getScene();
                     scene.setCursor(Cursor.DEFAULT);
                     control.closeConnection();
@@ -235,6 +235,16 @@ public class DataFromComPortValidation {
                     Image picture = new Image("images/red Ball.png", true);
                     controller.connectImage.setImage(picture);
                     controller.connectionLabel.setText("Не подключено");
+                    try {
+                        controller.glucoChart.getData().remove(controller.glucoChart.getData().size() - 1);
+                    } catch (Exception e){
+                        logger.debug(e.getMessage());
+                    }
+                    try {
+                        controller.polyChart.getData().remove(controller.polyChart.getData().size() - 1);
+                    } catch (Exception e){
+                        logger.debug(e.getMessage());
+                    }
                 });
                 Runnable task = () -> {
                     controller.setConnection();
@@ -264,6 +274,7 @@ public class DataFromComPortValidation {
                     controller.realLeakingTimeLabel.setVisible(false);
 //                    controller.glucoChart.getData().clear();
                     controller.polyChart.getData().clear();
+                    controller.lastValuesLabel.setText("");
                 });
                 voltageYMeasurement.clear();
                 break;
@@ -392,8 +403,12 @@ public class DataFromComPortValidation {
             currentData.setCurrentXMeasurement(xValues);
             currentData.setCurrentYMeasurement(yValues);
             currentData.setVoltageYMeasurement(voltageYMeasurement);
+            getLastValueOfFirstWave(yValues);
+            getLastValueOfSecondWave(yValues);
             setup.setData(currentData);
             Platform.runLater(() -> {
+                controller.lastValuesLabel.setText("Первое значение = " + String.valueOf(getLastValueOfFirstWave(yValues)) + " мкА" +
+                    "\nВторое значение = " + String.valueOf(getLastValueOfSecondWave(yValues))  + " мкА");
                 String fileName = Write.generateFileName(setup);
                 CreateStage dialog = new CreateStage(fileName);
                 fileName = dialog.getFileName();
@@ -411,6 +426,7 @@ public class DataFromComPortValidation {
                     // delete series from chart
                     controller.glucoChart.getData().remove(controller.glucoChart.getData().size() - 1);
                 }
+
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -522,6 +538,24 @@ public class DataFromComPortValidation {
         });
     }
 
+    private float getLastValueOfFirstWave(ArrayList<Number> list){
+        boolean lastValueSign = ((float) list.get(list.size() - 1)) > 0;
+        boolean currentValueSign;
+        float value = 0;
+        for (int i = list.size() - 1; i >= 0; i--) {
+            currentValueSign = ((float) list.get(i)) > 0;
+            if ((lastValueSign && !currentValueSign) || (!lastValueSign && currentValueSign)){
+                value = (float) list.get(i);
+                break;
+            }
+        }
+        return value;
+    }
+
+    private float getLastValueOfSecondWave(ArrayList<Number> list){
+        return (float) list.get(list.size() - 1);
+    }
+
     private void parseSetupCMD(List<Byte> command) {
         Platform.runLater(() -> {
             controller.mainTabPane.getSelectionModel().select(0);
@@ -542,8 +576,8 @@ public class DataFromComPortValidation {
         bytes[1] = command.get(9);
         setup.setNegativeFastPolarityReversalTime(control.getIntFromArray(bytes));
         controller.negativeTimeFastWavesEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
-        setup.setFirstPolarityReversal(command.get(11) == 0);
-        if (command.get(11) == 0) {
+        setup.setFirstPolarityReversal(command.get(11) != 0);
+        if (command.get(11) != 0) {
             controller.positiveFastHalfWaveRadioB.setSelected(true);
         } else {
             controller.negativeFastHalfWaveRadioB.setSelected(true);
@@ -568,8 +602,8 @@ public class DataFromComPortValidation {
         bytes[1] = command.get(21);
         setup.setNegativeMeasureTime(control.getIntFromArray(bytes));
         controller.negativeTimeMeasureEdit.setText(String.valueOf(control.getIntFromArray(bytes)));
-        setup.setFirstPolarityMeasure(command.get(23) == 0);
-        if (command.get(23) == 0) {
+        setup.setFirstPolarityMeasure(command.get(23) != 0);
+        if (command.get(23) != 0) {
             controller.positiveMeasureRadioB.setSelected(true);
         } else {
             controller.negativeMeasureRadioB.setSelected(true);
@@ -595,7 +629,7 @@ public class DataFromComPortValidation {
         logger.debug(command);
         byte[] bytes = {command.get(3), command.get(2)};
         int digit = control.getIntFromArray(bytes);
-        if (command.get(1) == 1) {
+        if (command.get(1) == 0) {
             digit = 0 - digit;
         }
         polySetup.setBeginPoint(digit);
@@ -604,7 +638,7 @@ public class DataFromComPortValidation {
         bytes[0] = command.get(6);
         bytes[1] = command.get(5);
         digit = control.getIntFromArray(bytes);
-        if (command.get(4) == 1) {
+        if (command.get(4) == 0) {
             digit = 0 - digit;
         }
         polySetup.setMediumPoint(digit);
@@ -612,7 +646,7 @@ public class DataFromComPortValidation {
         bytes[0] = command.get(9);
         bytes[1] = command.get(8);
         digit = control.getIntFromArray(bytes);
-        if (command.get(7) == 1) {
+        if (command.get(7) == 0) {
             digit = 0 - digit;
         }
         polySetup.setLastPoint(digit);
@@ -764,11 +798,12 @@ public class DataFromComPortValidation {
 
     private void successfulReceive() {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Успех");
-            alert.setHeaderText("Настройка принята");
-            alert.setContentText("");
-            alert.show();
+//            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//            alert.setTitle("Успех");
+//            alert.setHeaderText("Настройка принята");
+//            alert.setContentText("");
+//            alert.show();
+            controller.comPortStatus.setText("Настройка принята");
         });
     }
 
