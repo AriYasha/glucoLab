@@ -481,7 +481,15 @@ public class Controller implements Initializable {
 //        control.sendByteArray(byes);
         //renderVisualization();
         if (comPortConnection != null && comPortConnection.isBusy() /*&& control.isTestOk()*/) {
+            renderVisualisation();
+            System.out.println(setup.isFirstPolarityReversal());
+            System.out.println(setup.isFirstPolarityMeasure());
             control.sendByteArray(setup.getTransmitArray());
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
             //uiValidation.setOnDisconnected();
             //comPortConnection.closePort();

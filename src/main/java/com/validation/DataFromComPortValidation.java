@@ -751,6 +751,33 @@ public class DataFromComPortValidation {
             case Control.E55_ERROR:
                 Platform.runLater(() -> controller.comPortStatus.setText("E55_ERROR"));
                 break;
+            case Control.E30_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E30_ERROR"));
+                break;
+            case Control.E31_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E31_ERROR"));
+                break;
+            case Control.E32_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E32_ERROR"));
+                break;
+            case Control.E33_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E33_ERROR"));
+                break;
+            case Control.E34_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E34_ERROR"));
+                break;
+            case Control.E35_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E35_ERROR"));
+                break;
+            case Control.E36_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E36_ERROR"));
+                break;
+            case Control.E37_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E37_ERROR"));
+                break;
+            case Control.E95_ERROR:
+                Platform.runLater(() -> controller.comPortStatus.setText("E95_ERROR"));
+                break;
 
 
         }
@@ -791,6 +818,15 @@ public class DataFromComPortValidation {
                     controller.stripTypeImage.setImage(stripType);
                     controller.stripTypeLabel.setVisible(true);
                     controller.stripTypeLabel.setText("Полоска № 5");
+                });
+                break;
+            case Control.SIXTH_STRIP_TYPE:
+                logger.info("SIXTH_STRIP_TYPE");
+                Platform.runLater(() -> {
+                    Image stripType = new Image("images/strip6.jpg", true);
+                    controller.stripTypeImage.setImage(stripType);
+                    controller.stripTypeLabel.setVisible(true);
+                    controller.stripTypeLabel.setText("Полоска № 6");
                 });
                 break;
         }

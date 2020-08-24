@@ -325,6 +325,7 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte THIRD_STRIP_TYPE = 3;
     static final public byte FOURTH_STRIP_TYPE = 4;
     static final public byte ZERO_STRIP_TYPE = 5;
+    static final public byte SIXTH_STRIP_TYPE = 6;
 
     //    DEVICE MODE
     static final public byte MEASURE_MODE = 1;
@@ -350,6 +351,16 @@ public class Control extends Thread implements SerialPortDataListener {
     static final public byte E86_ERROR = 86;
     static final public byte E87_ERROR = 87;
     static final public byte E88_ERROR = 88;
+    static final public byte E30_ERROR = 30;
+    static final public byte E31_ERROR = 31;
+    static final public byte E32_ERROR = 32;
+    static final public byte E33_ERROR = 33;
+    static final public byte E34_ERROR = 34;
+    static final public byte E35_ERROR = 35;
+    static final public byte E36_ERROR = 36;
+    static final public byte E37_ERROR = 37;
+    static final public byte E95_ERROR = 95;
+
 
     public void sendOnExit() {
     }
